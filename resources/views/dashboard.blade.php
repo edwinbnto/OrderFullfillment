@@ -317,21 +317,21 @@
     <div class="stat-card">
       <div class="label">Orders received today</div>
       <div class="value">1</div>
-      <div class="sub sub-good">↗ +2 vs yesterday</div>
+      <div class="sub sub-good">↗ +1 vs yesterday</div>
     </div>
     <div class="stat-card">
       <div class="label">In packing</div>
-      <div class="value">0</div>
+      <div class="value">1</div>
       <div class="sub sub-warn">⚠ 1 overdue</div>
     </div>
     <div class="stat-card">
       <div class="label">Shipped today</div>
-      <div class="value">0</div>
-      <div class="sub sub-info">⏱ Avg. 0 min/order</div>
+      <div class="value">1</div>
+      <div class="sub sub-info">⏱ Avg. 1 min/order</div>
     </div>
     <div class="stat-card">
       <div class="label">On-time delivery rate</div>
-      <div class="value">0%</div>
+      <div class="value">90%</div>
       <div class="sub sub-good">✓ On track</div>
     </div>
   </div>
@@ -350,7 +350,7 @@
       <div class="order-card">
         <div class="order-id">ORD-4821</div>
         <div class="order-item">Wireless Headphones × 2</div>
-        <div><span class="tag tag-high">High</span></div>
+        <div><span class="tag tag-low">Low<i class="fas fa-temperature-low    "></i></span></div>
         <div class="order-meta">Due 3:00 PM</div>
       </div>
 
@@ -386,8 +386,8 @@
       <div class="order-card">
         <div class="order-id">ORD-4821</div>
         <div class="order-item">Wireless Headphones × 2</div>
-        <div><span class="tag tag-high">High</span></div>
-        <div class="order-meta">Staion 3</div>
+        <div><span class="tag tag-low">Low</span></div>
+        <div class="order-meta">June 25</div>
       </div>
 
       <div class="order-card">
@@ -457,7 +457,7 @@
         </div>
 
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-danger">⛔</span></div>
+          <div class="alert-left"><span>📦 New order #ORD-4821 received</span></div>
         </div>
         <div class="alert-row">
           <div class="alert-left"><span class="alert-icon icon-warn">⚠</span></div>
@@ -479,7 +479,7 @@
           <div class="live-badge"><span class="live-dot"></span> Live</div>
         </div>
 
-        <div class="activity-row">📦 </div>
+        <div class="activity-row">📦 Order #ORD-4821 has been shipped</div>
         <div class="activity-row">🏷 </div>
         <div class="activity-row">🏷 </div>
         <div class="activity-row">🏃</div>
