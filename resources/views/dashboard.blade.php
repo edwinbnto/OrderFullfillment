@@ -316,22 +316,22 @@
   <div class="stats-row">
     <div class="stat-card">
       <div class="label">Orders received today</div>
-      <div class="value">142</div>
-      <div class="sub sub-good">↗ +12 vs yesterday</div>
+      <div class="value">1</div>
+      <div class="sub sub-good">↗ +2 vs yesterday</div>
     </div>
     <div class="stat-card">
       <div class="label">In packing</div>
-      <div class="value">8</div>
-      <div class="sub sub-warn">⚠ 6 overdue</div>
+      <div class="value">0</div>
+      <div class="sub sub-warn">⚠ 1 overdue</div>
     </div>
     <div class="stat-card">
       <div class="label">Shipped today</div>
-      <div class="value">94</div>
-      <div class="sub sub-info">⏱ Avg. 18 min/order</div>
+      <div class="value">0</div>
+      <div class="sub sub-info">⏱ Avg. 0 min/order</div>
     </div>
     <div class="stat-card">
       <div class="label">On-time delivery rate</div>
-      <div class="value">90%</div>
+      <div class="value">0%</div>
       <div class="sub sub-good">✓ On track</div>
     </div>
   </div>
@@ -344,7 +344,7 @@
     <div class="column">
       <div class="column-header">
         <div class="column-title"><span class="dot dot-new"></span> Orders</div>
-        <div class="count-badge">4 orders</div>
+        <div class="count-badge">1 orders</div>
       </div>
 
       <div class="order-card">
@@ -355,24 +355,24 @@
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">USB-C Hub × 1</div>
-        <div><span class="tag tag-med">Med</span></div>
-        <div class="order-meta">Due 5:00 PM</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-med"></span></div>
+        <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Desk Lamp × 1</div>
-        <div><span class="tag tag-low">Low</span></div>
-        <div class="order-meta">Due tomorrow</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-low"></span></div>
+        <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Monitor Arm × 2</div>
-        <div><span class="tag tag-low">Low</span></div>
-        <div class="order-meta">Due tomorrow</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-low"></span></div>
+        <div class="order-meta"></div>
       </div>
     </div>
 
@@ -380,35 +380,35 @@
     <div class="column">
       <div class="column-header">
         <div class="column-title"><span class="dot dot-packing"></span> PACKING</div>
-        <div class="count-badge">4 orders</div>
+        <div class="count-badge">1 orders</div>
       </div>
 
       <div class="order-card">
         <div class="order-id">ORD-4821</div>
         <div class="order-item">Wireless Headphones × 2</div>
         <div><span class="tag tag-high">High</span></div>
-        <div class="order-meta">Station 3</div>
+        <div class="order-meta">Staion 3</div>
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">USB-C Hub × 1</div>
-        <div><span class="tag tag-med">Med</span></div>
-        <div class="order-meta">Station 1</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-med"></span></div>
+        <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Desk Lamp × 1</div>
-        <div><span class="tag tag-low">Low</span></div>
-        <div class="order-meta">Station 3</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-low"></span></div>
+        <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Monitor Arm x2</div>
-        <div><span class="tag tag-low">Low</span></div>
-        <div class="order-meta">Station 3</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-low"></span></div>
+        <div class="order-meta"></div>
       </div>
     </div>
 
@@ -416,7 +416,7 @@
     <div class="column">
       <div class="column-header">
         <div class="column-title"><span class="dot dot-shipped"></span> SHIPPED</div>
-        <div class="count-badge">4 orders</div>
+        <div class="count-badge">1 orders</div>
       </div>
 
       <div class="order-card">
@@ -427,24 +427,24 @@
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">USB-C Hub × 1</div>
-        <div><span class="tag tag-delivered">Delivered</span></div>
-        <div class="order-meta">J&amp;T Express</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-delivered"></span></div>
+        <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Desk Lamp × 1</div>
-        <div><span class="tag tag-shipped">Shipped</span></div>
-        <div class="order-meta">J&amp;T Express</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-shipped"></span></div>
+        <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Monitor Arm × 2</div>
-        <div><span class="tag tag-shipped">Shipped</span></div>
-        <div class="order-meta">DHL Express</div>
+        <div class="order-id"></div>
+        <div class="order-item"></div>
+        <div><span class="tag tag-shipped"></span></div>
+        <div class="order-meta"></div>
       </div>
     </div>
 
@@ -457,22 +457,19 @@
         </div>
 
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-danger">⛔</span> ORD-4812 overdue by 35 min</div>
+          <div class="alert-left"><span class="alert-icon icon-danger">⛔</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span> 6 orders past pick deadline</div>
-          <button class="alert-btn">Review</button>
+          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">↩</span> 3 return requests pending</div>
-          <button class="alert-btn">View</button>
+          <div class="alert-left"><span class="alert-icon icon-info">↩</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span> DHL pickup delayed by 1 hr</div>
+          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">⚙</span> ORD-4812 overdue by 35 min</div>
-          <button class="alert-btn">Assign</button>
+          <div class="alert-left"><span class="alert-icon icon-info">⚙</span></div>
         </div>
       </div>
 
@@ -482,10 +479,10 @@
           <div class="live-badge"><span class="live-dot"></span> Live</div>
         </div>
 
-        <div class="activity-row">📦 ORD-4800 shipped via DHL Express</div>
-        <div class="activity-row">🏷 ORD-4813 packed at station 3</div>
-        <div class="activity-row">🏷 ORD-4817 pick started — Zone B-04</div>
-        <div class="activity-row">🏃 ORD-4813 packed at station 3</div>
+        <div class="activity-row">📦 </div>
+        <div class="activity-row">🏷 </div>
+        <div class="activity-row">🏷 </div>
+        <div class="activity-row">🏃</div>
       </div>
     </div>
 
