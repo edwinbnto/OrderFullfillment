@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nexora Return</title>
+<title>Nexora Shipping</title>
 <style>
   :root {
     --bg-header: #0B1E3D;
@@ -72,144 +72,191 @@
     color: var(--text-light);
     font-weight: 700;
   }
-
-  /* ===== Main layout ===== */
-  .main-layout {
+/* ===== Stats Row ===== */
+  .stats-row {
     display: flex;
     gap: 24px;
-    padding: 24px 40px 60px;
-    align-items: flex-start;
+    padding: 32px 40px 10px;
+    flex-wrap: wrap;
   }
 
-  /* ===== Order queue panel ===== */
-  .queue-panel {
+  .stat-card {
     background: var(--bg-card);
     border: 1px solid var(--border-soft);
     border-radius: 12px;
+    padding: 22px 28px;
     flex: 1;
-    min-width: 0;
-    overflow: hidden;
+    min-width: 200px;
   }
 
-  .queue-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  .queue-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .queue-icon {
-    width: 18px;
-    height: 18px;
-    display: inline-block;
-    border: 2px solid var(--text-light);
-    border-radius: 3px;
-    position: relative;
-  }
-  .queue-icon::before, .queue-icon::after {
-    content: "";
-    position: absolute;
-    background: var(--text-light);
-    left: 3px;
-    right: 3px;
-    height: 2px;
-  }
-  .queue-icon::before { top: 5px; }
-  .queue-icon::after { top: 9px; }
-
-  .queue-tabs {
-    display: flex;
-    gap: 24px;
-    font-size: 14px;
+  .stat-card .label {
     color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
   }
 
-  .queue-tabs .active-tab {
-    color: var(--text-light);
+  .stat-card .value {
+    font-size: 32px;
     font-weight: 700;
+}
+
+  /* ---------- Main Content ---------- */
+  .content{
+    display:flex;
+    gap:24px;
+    padding: 28px 40px 60px 40px;
   }
 
-  table {
-    width: 100%;
+  /* Order Queue */
+  .panel{
+    background: var(--bg-card);
+    border-radius:12px;
+    overflow:hidden;
+  }
+
+  .order-queue{ flex: 2.5; }
+  .activity{ flex: 1; }
+
+  .panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+
+  .panel-header .title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+    font-size:16px;
+  }
+
+  .panel-header .actions{
+    display:flex;
+    gap:24px;
+    color: var(--text-muted);
+    font-size:14px;
+  }
+
+  table{
+    width:100%;
     border-collapse: collapse;
   }
 
-  thead th {
-    text-align: left;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border-soft);
+  thead th{
+    text-align:left;
+    padding:14px 24px;
+    font-size:14px;
+    color:#fff;
+    border-bottom:1px solid rgba(255,255,255,0.08);
   }
 
-  tbody td {
-    padding: 14px 24px;
-    font-size: 14px;
-    border-bottom: 1px solid var(--border-soft);
+  tbody td{
+    padding:14px 24px;
+    font-size:14px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
   }
 
-  tbody tr:hover {
-    background: rgba(255,255,255,0.03);
+  tbody tr:nth-child(even){
+    background: rgba(255,255,255,0.02);
   }
 
-  .order-id { color: var(--text-muted); }
-  .customer { font-weight: 700; }
-  .product { color: var(--text-muted); }
-
-  .status-badge {
-    background: rgba(255,255,255,0.1);
+  .order-id, .product{
     color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 700;
-    padding: 5px 12px;
-    border-radius: 6px;
-    letter-spacing: 0.5px;
   }
 
-  .priority-badge {
+  .customer{
+    font-weight:600;
+  }
+
+  .status-new{
+    background: rgba(255,255,255,0.1);
+    color:#fff;
+    padding:5px 14px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
+  }
+
+  .priority-low{
+    background: #1B6FC8;
+    color: ;
+    padding:3px 12px;
+    border-radius:5px;
+    font-size:11px;
+    display:inline-block;
+  }
+   .priority-med{
+    background: #16A34A;
+    color: #;
+    padding:3px 12px;
+    border-radius:5px;
+    font-size:11px;
+    display:inline-block;
+   }
+
+   .priority-high{
     background: #7F1D2E;
     color: #FCA5B1;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 10px;
+    padding:3px 12px;
+    border-radius:5px;
+    font-size:11px;
+    display:inline-block;
+   }
+
+  .prepare-btn{
+    background: var(--text-light);
+    color: var(--navy-dark);
+    border:none;
+    padding:8px 18px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
   }
 
-  .due-date {
-    color: #F87171;
-    font-weight: 600;
+  .empty-row td{
+    height:38px;
   }
 
-  .pick-btn {
-    background: rgba(255,255,255,0.12);
-    color: var(--text-light);
-    border: 1px solid var(--border-soft);
-    border-radius: 18px;
-    padding: 7px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+  /* Recent Activity */
+  .activity-list{
+    padding: 8px 0;
   }
 
-  .pick-btn:hover {
-    background: rgba(255,255,255,0.2);
+  .activity-item{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:16px 24px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    font-size:14px;
   }
 
-  /* ===== Sidebar ===== */
-  .sidebar {
+  .activity-icon{
+    width:18px;
+    text-align:center;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+
+  .icon-cart{ color:#5C9AE0; }
+  .icon-truck{ color:#5C9AE0; }
+  .icon-warn{ color:#E0735C; }
+
+  .activity-empty{
+    height:50px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+.sidebar {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    width: 320px;
+    width: 340px;
     flex-shrink: 0;
   }
 
@@ -217,37 +264,81 @@
     background: var(--bg-card);
     border: 1px solid var(--border-soft);
     border-radius: 12px;
-    overflow: hidden;
+    padding: 20px;
   }
 
   .side-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--border-soft);
-    font-size: 18px;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .side-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
     font-weight: 700;
   }
 
-  .side-icon {
-    width: 18px;
-    height: 18px;
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ADE80;
+  }
+
+  .alert-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+  }
+
+  .alert-row:last-child { border-bottom: none; }
+
+  .alert-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .alert-icon {
+    font-size: 14px;
+  }
+  .alert-btn {
+    background: rgba(255,255,255,0.12);
+    color: var(--text-light);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .activity-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
     color: var(--text-light);
   }
 
-  .side-body {
-    min-height: 360px;
-  }
-
-  .side-body .row {
-    height: 46px;
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  .side-body.short .row {
-    height: 46px;
-  }
+  .activity-row:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -272,133 +363,120 @@
     </div>
   </div>
 
-  <!-- Main layout -->
-  <div class="main-layout">
-
-    <!-- Order queue -->
-    <div class="queue-panel">
-      <div class="queue-header">
-        <div class="queue-title"><span class="queue-icon"></span> Order queue</div>
-        <div class="queue-tabs">
-          <span class="active-tab">All (142)</span>
-          <span>Pending (47)</span>
-          <span>Urgent (6)</span>
-          <span>Returns (3)</span>
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Order Id</th>
-            <th>Customer</th>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Status</th>
-            <th>Priority</th>
-            <th>Courier</th>
-            <th>Due</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- 6 identical rows as in the screenshot -->
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-        </tbody>
-      </table>
+<!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Return request pending</div>
+      <div class="value">3</div>
     </div>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="side-panel">
-        <div class="side-header">🔔 Alerts</div>
-        <div class="side-body">
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-        </div>
-      </div>
-
-      <div class="side-panel">
-        <div class="side-header">📈 Activity</div>
-        <div class="side-body short">
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-        </div>
-      </div>
+    <div class="stat-card">
+      <div class="label">Received at warehouse</div>
+      <div class="value">1</div>
     </div>
-
+    <div class="stat-card">
+      <div class="label">Refund porcessed today</div>
+      <div class="value">1</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Return rate(30 days)</div>
+      <div class="value">2.1%</div>
+    </div>
   </div>
+
+<section class="content">
+
+  <div class="panel order-queue">
+    <div class="panel-header">
+      <div class="title">📦 Return requests</div>
+      <div class="actions">
+        <span>Search</span>
+        <span>Filter</span>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Order Id</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Resolution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="order-id">#ORD-4821</td>
+          <td class="customer">Maria Santos</td>
+          <td class="product">Wireless Headphone</td>
+          <td class="Reason">Defective</td>
+          <td><span class="priority-med">Refuned</span></td>
+          <td><span class="Resolution">Pending</span></td>
+        </tr>
+        <td class="order-id">#ORD-4822</td>
+          <td class="customer">Carlos Dela Cruz</td>
+          <td class="product">Keyboard</td>
+          <td class="Reason">Wrong item</td>
+          <td><span class="priority-low">Inpecting</span></td>
+           <td><span class="Resolution">Pending</span></td>
+        </tr>
+        <td class="order-id">#ORD-4823</td>
+          <td class="customer">Ana Reyes</td>
+          <td class="product">Gaming mouse</td>
+          <td class="Reason">Defective</td>
+          <td><span class="priority-med">Refuned</span></td>
+           <td><span class="Resolution">Pending</span></td>
+        </tr>
+        <td class="order-id">#ORD-4824</td>
+          <td class="customer">Liza Mendoza</td>
+          <td class="product">Mechanical Keyboard</td>
+          <td class="Reason">Damage in transit</td>
+          <td><span class="priority-low">Inspecting</span></td>
+           <td><span class="Resolution">Refund issued</span></td>
+        </tr>
+        <td class="order-id">#ORD-4825</td>
+          <td class="customer">Jose Bautista</td>
+          <td class="product">Webcam HD</td>
+          <td class="Reason">Defective</td>
+          <td><span class="priority-low">Inspecting</span></td>
+           <td><span class="Resolution" class="alert-icon icon-warn">Not resellable</span></td>
+        </tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+   <div class="sidebar">
+      <div class="side-panel">
+        <div class="side-header">
+          <div class="side-title">🔔 Return reasons</div>
+        </div>
+
+        <div class="alert-row">
+          <div class="alert-left"><span>⚠️ Defective - 41%</span></div>
+        </div>
+        <div class="alert-row">
+          <div class="alert-left"><span>❌ Wrong item - 24%</span></div>
+        </div>
+        <div class="alert-row">
+          <div class="alert-left"><span class="alert-icon icon-info">🔄 Change mind 18%</span></div>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="side-header">
+          <div class="side-title">📈 Return activity</div>
+        </div>
+        <div class="activity-row">✅ Order #ORD-4821 has refunded </div>
+        <div class="activity-row">✅ Order #ORD-4823 has refunded</div>
+        <div class="activity-row">✅ </div>
+        <div class="activity-row">✅ </div>
+      </div>
+    </div>
 
 </body>
 </html>

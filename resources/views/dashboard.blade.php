@@ -102,7 +102,7 @@
     font-weight: 700;
   }
 
-  /* ===== Board ===== */
+  /*---> Board <----*/
   .board {
     display: flex;
     gap: 24px;
@@ -351,27 +351,24 @@
         <div class="order-id">ORD-4821</div>
         <div class="order-item">Wireless Headphones × 2</div>
         <div><span class="tag tag-low">Low<i class="fas fa-temperature-low    "></i></span></div>
-        <div class="order-meta">Due 3:00 PM</div>
+        <div class="order-meta">June 25</div>
       </div>
 
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-med"></span></div>
         <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-low"></span></div>
         <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-low"></span></div>
         <div class="order-meta"></div>
       </div>
     </div>
@@ -393,21 +390,18 @@
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-med"></span></div>
         <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-low"></span></div>
         <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-low"></span></div>
         <div class="order-meta"></div>
       </div>
     </div>
@@ -429,21 +423,18 @@
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-delivered"></span></div>
         <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-shipped"></span></div>
         <div class="order-meta"></div>
       </div>
 
       <div class="order-card">
         <div class="order-id"></div>
         <div class="order-item"></div>
-        <div><span class="tag tag-shipped"></span></div>
         <div class="order-meta"></div>
       </div>
     </div>
@@ -460,28 +451,28 @@
           <div class="alert-left"><span>📦 New order #ORD-4821 received</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span></div>
+          <div class="alert-left"><span class="alert-icon icon-warn">⚠️</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">↩</span></div>
+          <div class="alert-left"><span class="alert-icon icon-info">↩️</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span></div>
+          <div class="alert-left"><span class="alert-icon icon-warn">⚠️</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">⚙</span></div>
+          <div class="alert-left"><span class="alert-icon icon-info">🕓</span></div>
         </div>
       </div>
 
       <div class="side-panel">
         <div class="side-header">
-          <div class="side-title">⚡ Activity feed</div>
+          <div class="side-title">📈 Activity feed</div>
           <div class="live-badge"><span class="live-dot"></span> Live</div>
         </div>
 
-        <div class="activity-row">📦 Order #ORD-4821 has been shipped</div>
-        <div class="activity-row">🏷 </div>
-        <div class="activity-row">🏷 </div>
+        <div class="activity-row">🚚 Order #ORD-4821 has been shipped</div>
+        <div class="activity-row">🚚 </div>
+        <div class="activity-row">🚚 </div>
         <div class="activity-row">🏃</div>
       </div>
     </div>
