@@ -72,181 +72,168 @@
     color: var(--text-light);
     font-weight: 700;
   }
-
-  /* ===== Main layout ===== */
-  .main-layout {
+/* ===== Stats Row ===== */
+  .stats-row {
     display: flex;
     gap: 24px;
-    padding: 24px 40px 60px;
-    align-items: flex-start;
+    padding: 32px 40px 10px;
+    flex-wrap: wrap;
   }
 
-  /* ===== Order queue panel ===== */
-  .queue-panel {
+  .stat-card {
     background: var(--bg-card);
     border: 1px solid var(--border-soft);
     border-radius: 12px;
+    padding: 22px 28px;
     flex: 1;
-    min-width: 0;
-    overflow: hidden;
+    min-width: 200px;
   }
 
-  .queue-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  .queue-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .queue-icon {
-    width: 18px;
-    height: 18px;
-    display: inline-block;
-    border: 2px solid var(--text-light);
-    border-radius: 3px;
-    position: relative;
-  }
-  .queue-icon::before, .queue-icon::after {
-    content: "";
-    position: absolute;
-    background: var(--text-light);
-    left: 3px;
-    right: 3px;
-    height: 2px;
-  }
-  .queue-icon::before { top: 5px; }
-  .queue-icon::after { top: 9px; }
-
-  .queue-tabs {
-    display: flex;
-    gap: 24px;
-    font-size: 14px;
+  .stat-card .label {
     color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
   }
 
-  .queue-tabs .active-tab {
-    color: var(--text-light);
+  .stat-card .value {
+    font-size: 32px;
     font-weight: 700;
+}
+
+  /* ---------- Main Content ---------- */
+  .content{
+    display:flex;
+    gap:24px;
+    padding: 28px 40px 60px 40px;
   }
 
-  table {
-    width: 100%;
+  /* Order Queue */
+  .panel{
+    background: var(--bg-card);
+    border-radius:12px;
+    overflow:hidden;
+  }
+
+  .order-queue{ flex: 2.5; }
+  .activity{ flex: 1; }
+
+  .panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+
+  .panel-header .title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+    font-size:16px;
+  }
+
+  .panel-header .actions{
+    display:flex;
+    gap:24px;
+    color: var(--text-muted);
+    font-size:14px;
+  }
+
+  table{
+    width:100%;
     border-collapse: collapse;
   }
 
-  thead th {
-    text-align: left;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border-soft);
+  thead th{
+    text-align:left;
+    padding:14px 24px;
+    font-size:14px;
+    color:#fff;
+    border-bottom:1px solid rgba(255,255,255,0.08);
   }
 
-  tbody td {
-    padding: 14px 24px;
-    font-size: 14px;
-    border-bottom: 1px solid var(--border-soft);
+  tbody td{
+    padding:14px 24px;
+    font-size:14px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
   }
 
-  tbody tr:hover {
-    background: rgba(255,255,255,0.03);
+  tbody tr:nth-child(even){
+    background: rgba(255,255,255,0.02);
   }
 
-  .order-id { color: var(--text-muted); }
-  .customer { font-weight: 700; }
-  .product { color: var(--text-muted); }
-
-  .status-badge {
-    background: rgba(255,255,255,0.1);
+  .order-id, .product{
     color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 700;
-    padding: 5px 12px;
-    border-radius: 6px;
-    letter-spacing: 0.5px;
   }
 
-  .priority-badge {
-    background: #7F1D2E;
-    color: #FCA5B1;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 10px;
+  .customer{
+    font-weight:600;
   }
 
-  .due-date {
-    color: #F87171;
-    font-weight: 600;
+  .status-new{
+    background: rgba(255,255,255,0.1);
+    color:#fff;
+    padding:5px 14px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
   }
 
-  .pick-btn {
-    background: rgba(255,255,255,0.12);
-    color: var(--text-light);
-    border: 1px solid var(--border-soft);
-    border-radius: 18px;
-    padding: 7px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+  .priority-low{
+    background: #5A3A4A;
+    color:#E8B8C8;
+    padding:3px 12px;
+    border-radius:5px;
+    font-size:11px;
+    display:inline-block;
   }
 
-  .pick-btn:hover {
-    background: rgba(255,255,255,0.2);
+  .prepare-btn{
+    background: var(--text-light);
+    color: var(--navy-dark);
+    border:none;
+    padding:8px 18px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
   }
 
-  /* ===== Sidebar ===== */
-  .sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    width: 320px;
-    flex-shrink: 0;
+  .empty-row td{
+    height:38px;
   }
 
-  .side-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    overflow: hidden;
+  /* Recent Activity */
+  .activity-list{
+    padding: 8px 0;
   }
 
-  .side-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--border-soft);
-    font-size: 18px;
-    font-weight: 700;
+  .activity-item{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:16px 24px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    font-size:14px;
   }
 
-  .side-icon {
-    width: 18px;
-    height: 18px;
-    color: var(--text-light);
+  .activity-icon{
+    width:18px;
+    text-align:center;
+    flex-shrink:0;
+    margin-top:2px;
   }
 
-  .side-body {
-    min-height: 360px;
-  }
+  .icon-cart{ color:#5C9AE0; }
+  .icon-truck{ color:#5C9AE0; }
+  .icon-warn{ color:#E0735C; }
 
-  .side-body .row {
-    height: 46px;
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  .side-body.short .row {
-    height: 46px;
+  .activity-empty{
+    height:50px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
   }
 </style>
 </head>
@@ -272,133 +259,95 @@
     </div>
   </div>
 
-  <!-- Main layout -->
-  <div class="main-layout">
-
-    <!-- Order queue -->
-    <div class="queue-panel">
-      <div class="queue-header">
-        <div class="queue-title"><span class="queue-icon"></span> Order queue</div>
-        <div class="queue-tabs">
-          <span class="active-tab">All (142)</span>
-          <span>Pending (47)</span>
-          <span>Urgent (6)</span>
-          <span>Returns (3)</span>
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Order Id</th>
-            <th>Customer</th>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Status</th>
-            <th>Priority</th>
-            <th>Courier</th>
-            <th>Due</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- 6 identical rows as in the screenshot -->
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-          <tr>
-            <td class="order-id">#ORD-4821</td>
-            <td class="customer">Maria Santos</td>
-            <td class="product">Wireless Headphone</td>
-            <td>2</td>
-            <td><span class="status-badge">NEW</span></td>
-            <td><span class="priority-badge">High</span></td>
-            <td>DHL Express</td>
-            <td class="due-date">Today 3:00 PM</td>
-            <td><button class="pick-btn">Pick now</button></td>
-          </tr>
-        </tbody>
-      </table>
+<!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Orders received today</div>
+      <div class="value">1</div>
     </div>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="side-panel">
-        <div class="side-header">🔔 Alerts</div>
-        <div class="side-body">
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-        </div>
-      </div>
-
-      <div class="side-panel">
-        <div class="side-header">📈 Activity</div>
-        <div class="side-body short">
-          <div class="row"></div>
-          <div class="row"></div>
-          <div class="row"></div>
-        </div>
-      </div>
+    <div class="stat-card">
+      <div class="label">In packing</div>
+      <div class="value">1</div>
     </div>
-
+    <div class="stat-card">
+      <div class="label">Shipped today</div>
+      <div class="value">1</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">On-time delivery rate</div>
+      <div class="value">90</div>
+    </div>
   </div>
+
+<section class="content">
+
+  <div class="panel order-queue">
+    <div class="panel-header">
+      <div class="title">📦 Order queue</div>
+      <div class="actions">
+        <span>Search</span>
+        <span>Filter</span>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Order Id</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Due</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="order-id">#ORD-4821</td>
+          <td class="customer">Maria Santos</td>
+          <td class="product">Wireless Headphone</td>
+          <td>2</td>
+          <td><span class="status-new">NEW</span></td>
+          <td><span class="priority-low">Low</span></td>
+          <td>Jun 25</td>
+        </tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel activity">
+    <div class="panel-header">
+      <div class="title">📈 Recent activity</div>
+    </div>
+    <div class="activity-list">
+      <div class="activity-item">
+        <span class="activity-icon icon-cart">🛒</span>
+        <span>New order #ORD-4821 received</span>
+      </div>
+      <div class="activity-item">
+        <span class="activity-icon icon-truck">🚚</span>
+        <span>#ORD-4800 shipped via DHL</span>
+      </div>
+      <div class="activity-item">
+        <span class="activity-icon icon-warn">⚠️</span>
+        <span>#ORD-4812 flagged overdue</span>
+      </div>
+      <div class="activity-empty"></div>
+      <div class="activity-empty"></div>
+    </div>
+  </div>
+
+</section>
 
 </body>
 </html>
