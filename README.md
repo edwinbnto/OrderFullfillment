@@ -1,59 +1,48 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Order Fulfillment
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A web-based system for managing the order fulfillment pipeline — from order intake through packing, shipping, and returns. Built on Laravel 12.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Dashboard** — shows all orders, packing, and shipped items at a glance, along with alerts and an activity feed.
+- **Orders** — view order info and manage status and priority/due date. Clicking **Prepare** on an order moves it to Packing.
+- **Packing** — pack orders here. Once packed, the order moves to Shipping.
+- **Shipping** — tracks each order's progression through the shipping lifecycle, from Shipped to Ready for Delivery. Once an order reaches Ready for Delivery, a delivery agent can be assigned, automatically advancing the order's status to Out for Delivery and subsequently to Delivered upon completion.
+- **Returns** — manage and track returned orders.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Each stage presents records in a table with columns such as Order ID, Customer, Product, Qty, Status, Priority, Courier, Due, and Action.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> **Note:** This project is currently scaffolding — the routes and views are in place, but they return static views rather than dynamic data. Controllers, models, and database tables for orders/shipments still need to be built out.
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Backend:** PHP 8.2+, Laravel 12
+- **Frontend:** Blade templates, Tailwind CSS 4, Vite
+- **Database:** MySQL
+- **Testing:** Pest 3
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project Structure
 
-## Laravel Sponsors
+```
+app/
+  Http/Controllers/   # Controller.php (base controller only, no resource controllers yet)
+  Models/              # User.php (default Laravel model only)
+database/
+  migrations/          # Default Laravel tables (users, cache, jobs)
+resources/
+  views/
+    dashboard.blade.php
+    order.blade.php
+    packing.blade.php
+    shipping.blade.php
+    return.blade.php
+routes/
+  web.php              # Defines the dashboard/order/packing/shipping/return routes
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Requirements
 
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- PHP 8.2 or higher
+- Composer
+- Node.js & npm
+- MySQL
