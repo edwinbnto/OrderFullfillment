@@ -194,6 +194,100 @@
     font-size: 12px;
     color: var(--text-muted);
   }
+
+  /* ===== Sidebar (Alerts + Activity) ===== */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 340px;
+    flex-shrink: 0;
+  }
+
+  .side-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .side-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .side-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ADE80;
+  }
+
+  .alert-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+  }
+
+  .alert-row:last-child { border-bottom: none; }
+
+  .alert-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .alert-icon {
+    font-size: 14px;
+  }
+
+  .icon-danger { color: #F87171; }
+  .icon-warn { color: #F59E0B; }
+  .icon-info { color: #38BDF8; }
+
+  .alert-btn {
+    background: rgba(255,255,255,0.12);
+    color: var(--text-light);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .activity-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  .activity-row:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -218,34 +312,39 @@
     </div>
   </div>
 
-  <!-- Stats -->
+<!-- Stats -->
   <div class="stats-row">
     <div class="stat-card">
       <div class="label">Orders received today</div>
       <div class="value">142</div>
+      <div class="sub sub-good">↗ +12 vs yesterday</div>
     </div>
     <div class="stat-card">
       <div class="label">In packing</div>
       <div class="value">8</div>
+      <div class="sub sub-warn">⚠ 6 overdue</div>
     </div>
     <div class="stat-card">
       <div class="label">Shipped today</div>
       <div class="value">94</div>
+      <div class="sub sub-info">⏱ Avg. 18 min/order</div>
     </div>
     <div class="stat-card">
       <div class="label">On-time delivery rate</div>
       <div class="value">90%</div>
+      <div class="sub sub-good">✓ On track</div>
     </div>
   </div>
 
-  <!-- Board -->
+
+<!-- Board + Sidebar -->
   <div class="board">
 
-    <!-- NEW -->
+    <!-- Orders -->
     <div class="column">
       <div class="column-header">
-        <div class="column-title"><span class="dot dot-new"></span> NEW</div>
-        <div class="count-badge">3 orders</div>
+        <div class="column-title"><span class="dot dot-new"></span> Orders</div>
+        <div class="count-badge">4 orders</div>
       </div>
 
       <div class="order-card">
@@ -268,32 +367,46 @@
         <div><span class="tag tag-low">Low</span></div>
         <div class="order-meta">Due tomorrow</div>
       </div>
+
+      <div class="order-card">
+        <div class="order-id">ORD-4821</div>
+        <div class="order-item">Monitor Arm × 2</div>
+        <div><span class="tag tag-low">Low</span></div>
+        <div class="order-meta">Due tomorrow</div>
+      </div>
     </div>
 
     <!-- PACKING -->
     <div class="column">
       <div class="column-header">
         <div class="column-title"><span class="dot dot-packing"></span> PACKING</div>
-        <div class="count-badge">3 orders</div>
+        <div class="count-badge">4 orders</div>
       </div>
 
       <div class="order-card">
         <div class="order-id">ORD-4821</div>
-        <div class="order-item">Gaming Mouse × 3</div>
-        <div><span class="tag tag-med">Med</span></div>
+        <div class="order-item">Wireless Headphones × 2</div>
+        <div><span class="tag tag-high">High</span></div>
         <div class="order-meta">Station 3</div>
       </div>
 
       <div class="order-card">
         <div class="order-id">ORD-4821</div>
-        <div class="order-item">Laptop Stand × 1</div>
-        <div><span class="tag tag-high">High</span></div>
+        <div class="order-item">USB-C Hub × 1</div>
+        <div><span class="tag tag-med">Med</span></div>
         <div class="order-meta">Station 1</div>
       </div>
 
       <div class="order-card">
         <div class="order-id">ORD-4821</div>
-        <div class="order-item">Keyboard × 2</div>
+        <div class="order-item">Desk Lamp × 1</div>
+        <div><span class="tag tag-low">Low</span></div>
+        <div class="order-meta">Station 3</div>
+      </div>
+
+      <div class="order-card">
+        <div class="order-id">ORD-4821</div>
+        <div class="order-item">Monitor Arm x2</div>
         <div><span class="tag tag-low">Low</span></div>
         <div class="order-meta">Station 3</div>
       </div>
@@ -303,7 +416,28 @@
     <div class="column">
       <div class="column-header">
         <div class="column-title"><span class="dot dot-shipped"></span> SHIPPED</div>
-        <div class="count-badge">3 orders</div>
+        <div class="count-badge">4 orders</div>
+      </div>
+
+      <div class="order-card">
+        <div class="order-id">ORD-4821</div>
+        <div class="order-item">Wireless Headphones × 2</div>
+        <div><span class="tag tag-shipped">Shipped</span></div>
+        <div class="order-meta">DHL Express</div>
+      </div>
+
+      <div class="order-card">
+        <div class="order-id">ORD-4821</div>
+        <div class="order-item">USB-C Hub × 1</div>
+        <div><span class="tag tag-delivered">Delivered</span></div>
+        <div class="order-meta">J&amp;T Express</div>
+      </div>
+
+      <div class="order-card">
+        <div class="order-id">ORD-4821</div>
+        <div class="order-item">Desk Lamp × 1</div>
+        <div><span class="tag tag-shipped">Shipped</span></div>
+        <div class="order-meta">J&amp;T Express</div>
       </div>
 
       <div class="order-card">
@@ -312,19 +446,46 @@
         <div><span class="tag tag-shipped">Shipped</span></div>
         <div class="order-meta">DHL Express</div>
       </div>
+    </div>
 
-      <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Phone Stand × 4</div>
-        <div><span class="tag tag-delivered">Delivered</span></div>
-        <div class="order-meta">J&amp;T Express</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="side-panel">
+        <div class="side-header">
+          <div class="side-title">🔔 Alerts</div>
+        </div>
+
+        <div class="alert-row">
+          <div class="alert-left"><span class="alert-icon icon-danger">⛔</span> ORD-4812 overdue by 35 min</div>
+        </div>
+        <div class="alert-row">
+          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span> 6 orders past pick deadline</div>
+          <button class="alert-btn">Review</button>
+        </div>
+        <div class="alert-row">
+          <div class="alert-left"><span class="alert-icon icon-info">↩</span> 3 return requests pending</div>
+          <button class="alert-btn">View</button>
+        </div>
+        <div class="alert-row">
+          <div class="alert-left"><span class="alert-icon icon-warn">⚠</span> DHL pickup delayed by 1 hr</div>
+        </div>
+        <div class="alert-row">
+          <div class="alert-left"><span class="alert-icon icon-info">⚙</span> ORD-4812 overdue by 35 min</div>
+          <button class="alert-btn">Assign</button>
+        </div>
       </div>
 
-      <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Earbuds × 1</div>
-        <div><span class="tag tag-shipped">Shipped</span></div>
-        <div class="order-meta">LBC Express</div>
+      <div class="side-panel">
+        <div class="side-header">
+          <div class="side-title">⚡ Activity feed</div>
+          <div class="live-badge"><span class="live-dot"></span> Live</div>
+        </div>
+
+        <div class="activity-row">📦 ORD-4800 shipped via DHL Express</div>
+        <div class="activity-row">🏷 ORD-4813 packed at station 3</div>
+        <div class="activity-row">🏷 ORD-4817 pick started — Zone B-04</div>
+        <div class="activity-row">🏃 ORD-4813 packed at station 3</div>
       </div>
     </div>
 
