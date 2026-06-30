@@ -72,6 +72,12 @@
     color: var(--text-light);
     font-weight: 700;
   }
+
+  .nav-links a:hover {
+  color: var(--text-light);
+  text-shadow: 0 0 0.4px currentColor, 0 0 0.4px currentColor;
+}
+
 /* ===== Stats Row ===== */
   .stats-row {
     display: flex;

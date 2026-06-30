@@ -31,6 +31,7 @@
     background: var(--bg-header);
     border-bottom: 1px solid var(--border-soft);
   }
+  
 
   .brand {
     display: flex;
@@ -72,6 +73,11 @@
     color: var(--text-light);
     font-weight: 700;
   }
+
+  .nav-links a:hover {
+  color: var(--text-light);
+  text-shadow: 0 0 0.4px currentColor, 0 0 0.4px currentColor;
+}
 
   /* ===== Stats Row ===== */
   .stats-row {
@@ -297,6 +303,23 @@
   }
 
   .activity-row:last-child { border-bottom: none; }
+
+.sub-order {
+  color: #5FCB8A;
+}
+
+.sub-pack {
+  color: #F39A9A;
+}
+
+.sub-ship {
+  color: #9FB3CC;
+}
+
+.sub-deliver {
+  color: #5FCB8A;
+}
+
 </style>
 </head>
 <body>
@@ -326,22 +349,22 @@
     <div class="stat-card">
       <div class="label">Orders received today</div>
       <div class="value">1</div>
-      <div class="sub sub-good">↗ +1 vs yesterday</div>
+      <div class="sub-order">↗ +1 vs yesterday</div>
     </div>
     <div class="stat-card">
       <div class="label">In packing</div>
       <div class="value">1</div>
-      <div class="sub sub-warn">⚠ 1 overdue</div>
+      <div class="sub-pack">⚠ 1 overdue</div>
     </div>
     <div class="stat-card">
       <div class="label">Shipped today</div>
       <div class="value">1</div>
-      <div class="sub sub-info">⏱ Avg. 1 min/order</div>
+      <div class="sub-ship">⏱ Avg. 1 min/order</div>
     </div>
     <div class="stat-card">
       <div class="label">On-time delivery rate</div>
       <div class="value">90%</div>
-      <div class="sub sub-good">✓ On track</div>
+      <div class="sub-deliver">✓ On track</div>
     </div>
   </div>
 
@@ -352,7 +375,7 @@
     <!-- Orders -->
     <div class="column">
       <div class="column-header">
-        <div class="column-title"><span class="dot dot-new"></span> Orders</div>
+        <div class="column-title"><span class="dot dot-new"></span> ORDERS</div>
         <div class="count-badge">1 orders</div>
       </div>
 
@@ -460,16 +483,16 @@
           <div class="alert-left"><span>📦 New order #ORD-4821 received</span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠️</span></div>
+          <div class="alert-left"><span class="alert-icon icon-warn"></span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">↩️</span></div>
+          <div class="alert-left"><span class="alert-icon icon-info"></span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠️</span></div>
+          <div class="alert-left"><span class="alert-icon icon-warn"></span></div>
         </div>
         <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">🕓</span></div>
+          <div class="alert-left"><span class="alert-icon icon-info"></span></div>
         </div>
       </div>
 
@@ -480,9 +503,9 @@
         </div>
 
         <div class="activity-row">🚚 Order #ORD-4821 has been shipped</div>
-        <div class="activity-row">🚚 </div>
-        <div class="activity-row">🚚 </div>
-        <div class="activity-row">🏃</div>
+        <div class="activity-row"> </div>
+        <div class="activity-row"> </div>
+        <div class="activity-row"></div>
       </div>
     </div>
 
