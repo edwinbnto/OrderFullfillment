@@ -185,7 +185,7 @@
     </div>
  
     <div class="card-footer">
-      <button class="btn close">Close</button>
+      <button class="btn close">Close</a>
       <button class="btn cancel">Cancel order</button>
     </div>
   </div>

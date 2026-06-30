@@ -33,6 +33,7 @@ Route::get('/return', function () {
 
 Route::get('/orderfloat', function () {
     return view('orderfloat');
+<<<<<<< HEAD
 })->name('orderfloat');
 
 Route::get('/database', function () {
@@ -42,3 +43,6 @@ Route::get('/database', function () {
 Route::get('/contactus', function () {
     return view('contactus');
 })->name('contactus');
+=======
+})->name('orderfloat'); 
+>>>>>>> 8b3c513 (describe what you changed here)
