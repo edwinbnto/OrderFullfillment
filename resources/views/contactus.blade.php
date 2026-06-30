@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexora | Sign In</title>
+    <title>Nexora | Contact Us</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -15,15 +15,14 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            height: 100vh;
             background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            /* Allows natural vertical scrolling, prevents horizontal overflow */
+            overflow-x: hidden; 
+            min-height: 100vh;
         }
 
         /*==========================
-            SPLASH SCREEN 
+            SPLASH SCREEN
         ===========================*/
         #splash {
             position: fixed;
@@ -94,14 +93,14 @@
         }
 
         /*==========================
-            MAIN CONTENT LAYOUT
+            MAIN PAGE LAYOUT
         ===========================*/
         .main-wrapper {
             opacity: 0;
             animation: showPage .8s ease forwards 4.1s;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         @keyframes showPage {
@@ -109,26 +108,28 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Updated Header */
+        /* FIXED 128PX HEADER */
         .header {
             height: 128px;
             background: #0B1E3D;
             display: flex;
-            align-items: flex-start; 
+            align-items: center;
+            justify-content: space-between; 
             z-index: 100;
+            width: 100%;
         }
 
-        /* Interactive Logo Formatting */
+        /* LEFT LOGO */
         .nexora-logo {
             display: block;
-            margin: 16px 0 16px 16px; /* 16px on top, bottom, left */
-            height: 96px; /* 128px - 16px top - 16px bottom */
-            z-index: 999;
+            margin: 16px 0 16px 16px; 
+
+            height: 96px; 
             transition: .3s ease;
         }
 
         .nexora-logo:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .nexora-logo img {
@@ -141,124 +142,76 @@
             filter: drop-shadow(0 8px 20px rgba(0,0,0,.25));
         }
 
-        /* Page Background */
-        .page {
-            flex: 1;
-            display: flex;
-            background-image: url("{{ asset('bg/bg.png') }}");
-            background-size: 1920px;
-            background-repeat: no-repeat;
-            background-position-x: bottom center;
-            background-position-y: -192px;
-        }
-
-        .form-col {
-            flex: 0 0 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /*==========================
-            LOGIN CARD STYLING
-        ===========================*/
-        .login-card {
-            width: 500px;
-            background: #F0F4F8;
-            margin-top: -112px;
-            margin-left: -128px;
-            padding: 64px;
-            border-radius: 8px;
-            border: 1px solid rgba(226, 232, 240, 0.6);
-        }
-
-        .login-card h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0B1E3D;
-            margin-bottom: 32px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #0B1E3D;
-        }
-
-        input {
-            width: 100%;
-            height: 46px;
-            border: 1px solid #E2E8F0;
-            border-radius: 4px;
-            padding: 0 16px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            color: #0B1E3D;
+        /* HEADER CONTACT BUTTON */
+        .header-contact-btn {
+            margin-right: 32px;
+            padding: 12px 24px;
             background: #ffffff;
-            transition: .2s;
-        }
-
-        input:focus {
-            border: 1px solid #1B6FC8;
-            box-shadow: 0 0 0 2px rgba(27, 111, 200, 0.2);
-        }
-
-        input::placeholder {
-            color: #A0A0A0;
-        }
-
-        button {
-            width: 100%;
-            height: 48px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 4px;
-            background: #0B1E3D;
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
+            color: #0B1E3D;
+            border: 2px solid #ffffff;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 800;
             font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            transition: .2s;
+            cursor: pointer;
+        }
+
+        .header-contact-btn:hover {
+            background: #E2E8F0;
+            border-color: #E2E8F0;
+        }
+
+        /* IMAGE CONTAINER & LAYOUT */
+        .page-container {
+            position: relative;
+            width: 100%;
+            display: block;
+            margin-top: -18vh;
+        }
+
+        /* Displays image seamlessly, allowing natural vertical scroll */
+        .content-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* REQUEST A DEMO BUTTON - Positioned absolutely over the image */
+        .demo-btn {
+            position: absolute;
+            top: 89%; /* Centers button vertically under the achievement box */
+            left: 74%; /* Centers button horizontally under the achievement box */
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 260px;
+            height: 56px;
+            background: #ffffff;
+            color: #0B1E3D;
+            font-size: 18px;
+            font-weight: 800;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            border-radius: 30px; 
             cursor: pointer;
             transition: .2s;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 10;
         }
 
-        button:hover {
-            background: #132B52;
+        .demo-btn:hover {
+            background: #E2E8F0;
+            transform: translate(-50%, -53%);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.3);
         }
 
-        .links {
-            margin-top: 32px;
-            text-align: center;
-        }
-
-        .links p {
-            font-size: 12px;
-            color: #5B7A9D;
-            margin-bottom: 8px;
-        }
-
-        .links a {
-            color: #0B1E3D;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-            font-weight: 600;
-        }
-
-        .links a:hover {
-            color: #1B6FC8;
-        }
     </style>
 </head>
 
 <body>
 
+    <!-- Splash Screen -->
     <div id="splash">
         <div class="circle"></div>
         <div class="brand">
@@ -267,43 +220,29 @@
         </div>
     </div>
 
+    <!-- Main Content -->
     <div class="main-wrapper">
         
+        <!-- Top Navigation -->
         <header class="header">
-            <a href="signIn.html" class="nexora-logo">
+            <a href="signIn.html" class="nexora-logo" id="headerLogoBtn">
                 <img src="{{ asset('logo/Banner Transparent.png') }}" alt="Nexora Logo">
             </a>
+            
+            <a href="#" class="header-contact-btn">Contact Us</a>
         </header>
         
-        <main class="page">
-            <div class="form-col">
-                <div class="login-card">
-                    <h1>Sign In</h1>
-                    
-                    <form id="loginForm">
-                        <div class="input-group">
-                            <label for="username">Username</label>
-                            <input id="username" type="text" placeholder="Enter Username">
-                        </div>
-                        
-                        <div class="input-group">
-                            <label for="password">Password</label>
-                            <input id="password" type="password" placeholder="Enter Password">
-                        </div>
-                        
-                        <button type="submit" id="loginBtn">Log In</button>
-                    </form>
-                    
-                    <div class="links">
-                        <p>Forgot Password? <a href="#">Reset</a></p>
-                        <p>Not registered yet? <a href="{{ route('contactus') }}" id="contactBtn">Contact Us</a></p>
-                    </div>
-                </div>
-            </div>
+        <!-- Main Area (Image Container) -->
+        <main class="page-container">
+            <!-- Full Content Image -->
+            <img src="{{ asset('bg/contactus.png') }}" alt="Get Started With Our ERP" class="content-img">
+            
+            <!-- Request a Demo Button -->
+            <button class="demo-btn">Request a Demo</button>
         </main>
     </div>
 
-    <script>
+<script>
     const SPLASH_DURATION = 4300;
     const splash = document.getElementById("splash");
 
@@ -343,13 +282,10 @@
     const signInBtn = document.getElementById("signInBtn");
     const contactBtn = document.getElementById("contactBtn");
     const headerLogoBtn = document.getElementById("headerLogoBtn");
-    const loginForm = document.getElementById("loginForm");
 
     if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "signIn.html"));
-    if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('contactus') }}"));
+    if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "contactus.html"));
     if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "signIn.html"));
-    if (loginForm) loginForm.addEventListener("submit", (e) => smoothExit(e, "{{ route('dashboard') }}"));
-
 </script>
 
 </body>

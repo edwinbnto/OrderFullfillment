@@ -189,8 +189,8 @@
   }
 
   .priority-low{
-    background: #5A3A4A;
-    color:#E8B8C8;
+    background: #132B52;
+    color:#9FB3CC;
     padding:3px 12px;
     border-radius:5px;
     font-size:11px;

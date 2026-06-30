@@ -6,12 +6,18 @@
     $db_name = "project8";
     $conn = "";
 
-    $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
+    try{
+        $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
+    }
+    catch(mysqli_sql_exception){
+        echo"Connection failed!";
+    }
 
     if($conn){
         echo"You are connected!";
     }
-    else{
-        echo"Connection failed!";
-    }
+
+    //  if(DB::connection()->getPdo()){
+    //     echo "Connected to the database successfully! DB name is " . DB::connection()->getDatabaseName();
+    // }
 ?>

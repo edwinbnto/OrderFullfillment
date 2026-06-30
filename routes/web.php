@@ -3,12 +3,12 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('signup', function () {
+Route::get('Signup', function () {
     return view('Signup');
 });
 
 Route::get('/', function () {
-    return view('dashboard');
+    return view('Signup');
 });
 
 Route::get('/dashboard', function () {
@@ -31,7 +31,14 @@ Route::get('/return', function () {
     return view('return');
 })->name('return');
 
-
 Route::get('/orderfloat', function () {
     return view('orderfloat');
 })->name('orderfloat');
+
+Route::get('/database', function () {
+    return view('database');
+})->name('database');
+
+Route::get('/contactus', function () {
+    return view('contactus');
+})->name('contactus');
