@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nexora Dashboard</title>
+<title>Nexora Orders</title>
 <style>
   :root {
     --bg-header: #0B1E3D;
@@ -72,8 +72,7 @@
     color: var(--text-light);
     font-weight: 700;
   }
-
-  /* ===== Stats Row ===== */
+/* ===== Stats Row ===== */
   .stats-row {
     display: flex;
     gap: 24px;
@@ -100,194 +99,142 @@
   .stat-card .value {
     font-size: 32px;
     font-weight: 700;
+}
+
+  /* ---------- Main Content ---------- */
+  .content{
+    display:flex;
+    gap:24px;
+    padding: 28px 40px 60px 40px;
   }
 
-  /*---> Board <----*/
-  .board {
-    display: flex;
-    gap: 24px;
-    padding: 28px 40px 60px;
-    flex-wrap: wrap;
-  }
-
-  .column {
+  /* Order Queue */
+  .panel{
     background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    flex: 1;
-    min-width: 280px;
-    padding: 20px;
+    border-radius:12px;
+    overflow:hidden;
   }
 
-  .column-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-soft);
-    margin-bottom: 16px;
+  .order-queue{ flex: 2.5; }
+  .activity{ flex: 1; }
+
+  .panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
   }
 
-  .column-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+  .panel-header .title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+    font-size:16px;
   }
 
-  .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-
-  .dot-new { background: #9FB3D1; }
-  .dot-packing { background: #F59E0B; }
-  .dot-shipped { background: #38BDF8; }
-
-  .count-badge {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-light);
-    font-size: 12px;
-    padding: 4px 12px;
-    border-radius: 20px;
-  }
-
-  .order-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border-soft);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 14px;
-  }
-
-  .order-id {
+  .panel-header .actions{
+    display:flex;
+    gap:24px;
     color: var(--text-muted);
-    font-size: 13px;
-    margin-bottom: 6px;
+    font-size:14px;
   }
 
-  .order-item {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 10px;
+  table{
+    width:100%;
+    border-collapse: collapse;
   }
 
-  .tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 12px;
-    margin-bottom: 8px;
+  thead th{
+    text-align:left;
+    padding:14px 24px;
+    font-size:14px;
+    color:#fff;
+    border-bottom:1px solid rgba(255,255,255,0.08);
   }
 
-  .tag-high { background: #7F1D2E; color: #FCA5B1; }
-  .tag-med  { background: #6B4A1E; color: #FBD38D; }
-  .tag-low  { background: rgba(255,255,255,0.1); color: var(--text-muted); }
-  .tag-shipped  { background: #1E5A6B; color: #7DD3E8; }
-  .tag-delivered { background: #1E5A3A; color: #86EFAC; }
+  tbody td{
+    padding:14px 24px;
+    font-size:14px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+  }
 
-  .order-meta {
-    font-size: 12px;
+  tbody tr:nth-child(even){
+    background: rgba(255,255,255,0.02);
+  }
+
+  .order-id, .product{
     color: var(--text-muted);
   }
 
-  /* ===== Sidebar (Alerts + Activity) ===== */
-  .sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    width: 340px;
-    flex-shrink: 0;
+  .customer{
+    font-weight:600;
   }
 
-  .side-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    padding: 20px;
+  .status-new{
+    background: rgba(255,255,255,0.1);
+    color:#fff;
+    padding:5px 14px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
   }
 
-  .side-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
+  .priority-low{
+    background: #5A3A4A;
+    color:#E8B8C8;
+    padding:3px 12px;
+    border-radius:5px;
+    font-size:11px;
+    display:inline-block;
   }
 
-  .side-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 16px;
-    font-weight: 700;
+  .prepare-btn{
+    background: var(--bg-dark);
+    color: var(--text-ligh);
+    border:none;
+    padding:8px 18px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
   }
 
-  .live-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-muted);
+  .empty-row td{
+    height:38px;
   }
 
-  .live-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #4ADE80;
+  /* Recent Activity */
+  .activity-list{
+    padding: 8px 0;
   }
 
-  .alert-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-soft);
-    font-size: 13px;
+  .activity-item{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:16px 24px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    font-size:14px;
   }
 
-  .alert-row:last-child { border-bottom: none; }
-
-  .alert-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .activity-icon{
+    width:18px;
+    text-align:center;
+    flex-shrink:0;
+    margin-top:2px;
   }
 
-  .alert-icon {
-    font-size: 14px;
+  .icon-cart{ color:#5C9AE0; }
+  .icon-truck{ color:#5C9AE0; }
+  .icon-warn{ color:#E0735C; }
+
+  .activity-empty{
+    height:50px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
   }
-
-  .icon-danger { color: #F87171; }
-  .icon-warn { color: #F59E0B; }
-  .icon-info { color: #38BDF8; }
-
-  .alert-btn {
-    background: rgba(255,255,255,0.12);
-    color: var(--text-light);
-    border: 1px solid var(--border-soft);
-    border-radius: 14px;
-    padding: 4px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .activity-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-soft);
-    font-size: 13px;
-    color: var(--text-light);
-  }
-
-  .activity-row:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -304,8 +251,8 @@
       </div>
     </div>
     <div class="nav-links">
-    <a href="{{ route('dashboard') }}" class="active">Dashboard</a>
-      <a href="{{ route('orders') }}">Orders</a>
+     <a href="{{ route('dashboard') }}">Dashboard</a>
+     <a href="{{ route('orders') }}" class="active">Orders</a>
       <a href="{{ route('packing') }}">Packing</a>
       <a href="{{ route('shipping') }}">Shipping</a>
       <a href="{{ route('return') }}">Returns</a>
@@ -317,167 +264,91 @@
     <div class="stat-card">
       <div class="label">Orders received today</div>
       <div class="value">1</div>
-      <div class="sub sub-good">↗ +1 vs yesterday</div>
     </div>
     <div class="stat-card">
       <div class="label">In packing</div>
       <div class="value">1</div>
-      <div class="sub sub-warn">⚠ 1 overdue</div>
     </div>
     <div class="stat-card">
       <div class="label">Shipped today</div>
       <div class="value">1</div>
-      <div class="sub sub-info">⏱ Avg. 1 min/order</div>
     </div>
     <div class="stat-card">
       <div class="label">On-time delivery rate</div>
-      <div class="value">90%</div>
-      <div class="sub sub-good">✓ On track</div>
+      <div class="value">90</div>
     </div>
   </div>
 
+<section class="content">
 
-<!-- Board + Sidebar -->
-  <div class="board">
-
-    <!-- Orders -->
-    <div class="column">
-      <div class="column-header">
-        <div class="column-title"><span class="dot dot-new"></span> Orders</div>
-        <div class="count-badge">1 orders</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Wireless Headphones × 2</div>
-        <div><span class="tag tag-low">Low<i class="fas fa-temperature-low    "></i></span></div>
-        <div class="order-meta">June 25</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
+  <div class="panel order-queue">
+    <div class="panel-header">
+      <div class="title">📦 Order queue</div>
+      <div class="actions">
+        <span>Search</span>
+        <span>Filter</span>
       </div>
     </div>
-
-    <!-- PACKING -->
-    <div class="column">
-      <div class="column-header">
-        <div class="column-title"><span class="dot dot-packing"></span> PACKING</div>
-        <div class="count-badge">1 orders</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Wireless Headphones × 2</div>
-        <div><span class="tag tag-low">Low</span></div>
-        <div class="order-meta">June 25</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-    </div>
-
-    <!-- SHIPPED -->
-    <div class="column">
-      <div class="column-header">
-        <div class="column-title"><span class="dot dot-shipped"></span> SHIPPED</div>
-        <div class="count-badge">1 orders</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id">ORD-4821</div>
-        <div class="order-item">Wireless Headphones × 2</div>
-        <div><span class="tag tag-shipped">Shipped</span></div>
-        <div class="order-meta">DHL Express</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-id"></div>
-        <div class="order-item"></div>
-        <div class="order-meta"></div>
-      </div>
-    </div>
-
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="side-panel">
-        <div class="side-header">
-          <div class="side-title">🔔 Alerts</div>
-        </div>
-
-        <div class="alert-row">
-          <div class="alert-left"><span>📦 New order #ORD-4821 received</span></div>
-        </div>
-        <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠️</span></div>
-        </div>
-        <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">↩️</span></div>
-        </div>
-        <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-warn">⚠️</span></div>
-        </div>
-        <div class="alert-row">
-          <div class="alert-left"><span class="alert-icon icon-info">🕓</span></div>
-        </div>
-      </div>
-
-      <div class="side-panel">
-        <div class="side-header">
-          <div class="side-title">📈 Activity feed</div>
-          <div class="live-badge"><span class="live-dot"></span> Live</div>
-        </div>
-
-        <div class="activity-row">🚚 Order #ORD-4821 has been shipped</div>
-        <div class="activity-row">🚚 </div>
-        <div class="activity-row">🚚 </div>
-        <div class="activity-row">🏃</div>
-      </div>
-    </div>
-
+    <table>
+      <thead>
+        <tr>
+          <th>Order Id</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Due</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="order-id">#ORD-4821</td>
+          <td class="customer">Maria Santos</td>
+          <td class="product">Wireless Headphone</td>
+          <td>2</td>
+          <td><span class="status-new">NEW</span></td>
+          <td><span class="priority-low">Low</span></td>
+          <td>Jun 25</td>
+          <td><button class="prepare-btn">Prepare</button></td>
+        </tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+      </tbody>
+    </table>
   </div>
+
+  <div class="panel activity">
+    <div class="panel-header">
+      <div class="title">📈 Recent activity</div>
+    </div>
+    <div class="activity-list">
+      <div class="activity-item">
+        <span class="activity-icon icon-cart">🛒</span>
+        <span>New order #ORD-4821 received</span>
+      </div>
+      <div class="activity-item">
+        <span class="activity-icon icon-truck">🚚</span>
+        <span>#ORD-4800 shipped via DHL</span>
+      </div>
+      <div class="activity-item">
+        <span class="activity-icon icon-warn">⚠️</span>
+        <span>#ORD-4812 flagged overdue</span>
+      </div>
+      <div class="activity-empty"></div>
+      <div class="activity-empty"></div>
+    </div>
+  </div>
+
+</section>
 
 </body>
 </html>

@@ -30,3 +30,8 @@ Route::get('/shipping', function () {
 Route::get('/return', function () {
     return view('return');
 })->name('return');
+
+
+Route::get('/orderfloat', function () {
+    return view('orderfloat');
+})->name('orderfloat');
