@@ -1,7 +1,3 @@
-<?php
-  @include('database')
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -201,8 +197,8 @@
   .tag-delivered { background: #1E5A3A; color: #86EFAC; }
 
   .priority-low{
-    background: #132B52;
-    color:#9FB3CC;
+    background: #5A3A4A;
+    color:#E8B8C8;
     padding:3px 12px;
     border-radius:5px;
     font-size:11px;
@@ -324,118 +320,11 @@
   color: #5FCB8A;
 }
 
-/*==========================
-    SPLASH SCREEN
-===========================*/
-#splash {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  z-index: 99999;
-  transition: opacity .6s ease;
-}
-
-.circle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: #0B1E3D;
-  border-radius: 50%;
-  animation: spread .5s ease-out forwards;
-}
-
-@keyframes spread {
-  0% { transform: scale(0); }
-  100% { transform: scale(350); }
-}
-
-.splash-brand {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-}
-
-.splash-logo {
-  width: 132px;
-  height: 132px;
-  opacity: 0;
-  transform: scale(0) rotate(0deg);
-  animation: logoIntro 0.5s ease forwards 0.8s, logoMove .8s ease forwards 2s;
-}
-
-@keyframes logoIntro {
-  0% { opacity: 0; transform: scale(0) rotate(0deg); }
-  100% { opacity: 1; transform: scale(1) rotate(360deg); }
-}
-
-@keyframes logoMove {
-  from { transform: translateX(0); }
-  to { transform: translateX(-170px); }
-}
-
-.splash-banner {
-  position: absolute;
-  margin-left: 175px;
-  width: 0;
-  opacity: 0;
-  transform: translateX(-80px);
-  animation: bannerReveal .8s ease forwards 2.25s;
-}
-
-@keyframes bannerReveal {
-  0% { width: 0; opacity: 0; transform: translateX(-150px); }
-  100% { width: 420px; opacity: 1; transform: translateX(10px); }
-}
-
-.main-wrapper {
-  opacity: 0;
-  animation: showPage .8s ease forwards 4.1s;
-}
-
-@keyframes showPage {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* When splash has already played this session, skip it instantly */
-html.skip-splash-pending #splash {
-  display: none;
-}
-html.skip-splash-pending .main-wrapper {
-  opacity: 1;
-  animation: none;
-}
-
 </style>
-<script>
-  // Decide BEFORE paint whether to show the splash, so it never flashes
-  if (sessionStorage.getItem('nexora_splash_shown')) {
-    document.documentElement.classList.add('skip-splash-pending');
-  }
-</script>
 </head>
 <body>
 
-  <div id="splash">
-    <div class="circle"></div>
-    <div class="splash-brand">
-      <img src="{{ asset('logo/Nexora_Logo_Transparent.png') }}" class="splash-logo" alt="Logo">
-      <img src="{{ asset('logo/Banner Name White.png') }}" class="splash-banner" alt="Banner">
-    </div>
-  </div>
-
-  <div class="main-wrapper">
-
   <div class="top-strip"></div>
-
 
   <!-- Navbar -->
   <div class="navbar">
@@ -621,22 +510,6 @@ html.skip-splash-pending .main-wrapper {
     </div>
 
   </div>
-
-  </div>
-
-  <script>
-  const SPLASH_DURATION = 4300;
-  const splash = document.getElementById("splash");
-
-  if (!sessionStorage.getItem('nexora_splash_shown')) {
-    sessionStorage.setItem('nexora_splash_shown', '1');
-  }
-
-  setTimeout(() => {
-    splash.style.opacity = "0";
-    splash.style.pointerEvents = "none";
-  }, SPLASH_DURATION);
-  </script>
 
 </body>
 </html>

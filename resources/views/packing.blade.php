@@ -198,7 +198,7 @@
   }
    .priority-med{
     background: #6B4A1E;
-    color: #FBD38D;
+    color: #FBD38D; 
     padding:3px 12px;
     border-radius:5px;
     font-size:11px;
@@ -214,15 +214,15 @@
     display:inline-block;
    }
 
-  .prepare-btn{
-    background: var(--text-light);
-    color: var(--navy-dark);
-    border:none;
-    padding:8px 18px;
-    border-radius:20px;
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
+   .btn-prepare {
+    display: inline-block;
+    background:  var(--bg-dark);
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    text-align: center;
   }
 
   .empty-row td{
@@ -258,6 +258,7 @@
     height:50px;
     border-bottom:1px solid rgba(255,255,255,0.05);
   }
+  
 </style>
 </head>
 <body>
@@ -330,32 +331,36 @@
           <td class="product">Wireless Headphone</td>
           <td>2</td>
           <td><span class="priority-high">High</span></td>
+           <td><span class="btn-prepare">Process</span></td>
         </tr>
         <td class="order-id">#ORD-4822</td>
           <td class="customer">Carlos Dela Cruz</td>
           <td class="product">Keyboard</td>
           <td>2</td>
           <td><span class="priority-med">Med</span></td>
+           <td><span class="btn-prepare">Process</span></td>
         </tr>
         <td class="order-id">#ORD-4823</td>
           <td class="customer">Ana Reyes</td>
           <td class="product">Gaming mouse</td>
           <td>1</td>
           <td><span class="priority-low">Low</span></td>
+           <td><span class="btn-prepare">Process</span></td>
         </tr>
         <td class="order-id">#ORD-4824</td>
           <td class="customer">Liza Mendoza</td>
           <td class="product">Mechanical Keyboard</td>
           <td>1</td>
           <td><span class="priority-low">Low</span></td>
+           <td><span class="btn-prepare">Process</span></td>
         </tr>
         <td class="order-id">#ORD-4825</td>
           <td class="customer">Jose Bautista</td>
           <td class="product">Webcam HD</td>
           <td>2</td>
           <td><span class="priority-high">High</span></td>
+           <td><span class="btn-prepare">Process</span></td>
         </tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
         <tr class="empty-row"><td colspan="8"></td></tr>
         <tr class="empty-row"><td colspan="8"></td></tr>
         <tr class="empty-row"><td colspan="8"></td></tr>

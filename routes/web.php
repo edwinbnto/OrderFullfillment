@@ -27,10 +27,6 @@ Route::get('/return', function () {
     return view('return');
 })->name('return');
 
-Route::get('/orderfloat', function () {
-    return view('orderfloat');
-})->name('orderfloat');
-
 Route::get('/database', function () {
     return view('database');
 })->name('database');
@@ -38,3 +34,13 @@ Route::get('/database', function () {
 Route::get('/contactus', function () {
     return view('contactus');
 })->name('contactus');
+
+Route::get('/orderfloat', function () {
+    return view('orderfloat');
+})->name('orderfloat');
+
+Route::get('/packingfloat', function () {
+    return view('packingfloat');
+})->name('packingfloat');
+
+Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');

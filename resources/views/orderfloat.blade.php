@@ -20,7 +20,7 @@
   .blob {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(80px); 
     opacity: 0.5;
     z-index: 0;
   }
@@ -186,7 +186,7 @@
  
     <div class="card-footer">
       <button class="btn close">Close</a>
-      <button class="btn cancel">Cancel order</button>
+      <button class="btn cancel">Cancel order</button>`
     </div>
   </div>
  

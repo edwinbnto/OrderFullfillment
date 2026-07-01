@@ -241,6 +241,81 @@
     height:50px;
     border-bottom:1px solid rgba(255,255,255,0.05);
   }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+ 
+  thead th {
+    text-align: left;
+    font-size: 12px;
+    color: #8b94b8;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+ 
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.15s ease;
+  }
+ 
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+ 
+  /* The row is wrapped in a link, so we make the link fill the row */
+  tbody tr a.row-link {
+    display: table-row;
+    color: inherit;
+    text-decoration: none;
+  }
+ 
+  tbody tr:hover {
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+  }
+ 
+  td {
+    padding: 14px 20px;
+    font-size: 14px;
+    color: #cdd6f5;
+    vertical-align: middle;
+  }
+ 
+  td.order-id {
+    color: #8b94b8;
+  }
+ 
+  td.customer {
+    color: #f1f3fb;
+    font-weight: 700;
+  }
+ 
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+ 
+  .badge.status {
+    background: #3a4a7a;
+    color: #cdd6f5;
+  }
+ 
+  .badge.priority {
+    background: #6e3a63;
+    color: #e7c9e0;
+  }
+    .badge.priority2 {
+    background: #6B4A1E;
+    color: #FBD38D;
+  }
 </style>
 </head>
 <body>
@@ -309,25 +384,36 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="order-id">#ORD-4821</td>
-          <td class="customer">Maria Santos</td>
-          <td class="product">Wireless Headphone</td>
-          <td>2</td>
-          <td><span class="status-new">NEW</span></td>
-          <td><span class="priority-low">Low</span></td>
-          <td>Jun 25</td>
-          <td><button class="prepare-btn">Prepare</button></td>
+        <tbody>
+    <tr onclick="window.location='{{ route('orderfloat') }}'" style="cursor: pointer;">
+        <td class="order-id">#ORD-4821</td>
+        <td class="customer">Maria Santos</td>
+        <td>Wireless Headphone</td>
+        <td>2</td>
+        <td><span class="badge status">NEW</span></td>
+        <td><span class="badge priority">Low</span></td>
+        <td>Jun 25</td>
+        <td><span class="btn-prepare">Prepare</span></td>
+
+        <tr onclick="window.location='{{ route('orderfloat') }}'" style="cursor: pointer;">
+        <td class="order-id">#ORD-4822</td>
+        <td class="customer">Carlos Dela Cruz</td>
+        <td>Keyboard</td>
+        <td>2</td>
+        <td><span class="badge status">NEW</span></td>
+        <td><span class="badge priority2">Med</span></td>
+        <td>Jun 25</td>
+        <td><span class="btn-prepare">Prepare</span></td>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
+        <tr class="empty-row"><td colspan="8"></td></tr>
         </tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
-        <tr class="empty-row"><td colspan="8"></td></tr>
       </tbody>
     </table>
   </div>
