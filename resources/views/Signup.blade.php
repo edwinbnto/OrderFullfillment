@@ -270,7 +270,7 @@
     <div class="main-wrapper">
         
         <header class="header">
-            <a href="signIn.html" class="nexora-logo">
+            <a href="{{ route('signup') }}" class="nexora-logo">
                 <img src="{{ asset('logo/Banner Transparent.png') }}" alt="Nexora Logo">
             </a>
         </header>
@@ -345,9 +345,9 @@
     const headerLogoBtn = document.getElementById("headerLogoBtn");
     const loginForm = document.getElementById("loginForm");
 
-    if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "signIn.html"));
+    if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signup') }}"));
     if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('contactus') }}"));
-    if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "signIn.html"));
+    if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signup') }}"));
     if (loginForm) loginForm.addEventListener("submit", (e) => smoothExit(e, "{{ route('dashboard') }}"));
 
 </script>

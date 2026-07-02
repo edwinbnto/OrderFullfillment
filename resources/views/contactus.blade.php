@@ -225,7 +225,7 @@
         
         <!-- Top Navigation -->
         <header class="header">
-            <a href="signIn.html" class="nexora-logo" id="headerLogoBtn">
+            <a href="{{ route('signup') }}" class="nexora-logo" id="headerLogoBtn">
                 <img src="{{ asset('logo/Banner Transparent.png') }}" alt="Nexora Logo">
             </a>
             
@@ -283,9 +283,9 @@
     const contactBtn = document.getElementById("contactBtn");
     const headerLogoBtn = document.getElementById("headerLogoBtn");
 
-    if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "signIn.html"));
-    if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "contactus.html"));
-    if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "signIn.html"));
+    if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signup') }}"));
+    if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('contactus') }}"));
+    if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signup') }}"));
 </script>
 
 </body>

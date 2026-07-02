@@ -7,6 +7,10 @@ Route::get('/', function () {
     return view('Signup');
 });
 
+Route::get('/signup', function () {
+    return view('Signup');
+})->name('signup');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
