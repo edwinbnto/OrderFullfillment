@@ -16,7 +16,6 @@ public function up()
         $table->string('name', 100)->nullable();
         $table->string('status', 20)->default('NEW');
         $table->date('due_date')->nullable();
-        $table->timestamps();
     });
 }
 
