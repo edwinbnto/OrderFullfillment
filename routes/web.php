@@ -38,13 +38,3 @@ Route::get('/database', function () {
 Route::get('/contactus', function () {
     return view('contactus');
 })->name('contactus');
-
-Route::get('/orderfloat', function () {
-    return view('orderfloat');
-})->name('orderfloat');
-
-Route::get('/packingfloat', function () {
-    return view('packingfloat');
-})->name('packingfloat');
-
-Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');

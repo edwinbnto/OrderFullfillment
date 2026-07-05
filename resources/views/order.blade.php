@@ -218,7 +218,7 @@
     background: var(--bg-dark);
     color: var(--text-light);
     border: none;
-    padding: 8px 18px;
+    padding:4px 10px;
     border-radius: 20px;
     font-size: 13px;
     font-weight: 600;
@@ -260,9 +260,7 @@
     border-bottom: 1px solid rgba(255,255,255,0.05);
   }
 
-  /* ============================================
-     Blur + modal mechanism
-     ============================================ */
+  /* Blur + modal mechanism */
   #pageContent {
     transition: filter 0.25s ease;
   }
@@ -496,11 +494,6 @@
 
   </div>
 
-  <!-- ============================================
-       Modal lives OUTSIDE #pageContent so it never
-       gets blurred itself. Order data is filled in
-       by JS based on which row was clicked.
-       ============================================ -->
   <div class="overlay" id="orderOverlay">
     <div class="modal">
       <div class="modal-header">
