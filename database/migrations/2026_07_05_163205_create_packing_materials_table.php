@@ -11,17 +11,15 @@ return new class extends Migration
      */
 public function up()
 {
-    Schema::create('orders', function (Blueprint $table) {
+    Schema::create('packing_materials', function (Blueprint $table) {
         $table->string('id', 20)->primary();
         $table->string('name', 100)->nullable();
-        $table->string('status', 20)->default('NEW');
-        $table->date('due_date')->nullable();
-        $table->timestamps();
+        $table->integer('quantity')->nullable();
     });
 }
 
 public function down()
 {
-    Schema::dropIfExists('orders');
+    Schema::dropIfExists('packing_materials');
 }
 };

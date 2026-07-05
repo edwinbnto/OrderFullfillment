@@ -13,9 +13,9 @@
         echo"Connection failed!";
     }
 
-    if($conn){
-        echo"You are connected!";
-    }
+    // if($conn){
+    //     echo"You are connected!";
+    // }
 
     //  if(DB::connection()->getPdo()){
     //     echo "Connected to the database successfully! DB name is " . DB::connection()->getDatabaseName();
