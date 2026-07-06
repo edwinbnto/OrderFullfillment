@@ -1,0 +1,88 @@
+{
+  "orders": [
+    {
+      "id": "#ORD-4821",
+      "name": "Wireless Headphone",
+      "status": "NEW",
+      "createdAt": "2026-07-05",
+      "dueDate": "2026-07-09"
+    },
+    {
+      "id": "#ORD-4822",
+      "name": "Keyboard",
+      "status": "NEW",
+      "createdAt": "2026-07-06",
+      "dueDate": "2026-07-10"
+    },
+    {
+      "id": "#ORD-4823",
+      "name": "Gaming mouse",
+      "status": "NEW",
+      "createdAt": "2026-07-04",
+      "dueDate": "2026-07-08"
+    }
+
+  ],
+  "shippingProvider": [
+    {
+      "id": "SP-001",
+      "name": "J & T Express",
+      "deliveryManList": ["DM-001", "DM-002"]
+    },
+    {
+      "id": "SP-002",
+      "name": "FLASH Express",
+      "deliveryManList": ["DM-003"]
+    }
+  ],
+  "deliveryMan": [
+    {
+      "id": "DM-001",
+      "age": 29,
+      "licenseNum": "N01-23-456789",
+      "vehicleType": "Motorcycle",
+      "itemOnBag": ["#ORD-4821"]
+    },
+    {
+      "id": "DM-002",
+      "age": 35,
+      "licenseNum": "N02-45-987654",
+      "vehicleType": "Van",
+      "itemOnBag": ["#ORD-4822"]
+    },
+    {
+      "id": "DM-003",
+      "age": 26,
+      "licenseNum": "N03-11-223344",
+      "vehicleType": "Motorcycle",
+      "itemOnBag": ["#ORD-4823"]
+    }
+  ],
+  "packingMaterials": [
+    {
+      "id": "PM-001",
+      "name": "Small boxes",
+      "quantity": 10
+    },
+    {
+      "id": "PM-002",
+      "name": "Medium boxes",
+      "quantity": 3
+    },
+    {
+      "id": "PM-003",
+      "name": "Large boxes",
+      "quantity": 15
+    },
+    {
+      "id": "PM-004",
+      "name": "Bubble wrap",
+      "quantity": 80
+    },
+    {
+      "id": "PM-005",
+      "name": "Packing tape",
+      "quantity": 8
+    }
+  ]
+}
