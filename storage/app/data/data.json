@@ -2,27 +2,36 @@
   "orders": [
     {
       "id": "#ORD-4821",
-      "name": "Wireless Headphone",
+      "customer_name": "Addrian Samson",
+      "product_name": "Wireless Headphone",
+      "qty": 2,
       "status": "NEW",
-      "createdAt": "2026-07-05",
-      "dueDate": "2026-07-09"
+      "due_date": "2026-07-09",
+      "created_at": "2026-07-05 08:30:00",
+      "updated_at": "2026-07-05 08:30:00"
     },
     {
       "id": "#ORD-4822",
-      "name": "Keyboard",
+      "customer_name": "John Cruz",
+      "product_name": "Keyboard",
+      "qty": 1,
       "status": "NEW",
-      "createdAt": "2026-07-06",
-      "dueDate": "2026-07-10"
+      "due_date": "2026-07-10",
+      "created_at": "2026-07-06 09:15:00",
+      "updated_at": "2026-07-06 09:15:00"
     },
     {
       "id": "#ORD-4823",
-      "name": "Gaming mouse",
+      "customer_name": "Maria Santos",
+      "product_name": "Gaming Mouse",
+      "qty": 3,
       "status": "NEW",
-      "createdAt": "2026-07-04",
-      "dueDate": "2026-07-08"
+      "due_date": "2026-07-08",
+      "created_at": "2026-07-04 14:20:00",
+      "updated_at": "2026-07-04 14:20:00"
     }
-
   ],
+
   "shippingProvider": [
     {
       "id": "SP-001",
@@ -35,6 +44,7 @@
       "deliveryManList": ["DM-003"]
     }
   ],
+
   "deliveryMan": [
     {
       "id": "DM-001",
@@ -58,6 +68,7 @@
       "itemOnBag": ["#ORD-4823"]
     }
   ],
+
   "packingMaterials": [
     {
       "id": "PM-001",
