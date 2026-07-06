@@ -9,13 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-public function up()
+public function up(): void
 {
     Schema::create('orders', function (Blueprint $table) {
-        $table->string('id', 20)->primary();
-        $table->string('name', 100)->nullable();
-        $table->string('status', 20)->default('NEW');
-        $table->date('due_date')->nullable();
+        $table->string('id')->primary();
+
+        $table->string('customer_name');
+        $table->string('product_name');
+
+        $table->integer('qty')->default(1);
+
+        $table->string('status')->default('NEW');
+
+        $table->date('due_date');
+
+        $table->timestamps();
     });
 }
 

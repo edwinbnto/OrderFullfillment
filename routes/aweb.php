@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\OrderController;
 
 
 Route::get('/', function () {
@@ -16,7 +15,9 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/order', [OrderController::class, 'index'])->name('orders');
+Route::get('/order', function () {
+    return view('order');
+})->name('orders');
 
 Route::get('/packing', function () {
     return view('packing');

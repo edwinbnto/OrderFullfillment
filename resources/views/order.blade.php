@@ -1,3 +1,27 @@
+@php
+use Carbon\Carbon;
+
+function getPriority($createdAt)
+{
+    if (!$createdAt) {
+        return ['label' => 'LOW', 'class' => 'priority-low'];
+    }
+
+    $daysOld = Carbon::parse($createdAt)->diffInDays(now());
+
+    if ($daysOld >= 3) {
+        return ['label' => 'HIGH', 'class' => 'priority-high'];
+    }
+
+    if ($daysOld == 2) {
+        return ['label' => 'MEDIUM', 'class' => 'priority-medium'];
+    }
+
+    // 0 or 1 day old
+    return ['label' => 'LOW', 'class' => 'priority-low'];
+}
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -362,6 +386,25 @@
   .btn-cancel:hover {
     background: #8f2a4b;
   }
+  .priority-high {
+    background: #dc3545;
+    color: #fff;
+}
+
+.priority-medium {
+    background: #ffc107;
+    color: #000;
+}
+
+.priority-low {
+    background: #28a745;
+    color: #fff;
+}
+
+.priority-new {
+    background: #6c757d;
+    color: #fff;
+}
 </style>
 </head>
 <body>
@@ -396,19 +439,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="label">Orders received today</div>
-        <div class="value">1</div>
+        <div class="value">{{ $ordersToday }}</div>
       </div>
       <div class="stat-card">
         <div class="label">In packing</div>
-        <div class="value">1</div>
+        <div class="value">{{ $inPacking }}</div>
       </div>
       <div class="stat-card">
         <div class="label">Shipped today</div>
-        <div class="value">1</div>
+        <div class="value">{{ $shippedToday }}</div>
       </div>
       <div class="stat-card">
         <div class="label">On-time delivery rate</div>
-        <div class="value">90</div>
+        <div class="value">{{ $onTimeRate }}</div>
       </div>
     </div>
 
@@ -436,35 +479,43 @@
             </tr>
           </thead>
           <tbody>
-            <tr onclick="openOrderModal('4821')" style="cursor: pointer;">
-              <td class="order-id">#ORD-4821</td>
-              <td class="customer">Maria Santos</td>
-              <td>Wireless Headphone</td>
-              <td>2</td>
-              <td><span class="badge status">NEW</span></td>
-              <td><span class="badge priority">Low</span></td>
-              <td>Jun 25</td>
+            @forelse($orders as $order)
+            @php
+            $priority = getPriority($order->created_at);
+            @endphp
+            <tr class="order-row"
+                style="cursor: pointer;"
+                data-id="{{ $order->id }}"
+                data-customer="{{ $order->customer_name }}"
+                data-product="{{ $order->product_name }}"
+                data-qty="{{ $order->qty }}"
+                data-status="{{ strtoupper($order->status) }}"
+                data-priority="{{ $priority['label'] }}"
+                data-priority-class="{{ $priority['class'] }}"
+                data-due="{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}">
+              <td class="order-id">{{ $order->id }}</td>
+              <td class="customer">{{ $order->customer_name }}</td>
+              <td>{{ $order->product_name }}</td>
+              <td>{{ $order->qty }}</td>
+              <td><span class="badge status">{{ strtoupper($order->status) }}</span></td>
+              <td>
+              <span class="badge {{ $priority['class'] }}">
+              {{ $priority['label'] }}
+              </span>
+              </td>
+              <td>{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}</td>
               <td><span class="btn-prepare">Prepare</span></td>
             </tr>
-            <tr onclick="openOrderModal('4822')" style="cursor: pointer;">
-              <td class="order-id">#ORD-4822</td>
-              <td class="customer">Carlos Dela Cruz</td>
-              <td>Keyboard</td>
-              <td>2</td>
-              <td><span class="badge status">NEW</span></td>
-              <td><span class="badge priority2">Med</span></td>
-              <td>Jun 25</td>
-              <td><span class="btn-prepare">Prepare</span></td>
+            @empty
+            <tr class="empty-row">
+              <td colspan="8" style="text-align:center; padding:24px; color:#8b94b8;">No orders yet.</td>
             </tr>
+            @endforelse
+
+            {{-- Keeps the table visually padded to match the original design when there are few orders --}}
+            @for($i = 0; $i < max(0, 10 - $orders->count()); $i++)
             <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            <tr class="empty-row"><td colspan="8"></td></tr>
+            @endfor
           </tbody>
         </table>
       </div>
@@ -474,18 +525,10 @@
           <div class="title">📈 Recent activity</div>
         </div>
         <div class="activity-list">
-          <div class="activity-item">
-            <span class="activity-icon icon-cart">🛒</span>
-            <span>New order #ORD-4821 received</span>
           </div>
-          <div class="activity-item">
-            <span class="activity-icon icon-truck">🚚</span>
-            <span>#ORD-4800 shipped via DHL</span>
-          </div>
-          <div class="activity-item">
-            <span class="activity-icon icon-warn">⚠️</span>
-            <span>#ORD-4812 flagged overdue</span>
-          </div>
+          <div class="activity-empty"></div>
+          <div class="activity-empty"></div>
+          <div class="activity-empty"></div>
           <div class="activity-empty"></div>
           <div class="activity-empty"></div>
         </div>
@@ -507,7 +550,7 @@
         </div>
         <div>
           <p class="field-label">Status</p>
-          <span class="badge status">NEW</span>
+          <span class="badge status" id="modalStatus">NEW</span>
         </div>
         <div>
           <p class="field-label">Product</p>
@@ -534,26 +577,25 @@
   </div>
 
   <script>
-    // Simple lookup table for demo data.
-    // Replace with an AJAX/fetch call to your backend if you want live data.
-    const orders = {
-      '4821': { customer: 'Maria Santos', product: 'Wireless Headphone', qty: 2, priority: 'Low', priorityClass: 'priority', due: 'Jun 25' },
-      '4822': { customer: 'Carlos Dela Cruz', product: 'Keyboard', qty: 2, priority: 'Med', priorityClass: 'priority2', due: 'Jun 25' }
-    };
+    // Data comes straight from the DB via data-* attributes rendered by Blade
+    // on each <tr class="order-row">. No hardcoded orders here anymore.
+    document.querySelectorAll('.order-row').forEach(function (row) {
+      row.addEventListener('click', function () {
+        openOrderModal(this.dataset);
+      });
+    });
 
-    function openOrderModal(orderId) {
-      const order = orders[orderId];
-      if (order) {
-        document.getElementById('modalOrderId').textContent = '#ORD-' + orderId;
-        document.getElementById('modalCustomer').textContent = order.customer;
-        document.getElementById('modalProduct').textContent = order.product;
-        document.getElementById('modalQty').textContent = order.qty;
-        document.getElementById('modalDue').textContent = order.due;
+    function openOrderModal(data) {
+      document.getElementById('modalOrderId').textContent = data.id;
+      document.getElementById('modalCustomer').textContent = data.customer;
+      document.getElementById('modalProduct').textContent = data.product;
+      document.getElementById('modalQty').textContent = data.qty;
+      document.getElementById('modalDue').textContent = data.due;
+      document.getElementById('modalStatus').textContent = data.status;
 
-        const priorityEl = document.getElementById('modalPriority');
-        priorityEl.textContent = order.priority;
-        priorityEl.className = 'badge ' + order.priorityClass;
-      }
+      const priorityEl = document.getElementById('modalPriority');
+      priorityEl.textContent = data.priority;
+      priorityEl.className = 'badge ' + data.priorityClass;
 
       document.getElementById('pageContent').classList.add('blurred');
       document.getElementById('orderOverlay').classList.add('active');

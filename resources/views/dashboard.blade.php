@@ -428,7 +428,7 @@ $activity = $shippedOrders->take(5);
         <div class="order-card">
           <div class="order-id">{{ $order->id }}</div>
           <div class="order-details">
-            <div class="order-item">{{ $order->name }}</div>
+            <div class="order-item">{{ $order->product_name }} ×{{ $order->qty }}</div>
             <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
             @if (!empty($order->due_date))
               <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
@@ -452,7 +452,7 @@ $activity = $shippedOrders->take(5);
         <div class="order-card">
           <div class="order-id">{{ $order->id }}</div>
           <div class="order-details">
-            <div class="order-item">{{ $order->name }}</div>
+            <div class="order-item">{{ $order->product_name }}</div>
             <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
             @if (!empty($order->due_date))
               <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
@@ -476,7 +476,7 @@ $activity = $shippedOrders->take(5);
         <div class="order-card">
           <div class="order-id">{{ $order->id }}</div>
           <div class="order-details">
-            <div class="order-item">{{ $order->name }}</div>
+            <div class="order-item">{{ $order->product_name }}</div>
             <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
             @if (!empty($order->due_date))
               <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
