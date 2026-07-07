@@ -214,15 +214,21 @@
     display:inline-block;
    }
 
-  .prepare-btn{
-    background: var(--text-light);
-    color: var(--navy-dark);
-    border:none;
-    padding:8px 18px;
-    border-radius:20px;
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
+  .btn-prepare {
+    display: inline-block;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-prepare:hover {
+    background: #244a80;
   }
 
   .empty-row td{
@@ -258,12 +264,146 @@
     height:50px;
     border-bottom:1px solid rgba(255,255,255,0.05);
   }
+  #pageContent {
+    transition: filter 0.25s ease;
+  }
+
+  #pageContent.blurred {
+    filter: blur(4px);
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 12, 28, 0.45);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  .overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    width: 620px;
+    max-width: 90vw;
+    background: #16305c;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .modal-header {
+    background: #0f2549;
+    padding: 20px 28px;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 18px;
+  }
+
+  .modal-header p {
+    margin: 4px 0 0;
+    color: #8ea3cc;
+    font-size: 13px;
+  }
+
+  .modal-body {
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 20px;
+  }
+
+  .modal-body .field-label {
+    margin: 0 0 6px;
+    font-size: 12px;
+    color: #8ea3cc;
+  }
+
+  .modal-body .field-value {
+    margin: 0;
+    font-size: 15px;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .box-options {
+    display: flex;
+    gap: 12px;
+    padding: 0 28px 20px;
+  }
+
+  .box-option {
+    flex: 1;
+    background: #1c3766;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+  }
+
+  .box-option.selected { border-color: #3B82F6; background: #24437a; }
+  .box-option .box-name { font-weight: 700; font-size: 14px; }
+  .box-option .box-stock { font-size: 12px; color: #9FB3D1; }
+  .box-option .box-icon { font-size: 22px; }
+
+  .courier-options {
+    display: flex;
+    gap: 12px;
+    padding: 0 28px 20px;
+  }
+
+  .courier-option {
+    flex: 1;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 14px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .courier-option.jt { background: #d81f2a; color: #fff; }
+  .courier-option.flash { background: #ffd400; color: #111; }
+  .courier-option.selected { border-color: #fff; }
+
+  .modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 20px 28px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .btn-done { background: #2b4a7c; color: #dbe4f5; }
+  .btn-done:hover { background: #345a94; }
+
+  .btn-cancel { background: #7a2340; color: #f9c3d3; }
+  .btn-cancel:hover { background: #8f2a4b; }
 </style>
 </head>
 <body>
 
   <div class="top-strip"></div>
 
+    <div id="pageContent">
   <!-- Navbar -->
   <div class="navbar">
     <div class="brand">
@@ -332,6 +472,7 @@
           <td class="Tracking no.">0001</td>
           <td><span class="priority-low">Ready for delivery</span></td>
           <td><span class="Destanition">Cebu City</span></td>
+          <td><button class="btn-prepare" onclick="openPackingModal('4821')">Assign Driver</button></td>
         </tr>
         <td class="order-id">#ORD-4822</td>
           <td class="customer">Carlos Dela Cruz</td>
@@ -339,6 +480,7 @@
           <td class="Tracking no.">0002</td>
           <td><span class="priority-high">Delayed</span></td>
            <td><span class="Destanition">Iloilo City</span></td>
+           <td><button class="btn-prepare" onclick="openPackingModal('4821')">Assign Driver</button></td>
         </tr>
         <td class="order-id">#ORD-4823</td>
           <td class="customer">Ana Reyes</td>
@@ -346,6 +488,7 @@
          <td class="Tracking no.">0003</td>
           <td><span class="priority-med">Delivered</span></td>
            <td><span class="Destanition">Calamba, Laguna</span></td>
+           <<td><button class="btn-prepare" onclick="openPackingModal('4821')">Assign Driver</button></td>
         </tr>
         <td class="order-id">#ORD-4824</td>
           <td class="customer">Liza Mendoza</td>
@@ -353,6 +496,7 @@
           <td class="Tracking no.">0004</td>
           <td><span class="priority-low">Shipped</span></td>
            <td><span class="Destanition">Metro Manila</span></td>
+           <td><button class="btn-prepare" onclick="openPackingModal('4821')">Assign Driver</button></td>
         </tr>
         <td class="order-id">#ORD-4825</td>
           <td class="customer">Jose Bautista</td>
@@ -360,6 +504,7 @@
           <td class="Tracking no.">0005</td>
           <td><span class="priority-low">Shipped</span></td>
            <td><span class="Destanition">Quezon City</span></td>
+           <td><button class="btn-prepare" onclick="openPackingModal('4821')">Assign Driver</button></td>
         </tr>
         <tr class="empty-row"><td colspan="8"></td></tr>
         <tr class="empty-row"><td colspan="8"></td></tr>
@@ -394,6 +539,87 @@
   </div>
 
 </section>
+
+</div>
+
+ <div class="overlay" id="packingOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalOrderId">#ORD-4821</h2>
+        <p>Website order</p>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <p class="field-label">Customer</p>
+          <p class="field-value" id="modalCustomer">Maria Santos</p>
+        </div>
+        <div>
+          <p class="field-label">Priority</p>
+          <span class="priority-low" id="modalPriority">Low</span>
+        </div>
+        <div>
+          <p class="field-label">Items</p>
+          <p class="field-value" id="modalItem">Wireless Headphone</p>
+        </div>
+        <div>
+          <p class="field-label">Quantity</p>
+          <p class="field-value" id="modalQty">2</p>
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <p class="field-label">Delivery Address</p>
+          <p class="field-value" id="modalAddress">Hillsview Naic, Cavite</p>
+        </div>
+      </div>
+
+  <script>
+    // Demo data keyed by order id. Swap this for a fetch() call to your
+    // backend if you want live data instead of hardcoded values.
+    const orders = {
+      '4821': { customer: 'Maria Santos', item: 'Wireless Headphone', qty: 2, priority: 'Low', priorityClass: 'priority-low', address: 'Hillsview Naic, Cavite' },
+      '4822': { customer: 'Carlos Dela Cruz', item: 'Keyboard', qty: 2, priority: 'Med', priorityClass: 'priority-med', address: 'Imus, Cavite' },
+      '4823': { customer: 'Ana Reyes', item: 'Gaming mouse', qty: 1, priority: 'Low', priorityClass: 'priority-low', address: 'Dasmarinas, Cavite' },
+      '4824': { customer: 'Liza Mendoza', item: 'Mechanical Keyboard', qty: 1, priority: 'Low', priorityClass: 'priority-low', address: 'Bacoor, Cavite' },
+      '4825': { customer: 'Jose Bautista', item: 'Webcam HD', qty: 2, priority: 'High', priorityClass: 'priority-high', address: 'Kawit, Cavite' }
+    };
+
+    function openPackingModal(orderId) {
+      const order = orders[orderId];
+      if (order) {
+        document.getElementById('modalOrderId').textContent = '#ORD-' + orderId;
+        document.getElementById('modalCustomer').textContent = order.customer;
+        document.getElementById('modalItem').textContent = order.item;
+        document.getElementById('modalQty').textContent = order.qty;
+        document.getElementById('modalAddress').textContent = order.address;
+
+        const priorityEl = document.getElementById('modalPriority');
+        priorityEl.textContent = order.priority;
+        priorityEl.className = order.priorityClass;
+      }
+
+      // reset box/courier selection each time the modal opens
+      document.querySelectorAll('.box-option').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.courier-option').forEach(el => el.classList.remove('selected'));
+
+      document.getElementById('pageContent').classList.add('blurred');
+      document.getElementById('packingOverlay').classList.add('active');
+    }
+
+    function closePackingModal() {
+      document.getElementById('pageContent').classList.remove('blurred');
+      document.getElementById('packingOverlay').classList.remove('active');
+    }
+
+    function selectBox(el) {
+      document.querySelectorAll('.box-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectCourier(el) {
+      document.querySelectorAll('.courier-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
 
 </body>
 </html>

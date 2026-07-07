@@ -224,8 +224,8 @@ function getPriority($createdAt)
   }
 
   .badge.status {
-    background: #3a4a7a;
-    color: #cdd6f5;
+    background: #1B6FC8;
+    color: #F3A9A9;
   }
 
   .badge.priority {
@@ -397,7 +397,7 @@ function getPriority($createdAt)
 }
 
 .priority-low {
-    background: #28a745;
+    background: #6B2B2B;
     color: #fff;
 }
 
