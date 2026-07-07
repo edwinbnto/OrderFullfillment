@@ -36,10 +36,8 @@ $packingOrders = DB::table('orders')->where('status', 'PACKING')->get();
 $shippedOrders = DB::table('orders')->where('status', 'SHIPPED')->get();
 
 // ---- Sidebar ----
-// No take() limit here on purpose — the panel has a fixed height with
-// overflow-y:auto in CSS, so once there are more items than fit, it scrolls.
-$alerts   = $newOrders;
-$activity = $shippedOrders;
+$alerts   = $newOrders->take(5);
+$activity = $shippedOrders->take(5);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -165,9 +163,6 @@ $activity = $shippedOrders;
     flex: 1;
     min-width: 280px;
     padding: 20px;
-    height: 560px;
-    display: flex;
-    flex-direction: column;
   }
 
   .column-header {
@@ -177,36 +172,6 @@ $activity = $shippedOrders;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border-soft);
     margin-bottom: 16px;
-    flex-shrink: 0;
-  }
-
-  .column-body {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-    padding-right: 4px;
-  }
-
-  /* Custom dark scrollbar */
-  .column-body::-webkit-scrollbar,
-  .side-list::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .column-body::-webkit-scrollbar-track,
-  .side-list::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .column-body::-webkit-scrollbar-thumb,
-  .side-list::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.15);
-    border-radius: 10px;
-  }
-
-  .column-body::-webkit-scrollbar-thumb:hover,
-  .side-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.28);
   }
 
   .column-title {
@@ -330,9 +295,6 @@ $activity = $shippedOrders;
     border: 1px solid var(--border-soft);
     border-radius: 12px;
     padding: 20px;
-    height: 268px;
-    display: flex;
-    flex-direction: column;
   }
 
   .side-header {
@@ -340,14 +302,6 @@ $activity = $shippedOrders;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 14px;
-    flex-shrink: 0;
-  }
-
-  .side-list {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-    padding-right: 4px;
   }
 
   .side-title {
@@ -469,23 +423,21 @@ $activity = $shippedOrders;
         <div class="count-badge">{{ $newOrders->count() }} orders</div>
       </div>
 
-      <div class="column-body">
-        @forelse ($newOrders as $order)
-          @php $priority = getOrderPriority($order->created_at ?? null); @endphp
-          <div class="order-card">
-            <div class="order-id">{{ $order->id }}</div>
-            <div class="order-details">
-              <div class="order-item">{{ $order->product_name }} ×{{ $order->qty }}</div>
-              <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
-              @if (!empty($order->due_date))
-                <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
-              @endif
-            </div>
+      @forelse ($newOrders as $order)
+        @php $priority = getOrderPriority($order->created_at ?? null); @endphp
+        <div class="order-card">
+          <div class="order-id">{{ $order->id }}</div>
+          <div class="order-details">
+            <div class="order-item">{{ $order->product_name }} ×{{ $order->qty }}</div>
+            <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+            @if (!empty($order->due_date))
+              <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
+            @endif
           </div>
-        @empty
-          <div class="empty-state">No new orders.</div>
-        @endforelse
-      </div>
+        </div>
+      @empty
+        <div class="empty-state">No new orders.</div>
+      @endforelse
     </div>
 
     <!-- PACKING -->
@@ -495,23 +447,21 @@ $activity = $shippedOrders;
         <div class="count-badge">{{ $packingOrders->count() }} orders</div>
       </div>
 
-      <div class="column-body">
-        @forelse ($packingOrders as $order)
-          @php $priority = getOrderPriority($order->created_at ?? null); @endphp
-          <div class="order-card">
-            <div class="order-id">{{ $order->id }}</div>
-            <div class="order-details">
-              <div class="order-item">{{ $order->product_name }}</div>
-              <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
-              @if (!empty($order->due_date))
-                <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
-              @endif
-            </div>
+      @forelse ($packingOrders as $order)
+        @php $priority = getOrderPriority($order->created_at ?? null); @endphp
+        <div class="order-card">
+          <div class="order-id">{{ $order->id }}</div>
+          <div class="order-details">
+            <div class="order-item">{{ $order->product_name }}</div>
+            <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+            @if (!empty($order->due_date))
+              <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
+            @endif
           </div>
-        @empty
-          <div class="empty-state">Nothing in packing.</div>
-        @endforelse
-      </div>
+        </div>
+      @empty
+        <div class="empty-state">Nothing in packing.</div>
+      @endforelse
     </div>
 
     <!-- SHIPPED -->
@@ -521,23 +471,21 @@ $activity = $shippedOrders;
         <div class="count-badge">{{ $shippedOrders->count() }} orders</div>
       </div>
 
-      <div class="column-body">
-        @forelse ($shippedOrders as $order)
-          @php $priority = getOrderPriority($order->created_at ?? null); @endphp
-          <div class="order-card">
-            <div class="order-id">{{ $order->id }}</div>
-            <div class="order-details">
-              <div class="order-item">{{ $order->product_name }}</div>
-              <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
-              @if (!empty($order->due_date))
-                <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
-              @endif
-            </div>
+      @forelse ($shippedOrders as $order)
+        @php $priority = getOrderPriority($order->created_at ?? null); @endphp
+        <div class="order-card">
+          <div class="order-id">{{ $order->id }}</div>
+          <div class="order-details">
+            <div class="order-item">{{ $order->product_name }}</div>
+            <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+            @if (!empty($order->due_date))
+              <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
+            @endif
           </div>
-        @empty
-          <div class="empty-state">Nothing shipped yet.</div>
-        @endforelse
-      </div>
+        </div>
+      @empty
+        <div class="empty-state">Nothing shipped yet.</div>
+      @endforelse
     </div>
 
     <!-- Sidebar -->
@@ -547,17 +495,15 @@ $activity = $shippedOrders;
           <div class="side-title">🔔 Alerts</div>
         </div>
 
-        <div class="side-list">
-          @forelse ($alerts as $order)
-            <div class="alert-row">
-              <div class="alert-left">
-                <span>📦 New order {{ $order->id }} received</span>
-              </div>
+        @forelse ($alerts as $order)
+          <div class="alert-row">
+            <div class="alert-left">
+              <span>📦 New order {{ $order->id }} received</span>
             </div>
-          @empty
-            <div class="empty-state">No alerts.</div>
-          @endforelse
-        </div>
+          </div>
+        @empty
+          <div class="empty-state">No alerts.</div>
+        @endforelse
       </div>
 
       <div class="side-panel">
@@ -566,13 +512,11 @@ $activity = $shippedOrders;
           <div class="live-badge"><span class="live-dot"></span> Live</div>
         </div>
 
-        <div class="side-list">
-          @forelse ($activity as $order)
-            <div class="activity-row">🚚 Order {{ $order->id }} has been shipped</div>
-          @empty
-            <div class="empty-state">No recent activity.</div>
-          @endforelse
-        </div>
+        @forelse ($activity as $order)
+          <div class="activity-row">🚚 Order {{ $order->id }} has been shipped</div>
+        @empty
+          <div class="empty-state">No recent activity.</div>
+        @endforelse
       </div>
     </div>
 
