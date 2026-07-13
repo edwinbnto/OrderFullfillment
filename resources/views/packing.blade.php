@@ -1,7 +1,77 @@
+@php
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+// Same priority rule used on the dashboard/orders pages:
+// NEW on day 0, LOW after 1 day, MEDIUM after 2 days, HIGH after 3+ days
+function getPackingPriority($createdAt) {
+    if (!$createdAt) {
+        return ['label' => 'Low', 'class' => 'priority-low', 'key' => 'Low'];
+    }
+
+    $daysOld = Carbon::parse($createdAt)->diffInDays(Carbon::now());
+
+    if ($daysOld >= 3) {
+        return ['label' => 'High', 'class' => 'priority-high', 'key' => 'High'];
+    } elseif ($daysOld == 2) {
+        return ['label' => 'Med', 'class' => 'priority-med', 'key' => 'Med'];
+    }
+
+    return ['label' => 'Low', 'class' => 'priority-low', 'key' => 'Low'];
+}
+
+// ---- Orders currently in the PACKING column ----
+// Queried directly here (same pattern as dashboard.blade.php) so this
+// page works no matter which controller/route renders it — it isn't
+// dependent on the controller remembering to pass $packingOrders in.
+// If a controller DOES pass $packingOrders, that value is used instead.
+$packingOrders = $packingOrders ?? DB::table('orders')->where('status', 'PACKING')->get();
+
+// ---- Stats row (all derived from the orders table, nothing hardcoded) ----
+$inPackingCount     = $packingOrders->count();
+$readyToShipCount   = $readyToShipCount   ?? DB::table('orders')->where('status', 'READY_TO_SHIP')->count();
+$packingErrorToday  = $packingErrorToday  ?? 0; // TODO: wire to a packing_errors log once that table exists
+
+// ---- Packing materials (boxes, tape, wrap, etc.) ----
+// Expected shape per row from a `packing_materials` table:
+// id, name, icon, stock_qty, low_stock_threshold, is_box (bool), box_size (small|medium|large|null)
+// Queried directly (with a safe fallback) so this page doesn't break if
+// that table doesn't exist yet in your DB.
+if (!isset($materials)) {
+    $materials = \Illuminate\Support\Facades\Schema::hasTable('packing_materials')
+        ? DB::table('packing_materials')->get()
+        : collect();
+}
+$lowStockMaterialCount = $materials->filter(function ($m) {
+    return isset($m->stock_qty, $m->low_stock_threshold) && $m->stock_qty <= $m->low_stock_threshold;
+})->count();
+
+// Box options shown inside the "prepare shipment" modal — pulled straight
+// from the same $materials collection instead of being hardcoded.
+$boxMaterials = $materials->filter(fn($m) => !empty($m->is_box));
+
+// Build a lookup (order id => details) for the modal, in the exact shape
+// the front-end JS expects, generated from real DB rows instead of a
+// hand-typed object.
+$packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
+    $priority = getPackingPriority($order->created_at ?? null);
+    return [
+        (string) $order->id => [
+            'customer'      => $order->customer_name,
+            'item'          => $order->product_name,
+            'qty'           => $order->qty,
+            'priority'      => $priority['label'],
+            'priorityClass' => $priority['class'],
+            'address'       => $order->address ?? '',
+        ],
+    ];
+});
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>Nexora Packing</title>
 <style>
   :root {
@@ -548,7 +618,7 @@
     <!-- Navbar -->
     <div class="navbar">
       <div class="brand">
-      <img class="logo" src="data:image/png;base64,PASTE_YOUR_FULL_BASE64_LOGO_HERE" alt="Nexora logo">
+            <img src="{{ asset('logo/Nexora_Logo_Transparent.png') }}" class="logo" alt="Logo">
         <div class="brand-text">
           <div class="title">NEXORA</div>
           <div class="subtitle">ENTERPRISE RESOURCE PLANNING</div>
@@ -567,19 +637,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="label">In packing</div>
-        <div class="value">5</div>
+        <div class="value">{{ $inPackingCount }}</div>
       </div>
       <div class="stat-card">
         <div class="label">Ready to ship</div>
-        <div class="value">5</div>
+        <div class="value">{{ $readyToShipCount }}</div>
       </div>
       <div class="stat-card">
         <div class="label">Packing error today</div>
-        <div class="value">0</div>
+        <div class="value">{{ $packingErrorToday }}</div>
       </div>
       <div class="stat-card">
         <div class="label">Material low stock</div>
-        <div class="value">2</div>
+        <div class="value">{{ $lowStockMaterialCount }}</div>
       </div>
     </div>
 
@@ -632,51 +702,30 @@
             </tr>
           </thead>
           <tbody id="packingTableBody">
-            <tr class="packing-row" data-id="4821" data-customer="Maria Santos" data-item="Wireless Headphone" data-qty="2" data-priority="Low" data-priority-class="priority-low" data-address="Hillsview Naic, Cavite">
-              <td class="order-id">#ORD-4821</td>
-              <td class="customer">Maria Santos</td>
-              <td class="product">Wireless Headphone</td>
-              <td>2</td>
-              <td><span class="priority-low">Low</span></td>
-              <td><button class="btn-prepare" onclick="openPackingModal('4821')">Process</button></td>
-            </tr>
-            <tr class="packing-row" data-id="4822" data-customer="Carlos Dela Cruz" data-item="Keyboard" data-qty="2" data-priority="Med" data-priority-class="priority-med" data-address="Imus, Cavite">
-              <td class="order-id">#ORD-4822</td>
-              <td class="customer">Carlos Dela Cruz</td>
-              <td class="product">Keyboard</td>
-              <td>2</td>
-              <td><span class="priority-med">Med</span></td>
-              <td><button class="btn-prepare" onclick="openPackingModal('4822')">Process</button></td>
-            </tr>
-            <tr class="packing-row" data-id="4823" data-customer="Ana Reyes" data-item="Gaming mouse" data-qty="1" data-priority="Low" data-priority-class="priority-low" data-address="Dasmarinas, Cavite">
-              <td class="order-id">#ORD-4823</td>
-              <td class="customer">Ana Reyes</td>
-              <td class="product">Gaming mouse</td>
-              <td>1</td>
-              <td><span class="priority-low">Low</span></td>
-              <td><button class="btn-prepare" onclick="openPackingModal('4823')">Process</button></td>
-            </tr>
-            <tr class="packing-row" data-id="4824" data-customer="Liza Mendoza" data-item="Mechanical Keyboard" data-qty="1" data-priority="Low" data-priority-class="priority-low" data-address="Bacoor, Cavite">
-              <td class="order-id">#ORD-4824</td>
-              <td class="customer">Liza Mendoza</td>
-              <td class="product">Mechanical Keyboard</td>
-              <td>1</td>
-              <td><span class="priority-low">Low</span></td>
-              <td><button class="btn-prepare" onclick="openPackingModal('4824')">Process</button></td>
-            </tr>
-            <tr class="packing-row" data-id="4825" data-customer="Jose Bautista" data-item="Webcam HD" data-qty="2" data-priority="High" data-priority-class="priority-high" data-address="Kawit, Cavite">
-              <td class="order-id">#ORD-4825</td>
-              <td class="customer">Jose Bautista</td>
-              <td class="product">Webcam HD</td>
-              <td>2</td>
-              <td><span class="priority-high">High</span></td>
-              <td><button class="btn-prepare" onclick="openPackingModal('4825')">Process</button></td>
-            </tr>
+            @forelse ($packingOrders as $order)
+              @php $priority = getPackingPriority($order->created_at ?? null); @endphp
+              <tr class="packing-row"
+                  data-id="{{ $order->id }}"
+                  data-customer="{{ $order->customer_name }}"
+                  data-item="{{ $order->product_name }}"
+                  data-qty="{{ $order->qty }}"
+                  data-priority="{{ $priority['key'] }}"
+                  data-priority-class="{{ $priority['class'] }}"
+                  data-address="{{ $order->address ?? '' }}">
+                <td class="order-id">{{ $order->id }}</td>
+                <td class="customer">{{ $order->customer_name }}</td>
+                <td class="product">{{ $order->product_name }}</td>
+                <td>{{ $order->qty }}</td>
+                <td><span class="{{ $priority['class'] }}">{{ $priority['label'] }}</span></td>
+                <td><button class="btn-prepare" onclick="openPackingModal('{{ $order->id }}')">Process</button></td>
+              </tr>
+            @empty
+              <tr class="empty-row"><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Nothing in packing right now.</td></tr>
+            @endforelse
 
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
+            @for ($i = 0; $i < max(0, 4 - $packingOrders->count()); $i++)
+              <tr class="empty-row"><td colspan="6"></td></tr>
+            @endfor
 
             <tr class="no-results-row" id="noResultsRow" style="display:none;">
               <td colspan="6">No orders match your search or filter.</td>
@@ -690,26 +739,22 @@
           <div class="title">📝 Material packing</div>
         </div>
         <div class="activity-list">
-          <div class="activity-item">
-            <span class="activity-icon">📦</span>
-            <span>Small boxes - 10 left</span>
-          </div>
-          <div class="activity-item">
-            <span class="activity-icon">📦</span>
-            <span>Medium boxes - 3 left</span>
-          </div>
-          <div class="activity-item">
-            <span class="activity-icon">📦</span>
-            <span>Large boxes - 15 left</span>
-          </div>
-          <div class="activity-item">
-            <span class="activity-icon">✅</span>
-            <span>Bubble wrap - 80% stocked</span>
-          </div>
-          <div class="activity-item">
-            <span class="activity-icon">⚠️</span>
-            <span>Packing tape - 8 rolls left</span>
-          </div>
+          @forelse ($materials as $material)
+            @php
+              $isLow = isset($material->stock_qty, $material->low_stock_threshold)
+                  && $material->stock_qty <= $material->low_stock_threshold;
+              $icon = $material->icon ?? ($isLow ? '⚠️' : '📦');
+            @endphp
+            <div class="activity-item">
+              <span class="activity-icon">{{ $icon }}</span>
+              <span>{{ $material->name }} - {{ $material->stock_label ?? ($material->stock_qty . ' left') }}</span>
+            </div>
+          @empty
+            <div class="activity-item">
+              <span class="activity-icon">📦</span>
+              <span style="color: var(--text-muted);">No material data yet.</span>
+            </div>
+          @endforelse
         </div>
       </div>
 
@@ -720,55 +765,51 @@
   <div class="overlay" id="packingOverlay">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modalOrderId">#ORD-4821</h2>
+        <h2 id="modalOrderId">—</h2>
         <p>Website order</p>
       </div>
 
       <div class="modal-body">
         <div>
           <p class="field-label">Customer</p>
-          <p class="field-value" id="modalCustomer">Maria Santos</p>
+          <p class="field-value" id="modalCustomer">—</p>
         </div>
         <div>
           <p class="field-label">Priority</p>
-          <span class="priority-low" id="modalPriority">Low</span>
+          <span class="priority-low" id="modalPriority">—</span>
         </div>
         <div>
           <p class="field-label">Items</p>
-          <p class="field-value" id="modalItem">Wireless Headphone</p>
+          <p class="field-value" id="modalItem">—</p>
         </div>
         <div>
           <p class="field-label">Quantity</p>
-          <p class="field-value" id="modalQty">2</p>
+          <p class="field-value" id="modalQty">—</p>
         </div>
         <div style="grid-column: 1 / -1;">
           <p class="field-label">Delivery Address</p>
-          <p class="field-value" id="modalAddress">Hillsview Naic, Cavite</p>
+          <p class="field-value" id="modalAddress">—</p>
         </div>
       </div>
 
       <div class="box-options">
-        <div class="box-option" data-box="small" onclick="selectBox(this)">
-          <div>
-            <div class="box-name">Small</div>
-            <div class="box-stock">10 left</div>
+        @forelse ($boxMaterials as $box)
+          <div class="box-option" data-box="{{ $box->box_size }}" onclick="selectBox(this)">
+            <div>
+              <div class="box-name">{{ $box->name }}</div>
+              <div class="box-stock">{{ $box->stock_label ?? ($box->stock_qty . ' left') }}</div>
+            </div>
+            <div class="box-icon">📦</div>
           </div>
-          <div class="box-icon">📦</div>
-        </div>
-        <div class="box-option" data-box="medium" onclick="selectBox(this)">
-          <div>
-            <div class="box-name">Medium</div>
-            <div class="box-stock">3 left</div>
+        @empty
+          <div class="box-option" style="opacity:0.5; pointer-events:none;">
+            <div>
+              <div class="box-name">No box sizes configured</div>
+              <div class="box-stock">Add rows to packing_materials</div>
+            </div>
+            <div class="box-icon">📦</div>
           </div>
-          <div class="box-icon">📦</div>
-        </div>
-        <div class="box-option" data-box="large" onclick="selectBox(this)">
-          <div>
-            <div class="box-name">Large</div>
-            <div class="box-stock">15 left</div>
-          </div>
-          <div class="box-icon">📦</div>
-        </div>
+        @endforelse
       </div>
 
       <div class="courier-options">
@@ -786,20 +827,14 @@
   <div class="filter-overlay" id="filterOverlay"></div>
 
   <script>
-    // Demo data keyed by order id. Swap this for a fetch() call to your
-    // backend if you want live data instead of hardcoded values.
-    const orders = {
-      '4821': { customer: 'Maria Santos', item: 'Wireless Headphone', qty: 2, priority: 'Low', priorityClass: 'priority-low', address: 'Hillsview Naic, Cavite' },
-      '4822': { customer: 'Carlos Dela Cruz', item: 'Keyboard', qty: 2, priority: 'Med', priorityClass: 'priority-med', address: 'Imus, Cavite' },
-      '4823': { customer: 'Ana Reyes', item: 'Gaming mouse', qty: 1, priority: 'Low', priorityClass: 'priority-low', address: 'Dasmarinas, Cavite' },
-      '4824': { customer: 'Liza Mendoza', item: 'Mechanical Keyboard', qty: 1, priority: 'Low', priorityClass: 'priority-low', address: 'Bacoor, Cavite' },
-      '4825': { customer: 'Jose Bautista', item: 'Webcam HD', qty: 2, priority: 'High', priorityClass: 'priority-high', address: 'Kawit, Cavite' }
-    };
+    // Order data keyed by order id, rendered straight from the DB
+    // ($packingOrders, queried in the controller) — nothing hardcoded.
+    const orders = @json($packingOrdersJson);
 
     function openPackingModal(orderId) {
       const order = orders[orderId];
       if (order) {
-        document.getElementById('modalOrderId').textContent = '#ORD-' + orderId;
+        document.getElementById('modalOrderId').textContent = orderId;
         document.getElementById('modalCustomer').textContent = order.customer;
         document.getElementById('modalItem').textContent = order.item;
         document.getElementById('modalQty').textContent = order.qty;

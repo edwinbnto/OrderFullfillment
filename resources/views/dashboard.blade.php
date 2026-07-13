@@ -38,8 +38,24 @@ $shippedOrders = DB::table('orders')->where('status', 'SHIPPED')->get();
 // ---- Sidebar ----
 // No take() limit here on purpose — the panel has a fixed height with
 // overflow-y:auto in CSS, so once there are more items than fit, it scrolls.
-$alerts   = $newOrders;
-$activity = $shippedOrders;
+$alerts = $newOrders;
+
+// Activity feed: packing + shipped orders together, newest first.
+$activity = $packingOrders
+    ->map(function ($order) {
+        $order->activity_icon    = '📦';
+        $order->activity_message = "Order {$order->id} moved to packing";
+        $order->activity_time    = $order->updated_at ?? $order->created_at ?? null;
+        return $order;
+    })
+    ->concat($shippedOrders->map(function ($order) {
+        $order->activity_icon    = '🚚';
+        $order->activity_message = "Order {$order->id} has been shipped";
+        $order->activity_time    = $order->updated_at ?? $order->created_at ?? null;
+        return $order;
+    }))
+    ->sortByDesc('activity_time')
+    ->values();
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -425,6 +441,7 @@ $activity = $shippedOrders;
   <!-- Navbar -->
   <div class="navbar">
     <div class="brand">
+      <img class="logo" src="{{ asset('logo/Nexora_Logo_Transparent.png') }}" alt="Nexora logo">
       <div class="brand-text">
         <div class="title">NEXORA</div>
         <div class="subtitle">ENTERPRISE RESOURCE PLANNING</div>
@@ -568,7 +585,7 @@ $activity = $shippedOrders;
 
         <div class="side-list">
           @forelse ($activity as $order)
-            <div class="activity-row">🚚 Order {{ $order->id }} has been shipped</div>
+            <div class="activity-row">{{ $order->activity_icon }} {{ $order->activity_message }}</div>
           @empty
             <div class="empty-state">No recent activity.</div>
           @endforelse

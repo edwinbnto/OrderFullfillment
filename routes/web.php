@@ -18,6 +18,11 @@ Route::get('/dashboard', function () {
 
 Route::get('/order', [OrderController::class, 'index'])->name('orders');
 
+Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
+Route::get('/packing', [OrderController::class, 'packing'])->name('packing');
+
+Route::post('/orders/{id}/prepare', [OrderController::class, 'prepare'])->name('orders.prepare');
+
 Route::get('/packing', function () {
     return view('packing');
 })->name('packing');
@@ -37,3 +42,4 @@ Route::get('/database', function () {
 Route::get('/contactus', function () {
     return view('contactus');
 })->name('contactus');
+

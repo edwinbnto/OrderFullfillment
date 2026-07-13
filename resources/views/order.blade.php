@@ -20,12 +20,33 @@ function getPriority($createdAt)
     // 0 or 1 day old
     return ['label' => 'LOW', 'class' => 'priority-low'];
 }
+
+// ---- Recent activity (packing + shipped orders, newest first) ----
+// Queried directly here so this panel works regardless of which
+// controller/route renders this view — mirrors dashboard.blade.php.
+use Illuminate\Support\Facades\DB;
+
+if (!isset($recentActivity)) {
+    $recentActivity = DB::table('orders')
+        ->whereIn('status', ['PACKING', 'SHIPPED'])
+        ->orderByDesc('updated_at')
+        ->limit(10)
+        ->get()
+        ->map(function ($o) {
+            $o->activity_icon    = strtoupper($o->status) === 'SHIPPED' ? '🚚' : '📦';
+            $o->activity_message = strtoupper($o->status) === 'SHIPPED'
+                ? "Order {$o->id} has been shipped"
+                : "Order {$o->id} moved to packing";
+            return $o;
+        });
+}
 @endphp
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>Nexora Orders</title>
 <style>
   :root {
@@ -572,7 +593,7 @@ function getPriority($createdAt)
     <!-- Navbar -->
     <div class="navbar">
       <div class="brand">
-      <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAdMAAAH6CAYAAABcXaZTAAEAAElEQVR4nOz9d5Rk13meCz/v3vucU6de/j2n5phw" alt="Nexora logo">
+      <img class="logo" src="{{ asset('logo/Nexora_Logo_Transparent.png') }}" alt="Nexora logo">
         <div class="brand-text">
           <div class="title">NEXORA</div>
           <div class="subtitle">ENTERPRISE RESOURCE PLANNING</div>
@@ -683,7 +704,16 @@ function getPriority($createdAt)
               </span>
               </td>
               <td>{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}</td>
-              <td><span class="btn-prepare">Prepare</span></td>
+              <td>
+                @if (strtoupper($order->status) === 'NEW')
+                  <button type="button"
+                          class="btn-prepare"
+                          data-order-id="{{ $order->id }}"
+                          onclick="event.stopPropagation(); prepareOrder('{{ $order->id }}', this)">
+                    Prepare
+                  </button>
+                @endif
+              </td>
             </tr>
             @empty
             <tr class="empty-row">
@@ -709,12 +739,16 @@ function getPriority($createdAt)
           <div class="title">📈 Recent activity</div>
         </div>
         <div class="activity-list">
-          </div>
-          <div class="activity-empty"></div>
-          <div class="activity-empty"></div>
-          <div class="activity-empty"></div>
-          <div class="activity-empty"></div>
-          <div class="activity-empty"></div>
+          @forelse ($recentActivity as $order)
+            <div class="activity-item">
+              <span class="activity-icon">{{ $order->activity_icon }}</span>
+              <span>{{ $order->activity_message }}</span>
+            </div>
+          @empty
+            <div class="activity-empty" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px;">
+              No recent activity.
+            </div>
+          @endforelse
         </div>
       </div>
     </section>
@@ -768,7 +802,10 @@ function getPriority($createdAt)
     const orderRows = Array.from(document.querySelectorAll('.order-row'));
 
     orderRows.forEach(function (row) {
-      row.addEventListener('click', function () {
+      row.addEventListener('click', function (e) {
+        // If the click started on (or inside) a button — e.g. "Prepare" —
+        // don't open the order modal, let the button's own handler run.
+        if (e.target.closest('button')) return;
         openOrderModal(this.dataset);
       });
     });
@@ -793,6 +830,79 @@ function getPriority($createdAt)
       document.getElementById('pageContent').classList.remove('blurred');
       document.getElementById('orderOverlay').classList.remove('active');
     }
+
+    /* ===================== Prepare -> Packing (AJAX) ===================== */
+    // Clicking "Prepare" updates the order's status to PACKING in the DB.
+    // The row is NOT removed from this table — only its status/button change.
+    // The dashboard + packing page pick up the new status on their own
+    // queries, so the order will show up in the Packing column/queue there.
+    //
+    // Built with Laravel's route() helper (not a hardcoded "/orders/..."
+    // string) so this still works if the app lives in a subfolder, e.g.
+    // http://localhost/dashboard/OrderFullfillment/public/...
+    const prepareUrlTemplate = @json(route('orders.prepare', ['id' => '__ID__']));
+
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
+
+    if (!csrfMeta) {
+      console.error('CSRF meta tag not found. Add <meta name="csrf-token" content="{{ csrf_token() }}"> inside <head>. The Prepare button will not work without it.');
+    }
+
+    function prepareOrder(orderId, btn) {
+      console.log('prepareOrder called for order', orderId);
+
+      if (btn.disabled) return;
+
+      if (!csrfToken) {
+        alert('Missing CSRF token on this page — check the browser console for details.');
+        return;
+      }
+
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = 'Moving...';
+
+      const url = prepareUrlTemplate.replace('__ID__', encodeURIComponent(orderId));
+      console.log('prepareOrder POSTing to', url);
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+      })
+        .then(function (res) {
+          console.log('prepareOrder response status:', res.status);
+          if (!res.ok) {
+            return res.json().catch(function () { return {}; }).then(function (body) {
+              throw new Error(body.message || ('Request failed with status ' + res.status));
+            });
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          if (!data.success) throw new Error(data.message || 'Update failed');
+
+          const row = btn.closest('.order-row');
+          row.dataset.status = 'PACKING';
+
+          const statusBadge = row.querySelector('.badge.status');
+          if (statusBadge) statusBadge.textContent = 'PACKING';
+
+          // Order has moved past NEW — no action button needed anymore.
+          btn.remove();
+        })
+        .catch(function (err) {
+          console.error('prepareOrder failed:', err);
+          alert('Could not move this order to packing: ' + err.message);
+          btn.disabled = false;
+          btn.textContent = originalText;
+        });
+    }
+    /* =================== end Prepare -> Packing =================== */
 
     /* ===================== Search + Filter (working) ===================== */
     const searchInput   = document.getElementById('orderSearch');
