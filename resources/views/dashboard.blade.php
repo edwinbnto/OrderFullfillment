@@ -362,7 +362,8 @@ $activity = $packingOrders
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
     flex-shrink: 0;
   }
 
@@ -401,7 +402,7 @@ $activity = $packingOrders
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid var(--border-soft);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
     font-size: 13px;
   }
 
@@ -418,7 +419,7 @@ $activity = $packingOrders
     align-items: center;
     gap: 10px;
     padding: 10px 0;
-    border-bottom: 1px solid var(--border-soft);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
     font-size: 13px;
     color: var(--text-light);
   }
