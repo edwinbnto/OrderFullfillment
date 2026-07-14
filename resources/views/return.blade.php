@@ -4,13 +4,16 @@
 <meta charset="UTF-8">
 <title>Nexora Returns</title>
 <style>
-  :root {
+   :root {
     --bg-header: #0B1E3D;
     --bg-dark: #1B3A6B;
     --bg-card: #0B1E3D;
     --text-light: #FFFFFF;
     --text-muted: #9FB3D1;
     --border-soft: rgba(255,255,255,0.08);
+    --accent: #3B82F6;
+    --pill: #16305c;
+    --pill-border: #2c4373;
   }
 
   * { box-sizing: border-box; }
@@ -91,8 +94,7 @@
     color: var(--text-light);
     text-shadow: 0 0 0.4px currentColor, 0 0 0.4px currentColor;
   }
-
-
+  
   /* ---------- Stats ---------- */
   .stats-row {
     display: flex;
@@ -135,10 +137,171 @@
     justify-content: space-between;
     padding: 18px 24px;
     border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    gap: 16px;
   }
 
-  .panel-header .title { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; }
-  .panel-header .actions { display: flex; gap: 24px; color: var(--text-muted); font-size: 14px; }
+  .panel-header .title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+
+  .panel-header .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ===== Search + Filter (working controls) ===== */
+  .search-wrap {
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 170px;
+    background: var(--pill);
+    border: 1px solid var(--pill-border);
+    border-radius: 20px;
+    padding: 8px 14px 8px 32px;
+    color: var(--text-light);
+    font-size: 13px;
+    outline: none;
+    transition: width 0.15s ease, border-color 0.15s ease;
+  }
+
+  .search-wrap input:focus {
+    width: 210px;
+    border-color: var(--accent);
+  }
+
+  .search-wrap input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    font-size: 12px;
+  }
+
+  .filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pill);
+    border: 1px solid var(--pill-border);
+    border-radius: 20px;
+    padding: 8px 14px;
+    color: var(--text-light);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    border-color: var(--accent);
+  }
+
+  .filter-btn .caret {
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: transform 0.15s ease;
+  }
+
+  .filter-btn.open .caret {
+    transform: rotate(180deg);
+  }
+
+  .filter-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ff2f92;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    line-height: 1.4;
+    display: none;
+  }
+
+  .filter-panel {
+    position: absolute;
+    right: 24px;
+    top: 56px;
+    background: #16305c;
+    border: 1px solid var(--pill-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    width: 200px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    display: none;
+    z-index: 30;
+  }
+
+  .filter-panel.show {
+    display: block;
+  }
+
+  .filter-panel .filter-title {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+    color: var(--text-light);
+    font-size: 14px;
+    font-weight: 600;
+    user-select: none;
+  }
+
+  .filter-option input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .filter-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: none;
+  }
+
+  .filter-overlay.show {
+    display: block;
+  }
+
+  .no-results-row td {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  /* ===== end search + filter ===== */
 
   table { width: 100%; border-collapse: collapse; }
 
@@ -173,6 +336,110 @@
   .resolution-not-resellable { color: #f28b82; font-weight: 600; }
 
   .empty-row td { height: 38px; }
+
+ 
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+ 
+  thead th {
+    text-align: left;
+    padding: 14px 24px;
+    font-size: 14px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+ 
+  tbody td {
+    padding: 14px 24px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+ 
+  tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.02);
+  }
+ 
+  .order-id, .product {
+    color: var(--text-muted);
+  }
+ 
+  .customer {
+    font-weight: 600;
+  }
+ 
+  .priority-low {
+    background: #5A3A4A;
+    color: #E8B8C8;
+    padding: 3px 12px;
+    border-radius: 5px;
+    font-size: 11px;
+    display: inline-block;
+  }
+ 
+  .priority-med {
+    background: #6B4A1E;
+    color: #FBD38D;
+    padding: 3px 12px;
+    border-radius: 5px;
+    font-size: 11px;
+    display: inline-block;
+  }
+ 
+  .priority-high {
+    background: #7F1D2E;
+    color: #FCA5B1;
+    padding: 3px 12px;
+    border-radius: 5px;
+    font-size: 11px;
+    display: inline-block;
+  }
+ 
+  .btn-prepare {
+    display: inline-block;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+  }
+ 
+  .btn-prepare:hover {
+    background: #244a80;
+  }
+ 
+  .empty-row td {
+    height: 38px;
+  }
+ 
+  .activity-list {
+    padding: 8px 0;
+  }
+ 
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px;
+  }
+ 
+  .activity-item:last-child {
+    border-bottom: none;
+  }
+ 
+  .activity-icon {
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
 
   /* Return reasons / refund activity lists */
   .reason-list, .refund-list { padding: 8px 0; }
@@ -298,6 +565,7 @@
 </style>
 </head>
 <body>
+<div class="top-strip"></div>
 
   <!-- ============================================
        Everything the user should see BLURRED while
@@ -305,6 +573,7 @@
        ============================================ -->
   <div id="pageContent">
 
+    <!-- Navbar -->
     <div class="navbar">
       <a href="{{ route('logout') }}" class="brand logout-logo" title="Logout">
     <img class="logo" src="{{ asset('logo/Nexora_Logo_Transparent.png') }}" alt="Nexora Logo">
@@ -314,13 +583,11 @@
     </div>
 </a>
       <div class="nav-links">
-      <div class="nav-links">
       <a href="{{ route('dashboard') }}">Dashboard</a>
       <a href="{{ route('orders') }}">Orders</a>
       <a href="{{ route('packing') }}">Packing</a>
       <a href="{{ route('shipping') }}">Shipping</a>
       <a href="{{ route('return') }}" class="active">Returns</a>
-      </div>
       </div>
     </div>
 
@@ -349,8 +616,39 @@
         <div class="panel-header">
           <div class="title">📋 Return requests</div>
           <div class="actions">
-            <span>Search</span>
-            <span>Filter</span>
+            <div class="search-wrap">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="returnSearch" placeholder="Search..." autocomplete="off">
+            </div>
+
+            <button id="filterBtn" class="filter-btn">
+              Filter <span class="caret">▾</span>
+              <span id="filterBadge" class="filter-badge">1</span>
+            </button>
+
+            <div id="filterPanel" class="filter-panel">
+              <div class="filter-title">Status</div>
+              <label class="filter-option">
+                <input type="radio" name="statusFilter" value="" class="status-check" checked>
+                All
+              </label>
+              <label class="filter-option">
+                <input type="radio" name="statusFilter" value="High" class="status-check">
+                High
+              </label>
+              <label class="filter-option">
+                <input type="radio" name="statusFilter" value="Med" class="status-check">
+                Med
+              </label>
+              <label class="filter-option">
+                <input type="radio" name="statusFilter" value="Refunded" class="status-check">
+                Refunded
+              </label>
+              <label class="filter-option">
+                <input type="radio" name="statusFilter" value="Inspecting" class="status-check">
+                Inspecting
+              </label>
+            </div>
           </div>
         </div>
         <table>
@@ -364,8 +662,8 @@
               <th>Resolution</th>
             </tr>
           </thead>
-          <tbody>
-            <tr class="return-row" onclick="openReturnModal('r1')">
+          <tbody id="returnsTableBody">
+            <tr class="return-row" data-return-id="r1" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Defective" data-status="High" data-resolution="Pending" onclick="openReturnModal('r1')">
               <td class="order-id">#ORD-4821</td>
               <td class="customer">Maria Santos</td>
               <td class="product">Wireless Headphone</td>
@@ -373,7 +671,7 @@
               <td><span class="status-badge status-high">High</span></td>
               <td>Pending</td>
             </tr>
-            <tr class="return-row" onclick="openReturnModal('r2')">
+            <tr class="return-row" data-return-id="r2" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Wrong item" data-status="Med" data-resolution="Pending" onclick="openReturnModal('r2')">
               <td class="order-id">#ORD-4821</td>
               <td class="customer">Maria Santos</td>
               <td class="product">Wireless Headphone</td>
@@ -381,7 +679,7 @@
               <td><span class="status-badge status-med">Med</span></td>
               <td>Pending</td>
             </tr>
-            <tr class="return-row" onclick="openReturnModal('r3')">
+            <tr class="return-row" data-return-id="r3" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Defective" data-status="Refunded" data-resolution="Refund issued" onclick="openReturnModal('r3')">
               <td class="order-id">#ORD-4821</td>
               <td class="customer">Maria Santos</td>
               <td class="product">Wireless Headphone</td>
@@ -389,7 +687,7 @@
               <td><span class="status-badge status-refunded">Refunded</span></td>
               <td>Refund issued</td>
             </tr>
-            <tr class="return-row" onclick="openReturnModal('r4')">
+            <tr class="return-row" data-return-id="r4" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Damaged in transit" data-status="Inspecting" data-resolution="Not resellable" onclick="openReturnModal('r4')">
               <td class="order-id">#ORD-4821</td>
               <td class="customer">Maria Santos</td>
               <td class="product">Wireless Headphone</td>
@@ -403,6 +701,10 @@
             <tr class="empty-row"><td colspan="6"></td></tr>
             <tr class="empty-row"><td colspan="6"></td></tr>
             <tr class="empty-row"><td colspan="6"></td></tr>
+
+            <tr class="no-results-row" id="noResultsRow" style="display:none;">
+              <td colspan="6">No returns match your search or filter.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -469,7 +771,7 @@
         <div class="meta-row">
           <div>
             <p class="field-label">Order value</p>
-            <p class="field-value" id="modalValue">$67.67</p>
+            <p class="field-value" id="modalValue">₱67.67</p>
           </div>
           <div>
             <p class="field-label">Requested on</p>
@@ -488,6 +790,8 @@
       </div>
     </div>
   </div>
+
+  <div class="filter-overlay" id="filterOverlay"></div>
 
   <script>
     // Demo data keyed by return id. Swap this for a fetch() call to your
@@ -545,6 +849,78 @@
       document.getElementById('pageContent').classList.remove('blurred');
       document.getElementById('returnOverlay').classList.remove('active');
     }
+
+    /* ===================== Search + Filter (working) ===================== */
+    const returnRows     = Array.from(document.querySelectorAll('.return-row'));
+    const searchInput    = document.getElementById('returnSearch');
+    const filterBtn      = document.getElementById('filterBtn');
+    const filterPanel    = document.getElementById('filterPanel');
+    const filterOverlay  = document.getElementById('filterOverlay');
+    const filterBadge    = document.getElementById('filterBadge');
+    const noResultsRow   = document.getElementById('noResultsRow');
+    const statusChecks   = document.querySelectorAll('.status-check');
+
+    function activeStatus() {
+      const checked = Array.from(statusChecks).find(c => c.checked);
+      return checked ? checked.value : '';
+    }
+
+    function applyReturnFilters() {
+      const query = searchInput.value.trim().toLowerCase();
+      const active = activeStatus();
+      let visibleCount = 0;
+
+      returnRows.forEach(function (row) {
+        const d = row.dataset;
+        const haystack = [d.orderId, d.customer, d.product, d.reason, d.status, d.resolution]
+          .join(' ')
+          .toLowerCase();
+
+        const matchesSearch = query === '' || haystack.includes(query);
+        const matchesStatus = active === '' || d.status === active;
+        const visible = matchesSearch && matchesStatus;
+
+        row.style.display = visible ? '' : 'none';
+        if (visible) visibleCount++;
+      });
+
+      noResultsRow.style.display = visibleCount === 0 ? '' : 'none';
+
+      if (active !== '') {
+        filterBtn.classList.add('active');
+        filterBadge.style.display = 'inline-block';
+        filterBadge.textContent = '1';
+      } else {
+        filterBtn.classList.remove('active');
+        filterBadge.style.display = 'none';
+      }
+    }
+
+    function openFilterPanel() {
+      filterPanel.classList.add('show');
+      filterOverlay.classList.add('show');
+      filterBtn.classList.add('open');
+    }
+
+    function closeFilterPanel() {
+      filterPanel.classList.remove('show');
+      filterOverlay.classList.remove('show');
+      filterBtn.classList.remove('open');
+    }
+
+    filterBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      filterPanel.classList.contains('show') ? closeFilterPanel() : openFilterPanel();
+    });
+
+    filterOverlay.addEventListener('click', closeFilterPanel);
+
+    statusChecks.forEach(function (c) {
+      c.addEventListener('change', applyReturnFilters);
+    });
+
+    searchInput.addEventListener('input', applyReturnFilters);
+    /* =================== end Search + Filter =================== */
   </script>
 
 </body>
