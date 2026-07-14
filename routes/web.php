@@ -22,6 +22,7 @@ Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
 Route::get('/packing', [OrderController::class, 'packing'])->name('packing');
 
 Route::post('/orders/{id}/prepare', [OrderController::class, 'prepare'])->name('orders.prepare');
+Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
 Route::get('/packing', function () {
     return view('packing');

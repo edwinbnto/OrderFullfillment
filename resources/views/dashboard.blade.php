@@ -34,13 +34,14 @@ $onTimeRate          = $totalOrders > 0 ? round(($deliveredCount / $totalOrders)
 $newOrders     = DB::table('orders')->where('status', 'NEW')->get();
 $packingOrders = DB::table('orders')->where('status', 'PACKING')->get();
 $shippedOrders = DB::table('orders')->where('status', 'SHIPPED')->get();
+$cancelledOrders = DB::table('orders')->where('status', 'CANCELLED')->get();
 
 // ---- Sidebar ----
 // No take() limit here on purpose — the panel has a fixed height with
 // overflow-y:auto in CSS, so once there are more items than fit, it scrolls.
 $alerts = $newOrders;
 
-// Activity feed: packing + shipped orders together, newest first.
+// Activity feed: packing + shipped + cancelled orders together, newest first.
 $activity = $packingOrders
     ->map(function ($order) {
         $order->activity_icon    = '📦';
@@ -51,6 +52,12 @@ $activity = $packingOrders
     ->concat($shippedOrders->map(function ($order) {
         $order->activity_icon    = '🚚';
         $order->activity_message = "Order {$order->id} has been shipped";
+        $order->activity_time    = $order->updated_at ?? $order->created_at ?? null;
+        return $order;
+    }))
+    ->concat($cancelledOrders->map(function ($order) {
+        $order->activity_icon    = '❌';
+        $order->activity_message = "Order {$order->id} has been cancelled";
         $order->activity_time    = $order->updated_at ?? $order->created_at ?? null;
         return $order;
     }))

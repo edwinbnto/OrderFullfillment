@@ -28,15 +28,24 @@ use Illuminate\Support\Facades\DB;
 
 if (!isset($recentActivity)) {
     $recentActivity = DB::table('orders')
-        ->whereIn('status', ['PACKING', 'SHIPPED'])
+        ->whereIn('status', ['PACKING', 'SHIPPED', 'CANCELLED'])
         ->orderByDesc('updated_at')
         ->limit(10)
         ->get()
         ->map(function ($o) {
-            $o->activity_icon    = strtoupper($o->status) === 'SHIPPED' ? '🚚' : '📦';
-            $o->activity_message = strtoupper($o->status) === 'SHIPPED'
-                ? "Order {$o->id} has been shipped"
-                : "Order {$o->id} moved to packing";
+            $status = strtoupper($o->status);
+
+            if ($status === 'SHIPPED') {
+                $o->activity_icon    = '🚚';
+                $o->activity_message = "Order {$o->id} has been shipped";
+            } elseif ($status === 'CANCELLED') {
+                $o->activity_icon    = '❌';
+                $o->activity_message = "Order {$o->id} has been cancelled";
+            } else {
+                $o->activity_icon    = '📦';
+                $o->activity_message = "Order {$o->id} moved to packing";
+            }
+
             return $o;
         });
 }
@@ -401,6 +410,11 @@ if (!isset($recentActivity)) {
     color: #9FB3D1;
   }
 
+  .badge.status.status-cancelled {
+    background: #dc3545;
+    color: #fff;
+  }
+
   .badge.priority {
     background: #6e3a63;
     color: #e7c9e0;
@@ -736,11 +750,13 @@ if (!isset($recentActivity)) {
               <td class="customer">{{ $order->customer_name }}</td>
               <td>{{ $order->product_name }}</td>
               <td>{{ $order->qty }}</td>
-              <td><span class="badge status">{{ strtoupper($order->status) }}</span></td>
+              <td><span class="badge status {{ strtoupper($order->status) === 'CANCELLED' ? 'status-cancelled' : '' }}">{{ strtoupper($order->status) }}</span></td>
               <td>
+              @if (strtoupper($order->status) !== 'CANCELLED')
               <span class="badge {{ $priority['class'] }}">
               {{ $priority['label'] }}
               </span>
+              @endif
               </td>
               <td>{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}</td>
               <td>
@@ -853,8 +869,6 @@ if (!isset($recentActivity)) {
         // If the click started on (or inside) a button — e.g. "Prepare" —
         // don't open the order modal, let the button's own handler run.
         if (e.target.closest('button')) return;
-        openOrderModal(this.dataset);
-      row.addEventListener('click', function () {
         openOrderModal(this.dataset, this);
       });
     });
@@ -868,6 +882,7 @@ if (!isset($recentActivity)) {
       document.getElementById('modalQty').textContent = data.qty;
       document.getElementById('modalDue').textContent = data.due;
       document.getElementById('modalStatus').textContent = data.status;
+      document.getElementById('modalStatus').classList.toggle('status-cancelled', data.status === 'CANCELLED');
 
       const priorityEl = document.getElementById('modalPriority');
       priorityEl.textContent = data.priority;
@@ -888,8 +903,6 @@ if (!isset($recentActivity)) {
       document.getElementById('confirmBox').classList.remove('show');
     }
 
-<<<<<<< HEAD
-.
     const prepareUrlTemplate = @json(route('orders.prepare', ['id' => '__ID__']));
 
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
@@ -944,6 +957,12 @@ if (!isset($recentActivity)) {
 
           // Order has moved past NEW — no action button needed anymore.
           btn.remove();
+
+          // If the floating window is currently open for this same order,
+          // keep it in sync with the new status.
+          if (currentOrderRow === row) {
+            document.getElementById('modalStatus').textContent = 'PACKING';
+          }
         })
         .catch(function (err) {
           console.error('prepareOrder failed:', err);
@@ -962,29 +981,83 @@ if (!isset($recentActivity)) {
       document.getElementById('confirmBox').classList.remove('show');
     });
 
+    const cancelUrlTemplate = @json(route('orders.cancel', ['id' => '__ID__']));
+
     document.getElementById('yesCancelBtn').addEventListener('click', function () {
-      document.getElementById('modalStatus').textContent = 'CANCELLED';
-      const priorityEl = document.getElementById('modalPriority');
-      priorityEl.textContent = 'CANCELLED';
-      priorityEl.className = 'badge priority-cancelled';
+      if (!currentOrderRow) return;
 
-      document.getElementById('cancelOrderBtn').classList.add('disabled');
-      document.getElementById('confirmBox').classList.remove('show');
+      const yesBtn  = this;
+      const orderId = currentOrderRow.dataset.id;
 
-      if (currentOrderRow) {
-        currentOrderRow.dataset.status = 'CANCELLED';
-        currentOrderRow.dataset.priority = 'CANCELLED';
-        currentOrderRow.querySelector('.badge.status').textContent = 'CANCELLED';
-        const rowPriorityBadge = currentOrderRow.querySelector('td .badge:not(.status)');
-        if (rowPriorityBadge) {
-          rowPriorityBadge.textContent = 'CANCELLED';
-          rowPriorityBadge.className = 'badge priority-cancelled';
-        }
+      if (!csrfToken) {
+        alert('Missing CSRF token on this page — check the browser console for details.');
+        return;
       }
 
-      setTimeout(closeOrderModal, 500);
+      yesBtn.disabled = true;
+      const originalText = yesBtn.textContent;
+      yesBtn.textContent = 'Cancelling...';
+
+      const url = cancelUrlTemplate.replace('__ID__', encodeURIComponent(orderId));
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            return res.json().catch(function () { return {}; }).then(function (body) {
+              throw new Error(body.message || ('Request failed with status ' + res.status));
+            });
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          if (!data.success) throw new Error(data.message || 'Cancel failed');
+
+          // ---- Update modal ----
+          document.getElementById('modalStatus').textContent = 'CANCELLED';
+          document.getElementById('modalStatus').classList.add('status-cancelled');
+          const priorityEl = document.getElementById('modalPriority');
+          priorityEl.textContent = '—';
+          priorityEl.className = 'badge';
+          document.getElementById('cancelOrderBtn').classList.add('disabled');
+          document.getElementById('confirmBox').classList.remove('show');
+
+          // ---- Update the row ----
+          currentOrderRow.dataset.status = 'CANCELLED';
+          currentOrderRow.dataset.priority = 'CANCELLED';
+
+          const statusBadge = currentOrderRow.querySelector('.badge.status');
+          if (statusBadge) {
+            statusBadge.textContent = 'CANCELLED';
+            statusBadge.classList.add('status-cancelled');
+          }
+
+          // Priority badge disappears entirely for cancelled orders.
+          const rowPriorityBadge = currentOrderRow.querySelector('td .badge:not(.status)');
+          if (rowPriorityBadge) rowPriorityBadge.remove();
+
+          // Prepare button (if the order was still NEW) disappears too.
+          const prepareBtn = currentOrderRow.querySelector('.btn-prepare');
+          if (prepareBtn) prepareBtn.remove();
+
+          yesBtn.disabled = false;
+          yesBtn.textContent = originalText;
+
+          setTimeout(closeOrderModal, 500);
+        })
+        .catch(function (err) {
+          console.error('cancelOrder failed:', err);
+          alert('Could not cancel this order: ' + err.message);
+          yesBtn.disabled = false;
+          yesBtn.textContent = originalText;
+        });
     });
->>>>>>> 6e6ab25 (describe what you changed here)
 
     /* ===================== Search + Filter (working) ===================== */
     const searchInput   = document.getElementById('orderSearch');

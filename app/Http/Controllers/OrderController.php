@@ -78,4 +78,48 @@ class OrderController extends Controller
             'status'  => 'PACKING',
         ]);
     }
+
+    /**
+     * AJAX: cancel an order.
+     * Order row is never deleted, only its status changes to CANCELLED,
+     * so it drops its priority badge / Prepare button on the Orders page
+     * and shows up in the Recent activity / dashboard activity feed.
+     */
+    public function cancel($id): JsonResponse
+    {
+        $order = DB::table('orders')->where('id', $id)->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found.',
+            ], 404);
+        }
+
+        $status = strtoupper($order->status);
+
+        if ($status === 'CANCELLED') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order is already cancelled.',
+            ], 409);
+        }
+
+        if (in_array($status, ['SHIPPED', 'DELIVERED'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order has already been ' . strtolower($status) . ' and can no longer be cancelled.',
+            ], 409);
+        }
+
+        DB::table('orders')->where('id', $id)->update([
+            'status'     => 'CANCELLED',
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'status'  => 'CANCELLED',
+        ]);
+    }
 }
