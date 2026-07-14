@@ -21,8 +21,32 @@ class OrderController extends Controller
         $total        = DB::table('orders')->count();
         $onTimeRate   = $total > 0 ? round(($delivered / $total) * 100) . '%' : '0%';
 
+        // Recent activity panel (packing + shipped + cancelled orders, newest first) —
+        // order.blade.php loops over this at the bottom of the page.
+        $recentActivity = DB::table('orders')
+            ->whereIn('status', ['PACKING', 'SHIPPED', 'CANCELLED'])
+            ->orderByDesc('updated_at')
+            ->limit(10)
+            ->get()
+            ->map(function ($o) {
+                $status = strtoupper($o->status);
+
+                if ($status === 'SHIPPED') {
+                    $o->activity_icon    = '🚚';
+                    $o->activity_message = "Order {$o->id} has been shipped";
+                } elseif ($status === 'CANCELLED') {
+                    $o->activity_icon    = '❌';
+                    $o->activity_message = "Order {$o->id} has been cancelled";
+                } else {
+                    $o->activity_icon    = '📦';
+                    $o->activity_message = "Order {$o->id} moved to packing";
+                }
+
+                return $o;
+            });
+
         return view('order', compact(
-            'orders', 'ordersToday', 'inPacking', 'shippedToday', 'onTimeRate'
+            'orders', 'ordersToday', 'inPacking', 'shippedToday', 'onTimeRate', 'recentActivity'
         ));
     }
 

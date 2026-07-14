@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
-
+use App\Http\Controllers\PackingController;
+use App\Http\Controllers\LoginController;
 
 Route::get('/', function () {
     return view('Signup');
@@ -12,21 +14,13 @@ Route::get('/signup', function () {
     return view('Signup');
 })->name('signup');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/order', [OrderController::class, 'index'])->name('orders');
-
-Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
-Route::get('/packing', [OrderController::class, 'packing'])->name('packing');
-
+Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 Route::post('/orders/{id}/prepare', [OrderController::class, 'prepare'])->name('orders.prepare');
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
-Route::get('/packing', function () {
-    return view('packing');
-})->name('packing');
+Route::get('/packing', [PackingController::class, 'index'])->name('packing');
 
 Route::get('/shipping', function () {
     return view('shipping');
@@ -44,3 +38,6 @@ Route::get('/contactus', function () {
     return view('contactus');
 })->name('contactus');
 
+Route::post('/login',[LoginController::class,'login'])->name('login');
+
+Route::get('/logout',[LoginController::class,'logout'])->name('logout');

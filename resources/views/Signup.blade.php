@@ -280,15 +280,26 @@
                 <div class="login-card">
                     <h1>Sign In</h1>
                     
-                    <form id="loginForm">
+                    <form method="POST" action="{{ route('login') }}">
+                    @csrf
                         <div class="input-group">
-                            <label for="username">Username</label>
-                            <input id="username" type="text" placeholder="Enter Username">
+                        <label for="username">Username</label>
+                        <input
+                     id="username"
+                     name="username"
+                     type="text"
+                     placeholder="Enter Username"
+                     required>
                         </div>
                         
                         <div class="input-group">
                             <label for="password">Password</label>
-                            <input id="password" type="password" placeholder="Enter Password">
+                            <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Enter Password"
+                            required>
                         </div>
                         
                         <button type="submit" id="loginBtn">Log In</button>
@@ -348,7 +359,6 @@
     if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signup') }}"));
     if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('contactus') }}"));
     if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signup') }}"));
-    if (loginForm) loginForm.addEventListener("submit", (e) => smoothExit(e, "{{ route('dashboard') }}"));
 
 </script>
 
