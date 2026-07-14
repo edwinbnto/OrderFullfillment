@@ -193,8 +193,42 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
     overflow: hidden;
   }
 
-  .order-queue { flex: 2.5; }
-  .activity { flex: 1; }
+  .order-queue {
+    flex: 2.5;
+    display: flex;
+    flex-direction: column;
+    /* Fixed frame: panel height never grows past this, queue scrolls inside it */
+    height: 560px;
+  }
+
+
+  /* Scrollable body under the fixed panel header */
+  .table-scroll {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .table-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .table-scroll::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  /* Keep column headers pinned while rows scroll */
+  .order-queue thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 5;
+  }
 
   .panel-header {
     display: flex;
@@ -371,7 +405,17 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
   table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
   }
+
+  /* Column proportions matched to the Figma design so long customer/item
+     names never push the Process button off to the far right */
+  table col.col-order    { width: 14%; }
+  table col.col-customer { width: 20%; }
+  table col.col-item     { width: 26%; }
+  table col.col-qty      { width: 14%; }
+  table col.col-priority { width: 16%; }
+  table col.col-action   { width: 140px; }
 
   thead th {
     text-align: left;
@@ -384,11 +428,20 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
   tbody td {
     padding: 14px 24px;
     font-size: 14px;
+    text-align: left;
     border-bottom: 1px solid rgba(255,255,255,0.05);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  tbody tr:nth-child(even) {
-    background: rgba(255,255,255,0.02);
+  .th-qty, .th-priority,
+  .qty-cell, .priority-cell {
+    text-align: center;
+  }
+
+  .priority-low, .priority-med, .priority-high {
+    margin: 0 auto;
   }
 
   .order-id, .product {
@@ -443,12 +496,37 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
     background: #244a80;
   }
 
+  .action-cell {
+    text-align: center;
+    white-space: nowrap;
+  }
+
   .empty-row td {
-    height: 38px;
+    height: 20px;
+  }
+
+  .activity {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 560px;
   }
 
   .activity-list {
     padding: 8px 0;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .activity-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .activity-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .activity-list::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
   }
 
   .activity-item {
@@ -572,16 +650,29 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
 
   .courier-option {
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     border: 2px solid transparent;
     border-radius: 8px;
-    padding: 14px 20px;
+    padding: 10px 18px;
     cursor: pointer;
     font-weight: 700;
-    text-align: center;
+    text-align: left;
   }
 
-  .courier-option.jt { background: #d81f2a; color: #fff; }
-  .courier-option.flash { background: #ffd400; color: #111; }
+  .courier-option .courier-logo {
+    height: 28px;
+    width: auto;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .courier-option .courier-name { font-size: 15px; }
+
+  /* Exact brand colors sampled from the official logo artwork */
+  .courier-option.jt { background: #FD0001; color: #fff; }
+  .courier-option.flash { background: #FAEE1E; color: #111; }
   .courier-option.selected { border-color: #fff; }
 
   .modal-footer {
@@ -603,8 +694,8 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
   .btn-done { background: #2b4a7c; color: #dbe4f5; }
   .btn-done:hover { background: #345a94; }
 
-  .btn-cancel { background: #7a2340; color: #f9c3d3; }
-  .btn-cancel:hover { background: #8f2a4b; }
+  .btn-cancel { background: #2b4a7c; color: #dbe4f5; }
+  .btn-cancel:hover { background: #345a94; }
 </style>
 </head>
 <body>
@@ -688,64 +779,80 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
             </div>
           </div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Order Id</th>
-              <th>Customer</th>
-              <th>Item</th>
-              <th>Qty</th>
-              <th>Priority</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="packingTableBody">
-            @forelse ($packingOrders as $order)
-              @php $priority = getPackingPriority($order->created_at ?? null); @endphp
-              <tr class="packing-row"
-                  data-id="{{ $order->id }}"
-                  data-customer="{{ $order->customer_name }}"
-                  data-item="{{ $order->product_name }}"
-                  data-qty="{{ $order->qty }}"
-                  data-priority="{{ $priority['key'] }}"
-                  data-priority-class="{{ $priority['class'] }}"
-                  data-address="{{ $order->address ?? '' }}">
-                <td class="order-id">{{ $order->id }}</td>
-                <td class="customer">{{ $order->customer_name }}</td>
-                <td class="product">{{ $order->product_name }}</td>
-                <td>{{ $order->qty }}</td>
-                <td><span class="{{ $priority['class'] }}">{{ $priority['label'] }}</span></td>
-                <td><button class="btn-prepare" onclick="openPackingModal('{{ $order->id }}')">Process</button></td>
+        <div class="table-scroll">
+          <table>
+            <colgroup>
+              <col class="col-order">
+              <col class="col-customer">
+              <col class="col-item">
+              <col class="col-qty">
+              <col class="col-priority">
+              <col class="col-action">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="th-order">Order Id</th>
+                <th class="th-customer">Customer</th>
+                <th class="th-item">Item</th>
+                <th class="th-qty">Qty</th>
+                <th class="th-priority">Priority</th>
+                <th></th>
               </tr>
-            @empty
-              <tr class="empty-row"><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Nothing in packing right now.</td></tr>
-            @endforelse
+            </thead>
+            <tbody id="packingTableBody">
+              @forelse ($packingOrders as $order)
+                @php $priority = getPackingPriority($order->created_at ?? null); @endphp
+                <tr class="packing-row"
+                    data-id="{{ $order->id }}"
+                    data-customer="{{ $order->customer_name }}"
+                    data-item="{{ $order->product_name }}"
+                    data-qty="{{ $order->qty }}"
+                    data-priority="{{ $priority['key'] }}"
+                    data-priority-class="{{ $priority['class'] }}"
+                    data-address="{{ $order->address ?? '' }}">
+                  <td class="order-id">{{ $order->id }}</td>
+                  <td class="customer">{{ $order->customer_name }}</td>
+                  <td class="product">{{ $order->product_name }}</td>
+                  <td class="qty-cell">{{ $order->qty }}</td>
+                  <td class="priority-cell"><span class="{{ $priority['class'] }}">{{ $priority['label'] }}</span></td>
+                  <td class="action-cell"><button class="btn-prepare" onclick="openPackingModal('{{ $order->id }}')">Process</button></td>
+                </tr>
+              @empty
+                <tr class="empty-row"><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Nothing in packing right now.</td></tr>
+              @endforelse
 
-            @for ($i = 0; $i < max(0, 4 - $packingOrders->count()); $i++)
-              <tr class="empty-row"><td colspan="6"></td></tr>
-            @endfor
+              @for ($i = 0; $i < max(0, 12 - $packingOrders->count()); $i++)
+                <tr class="empty-row"><td colspan="6">&nbsp;</td></tr>
+              @endfor
 
-            <tr class="no-results-row" id="noResultsRow" style="display:none;">
-              <td colspan="6">No orders match your search or filter.</td>
-            </tr>
-          </tbody>
-        </table>
+              <tr class="no-results-row" id="noResultsRow" style="display:none;">
+                <td colspan="6">No orders match your search or filter.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="panel activity">
         <div class="panel-header">
-          <div class="title">📝 Material packing</div>
+          <div class="title">📋 Packing materials</div>
         </div>
         <div class="activity-list">
           @forelse ($materials as $material)
             @php
               $isLow = isset($material->stock_qty, $material->low_stock_threshold)
                   && $material->stock_qty <= $material->low_stock_threshold;
-              $icon = $material->icon ?? ($isLow ? '⚠️' : '📦');
+              // Boxes always show the box glyph; everything else shows a
+              // warning when low, or a checkmark when adequately stocked.
+              if (!empty($material->is_box)) {
+                  $icon = $material->icon ?? '📦';
+              } else {
+                  $icon = $material->icon ?? ($isLow ? '⚠️' : '✅');
+              }
             @endphp
             <div class="activity-item">
               <span class="activity-icon">{{ $icon }}</span>
-              <span>{{ $material->name }} - {{ $material->stock_label ?? ($material->stock_qty . ' left') }}</span>
+              <span>{{ $material->name }} — {{ $material->stock_label ?? ($material->stock_qty . ' left') }}</span>
             </div>
           @empty
             <div class="activity-item">
@@ -811,12 +918,18 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
       </div>
 
       <div class="courier-options">
-        <div class="courier-option jt" data-courier="jt" onclick="selectCourier(this)">J &amp; T Express</div>
-        <div class="courier-option flash" data-courier="flash" onclick="selectCourier(this)">FLASH Express</div>
+        <div class="courier-option jt" data-courier="jt" onclick="selectCourier(this)">
+          <img class="courier-logo" src="{{ asset('images/couriers/jt-logo.png') }}" alt="J&amp;T Express">
+          <span class="courier-name">J &amp; T Express</span>
+        </div>
+        <div class="courier-option flash" data-courier="flash" onclick="selectCourier(this)">
+          <img class="courier-logo" src="{{ asset('images/couriers/flash-logo.png') }}" alt="FLASH Express">
+          <span class="courier-name">FLASH Express</span>
+        </div>
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-cancel" onclick="closePackingModal()">Cancel order</button>
+        <button class="btn btn-cancel" onclick="closePackingModal()">Cancel</button>
         <button class="btn btn-done" onclick="closePackingModal()">Done</button>
       </div>
     </div>
