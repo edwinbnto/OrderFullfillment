@@ -664,19 +664,19 @@ if (!isset($recentActivity)) {
     <!-- Stats -->
     <div class="stats-row">
       <div class="stat-card">
-        <div class="label">Orders received today</div>
+        <div class="label">Total order today</div>
         <div class="value">{{ $ordersToday }}</div>
       </div>
       <div class="stat-card">
-        <div class="label">In packing</div>
+        <div class="label">In progress</div>
         <div class="value">{{ $inPacking }}</div>
       </div>
       <div class="stat-card">
-        <div class="label">Shipped today</div>
+        <div class="label">Unfulfilled</div>
         <div class="value">{{ $shippedToday }}</div>
       </div>
       <div class="stat-card">
-        <div class="label">On-time delivery rate</div>
+        <div class="label">Fulfilled today</div>
         <div class="value">{{ $onTimeRate }}</div>
       </div>
     </div>

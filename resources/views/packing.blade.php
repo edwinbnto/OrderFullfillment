@@ -223,7 +223,7 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
     font-size: 14px;
   }
 
-  /* ===== Search + Filter (working controls) ===== */
+  /* ===== Search & Filter (working controls) ===== */
   .search-wrap {
     position: relative;
   }
@@ -471,9 +471,7 @@ $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
     margin-top: 2px;
   }
 
-  /* ============================================
-     Blur + modal mechanism
-     ============================================ */
+  /* Blur + modal mechanism  */
   #pageContent {
     transition: filter 0.25s ease;
   }
