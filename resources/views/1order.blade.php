@@ -879,8 +879,7 @@
         </div>
         <div>
           <p class="field-label">Amount</p>
-          <p class="field-value" id="modalAmount">₱0.00</p>
-        </div>
+          <p class="field-value=" id="modalAmount">₱0.00</p>
         <div>
           <p class="field-label">Priority</p>
           <span class="badge priority" id="modalPriority">Low</span>

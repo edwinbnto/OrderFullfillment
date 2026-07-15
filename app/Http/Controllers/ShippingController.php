@@ -18,7 +18,8 @@ class ShippingController extends Controller
             'due_date',
             'address',
             'tracking_number',
-            'courier'
+            'courier',
+            'amount'
         )
         ->whereIn('status',[
             'Shipped',

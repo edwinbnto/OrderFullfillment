@@ -835,14 +835,13 @@
                     data-qty="{{ $order->qty }}"
                     data-priority="{{ $priority['key'] }}"
                     data-priority-class="{{ $priority['class'] }}"
-                    data-amount="{{ number_format($order->amount, 2) }}"
                     data-address="{{ $order->address ?? '' }}">
                   <td class="order-id">{{ $order->id }}</td>
                   <td class="customer">{{ $order->customer_name }}</td>
                   <td class="product">{{ $order->product_name }}</td>
                   <td class="qty-cell">{{ $order->qty }}</td>
                   <td class="priority-cell"><span class="{{ $priority['class'] }}">{{ $priority['label'] }}</span></td>
-                  <td class="action-cell"><button class="btn-prepare" onclick="openPackingModal('{{ $order->id }}', this.closest('tr'))">Process</button></td>
+                  <td class="action-cell"><button class="btn-prepare" onclick="openPackingModal('{{ $order->id }}')">Process</button></td>
                 </tr>
               @empty
                 <tr class="empty-row"><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Nothing in packing right now.</td></tr>
@@ -913,10 +912,6 @@
         <div>
           <p class="field-label">Quantity</p>
           <p class="field-value" id="modalQty">—</p>
-        </div>
-        <div>
-          <p class="field-label">Amount</p>
-          <p class="field-value" id="modalAmount">—</p>
         </div>
         <div style="grid-column: 1 / -1;">
           <p class="field-label">Delivery Address</p>
@@ -990,7 +985,7 @@
     let selectedBox = null;
     let selectedCourier = null;
 
-    function openPackingModal(orderId, rowEl) {
+    function openPackingModal(orderId) {
       currentOrderId = orderId;
       const order = orders[orderId];
 
@@ -1002,12 +997,6 @@
         document.getElementById('modalItem').textContent = order.item;
         document.getElementById('modalQty').textContent = order.qty;
         document.getElementById('modalAddress').textContent = order.address;
-
-        // Amount may come from the order JSON, or fall back to the
-        // clicked row's data-amount attribute if the JSON doesn't have it.
-        const rawAmount = order.amount ?? (rowEl ? rowEl.dataset.amount : null);
-        document.getElementById('modalAmount').textContent =
-          rawAmount != null ? '₱' + rawAmount : '—';
 
         const priorityEl = document.getElementById('modalPriority');
         priorityEl.textContent = order.priority;
