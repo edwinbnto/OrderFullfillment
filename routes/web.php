@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackingController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ShippingController;
 
 Route::get('/', function () {
     return view('Signup');
@@ -21,6 +22,11 @@ Route::post('/orders/{id}/prepare', [OrderController::class, 'prepare'])->name('
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
 Route::get('/packing', [PackingController::class, 'index'])->name('packing');
+
+Route::post(
+    '/packing/process/{id}',
+    [PackingController::class, 'processOrder']
+)->name('packing.process');
 
 Route::get('/shipping', function () {
     return view('shipping');
@@ -41,3 +47,5 @@ Route::get('/contactus', function () {
 Route::post('/login',[LoginController::class,'login'])->name('login');
 
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
+
+Route::get('/shipping', [ShippingController::class, 'index'])->name('shipping');

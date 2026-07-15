@@ -905,7 +905,7 @@
 
       <div class="modal-footer">
         <button class="btn btn-cancel" onclick="closePackingModal()">Cancel</button>
-        <button class="btn btn-done" onclick="closePackingModal()">Done</button>
+        <button class="btn btn-done" onclick="completePacking()">Done</button>
       </div>
     </div>
   </div>
@@ -916,9 +916,16 @@
     // Order data keyed by order id, rendered straight from the DB
     // ($packingOrders, queried in the controller) — nothing hardcoded.
     const orders = @json($packingOrdersJson);
+    let currentOrderId = null;
+    let selectedBox = null;
+    let selectedCourier = null;
 
     function openPackingModal(orderId) {
+      currentOrderId = orderId;
       const order = orders[orderId];
+
+      console.log("Modal opened. Order ID =", orderId);
+      console.log("currentOrderId =", currentOrderId);
       if (order) {
         document.getElementById('modalOrderId').textContent = orderId;
         document.getElementById('modalCustomer').textContent = order.customer;
@@ -945,13 +952,23 @@
     }
 
     function selectBox(el) {
-      document.querySelectorAll('.box-option').forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll('.box-option')
+        .forEach(o => o.classList.remove('selected'));
+
       el.classList.add('selected');
+
+      selectedBox =
+        el.querySelector('.box-name').innerText;
     }
 
     function selectCourier(el) {
-      document.querySelectorAll('.courier-option').forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll('.courier-option')
+        .forEach(o => o.classList.remove('selected'));
+
       el.classList.add('selected');
+
+      selectedCourier =
+        el.dataset.courier;
     }
 
     /* ===================== Search + Filter (working) ===================== */
@@ -1024,7 +1041,48 @@
     });
 
     searchInput.addEventListener('input', applyPackingFilters);
-    /* =================== end Search + Filter =================== */
+
+    async function completePacking() {
+      console.log("Sending order ID:", currentOrderId);
+    if(!selectedBox)
+    {
+        alert('Select a box');
+        return;
+    }
+
+    if(!selectedCourier)
+    {
+        alert('Select a courier');
+        return;
+    }
+
+    const response = await fetch(
+         `{{ url('/packing/process') }}/${encodeURIComponent(currentOrderId)}`,
+        {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRF-TOKEN':
+                document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content
+            },
+
+            body: JSON.stringify({
+                courier:selectedCourier,
+                box:selectedBox
+            })
+        }
+    );
+
+    const result = await response.json();
+
+    if(result.success)
+    {
+        location.reload();
+    }
+  }
   </script>
 
 </body>

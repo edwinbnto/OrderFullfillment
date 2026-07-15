@@ -517,19 +517,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="label">Shipped today</div>
-        <div class="value">2</div>
+        <div class="value">{{ $shippedToday }}</div>
       </div>
       <div class="stat-card">
         <div class="label">In transit</div>
-        <div class="value">2</div>
+        <div class="value">{{ $inTransit }}</div>
       </div>
       <div class="stat-card">
         <div class="label">On time delivery rate</div>
-        <div class="value">80%</div>
+        <div class="value">{{ $onTimeRate }}%</div>
       </div>
       <div class="stat-card">
         <div class="label">Delayed shipment</div>
-        <div class="value">1</div>
+        <div class="value">{{ $delayed }}</div>
       </div>
     </div>
 
@@ -587,51 +587,52 @@
             </tr>
           </thead>
           <tbody id="shippingTableBody">
-            <tr class="shipping-row" data-id="4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-tracking="0001" data-status="Ready for delivery" data-status-class="priority-low" data-destination="Cebu City">
-              <td class="order-id">#ORD-4821</td>
-              <td class="customer">Maria Santos</td>
-              <td class="product">Wireless Headphone</td>
-              <td>0001</td>
-              <td><span class="priority-low">Ready for delivery</span></td>
-              <td>Cebu City</td>
-              <td><button class="btn-prepare" onclick="openShippingModal('4821')">Assign Driver</button></td>
-            </tr>
-            <tr class="shipping-row" data-id="4822" data-customer="Carlos Dela Cruz" data-product="Keyboard" data-tracking="0002" data-status="Delayed" data-status-class="priority-high" data-destination="Iloilo City">
-              <td class="order-id">#ORD-4822</td>
-              <td class="customer">Carlos Dela Cruz</td>
-              <td class="product">Keyboard</td>
-              <td>0002</td>
-              <td><span class="priority-high">Delayed</span></td>
-              <td>Iloilo City</td>
-              <td><button class="btn-prepare" onclick="openShippingModal('4822')">Assign Driver</button></td>
-            </tr>
-            <tr class="shipping-row" data-id="4823" data-customer="Ana Reyes" data-product="Gaming mouse" data-tracking="0003" data-status="Delivered" data-status-class="priority-med" data-destination="Calamba, Laguna">
-              <td class="order-id">#ORD-4823</td>
-              <td class="customer">Ana Reyes</td>
-              <td class="product">Gaming mouse</td>
-              <td>0003</td>
-              <td><span class="priority-med">Delivered</span></td>
-              <td>Calamba, Laguna</td>
-              <td><button class="btn-prepare" onclick="openShippingModal('4823')">Assign Driver</button></td>
-            </tr>
-            <tr class="shipping-row" data-id="4824" data-customer="Liza Mendoza" data-product="Mechanical Keyboard" data-tracking="0004" data-status="Shipped" data-status-class="priority-low" data-destination="Metro Manila">
-              <td class="order-id">#ORD-4824</td>
-              <td class="customer">Liza Mendoza</td>
-              <td class="product">Mechanical Keyboard</td>
-              <td>0004</td>
-              <td><span class="priority-low">Shipped</span></td>
-              <td>Metro Manila</td>
-              <td><button class="btn-prepare" onclick="openShippingModal('4824')">Assign Driver</button></td>
-            </tr>
-            <tr class="shipping-row" data-id="4825" data-customer="Jose Bautista" data-product="Webcam HD" data-tracking="0005" data-status="Shipped" data-status-class="priority-low" data-destination="Quezon City">
-              <td class="order-id">#ORD-4825</td>
-              <td class="customer">Jose Bautista</td>
-              <td class="product">Webcam HD</td>
-              <td>0005</td>
-              <td><span class="priority-low">Shipped</span></td>
-              <td>Quezon City</td>
-              <td><button class="btn-prepare" onclick="openShippingModal('4825')">Assign Driver</button></td>
-            </tr>
+            @foreach($shipments as $shipment)
+<tr
+    class="shipping-row"
+    data-id="{{ $shipment->shipment_id }}"
+    data-customer="{{ $shipment->customer_name }}"
+    data-product="{{ $shipment->product_name }}"
+    data-tracking="{{ $shipment->tracking_number }}"
+    data-status="{{ $shipment->status }}"
+    data-destination="{{ $shipment->address }}"
+>
+
+    <td class="order-id">{{ $shipment->shipment_id }}</td>
+    <td class="customer">{{ $shipment->customer_name }}</td>
+    <td class="product">{{ $shipment->product_name }}</td>
+    <td class="tracking">{{ $shipment->tracking_number }}</td>
+
+    <td>
+        @if($shipment->status == 'Shipped')
+            <span class="priority-low">{{ $shipment->status }}</span>
+
+        @elseif($shipment->status == 'Ready for delivery')
+            <span class="priority-low">{{ $shipment->status }}</span>
+
+        @elseif($shipment->status == 'Out for delivery')
+            <span class="priority-low">{{ $shipment->status }}</span>
+
+        @elseif($shipment->status == 'Delivered')
+            <span class="priority-low">{{ $shipment->status }}</span>
+
+        @elseif($shipment->status == 'Delayed')
+            <span class="priority-high">{{ $shipment->status }}</span>
+        @endif
+    </td>
+
+    <td>{{ $shipment->address }}</td>
+
+    <td>
+        <button
+            class="btn-prepare"
+            onclick="openShippingModal('{{ $shipment->shipment_id }}')">
+            Assign Driver
+        </button>
+    </td>
+
+</tr>
+@endforeach
             <tr class="empty-row"><td colspan="7"></td></tr>
             <tr class="empty-row"><td colspan="7"></td></tr>
             <tr class="empty-row"><td colspan="7"></td></tr>
@@ -724,27 +725,20 @@
   <div class="filter-overlay" id="filterOverlay"></div>
 
   <script>
-    // Demo data keyed by order id. Swap this for a fetch() call to your
-    // backend if you want live data instead of hardcoded values.
-    const orders = {
-      '4821': { customer: 'Maria Santos', item: 'Wireless Headphone', tracking: '2', status: 'Ready for delivery', courier: 'J & T Express', due: 'Jun 25', address: 'Hillsview Naic, Cavite' },
-      '4822': { customer: 'Carlos Dela Cruz', item: 'Keyboard', tracking: '2', status: 'Delayed', courier: 'DHL', due: 'Jun 24', address: 'Iloilo City' },
-      '4823': { customer: 'Ana Reyes', item: 'Gaming mouse', tracking: '1', status: 'Delivered', courier: 'FLASH Express', due: 'Jun 20', address: 'Calamba, Laguna' },
-      '4824': { customer: 'Liza Mendoza', item: 'Mechanical Keyboard', tracking: '1', status: 'Shipped', courier: 'J & T Express', due: 'Jun 26', address: 'Metro Manila' },
-      '4825': { customer: 'Jose Bautista', item: 'Webcam HD', tracking: '2', status: 'Shipped', courier: 'FLASH Express', due: 'Jun 27', address: 'Quezon City' }
-    };
+    
+    const orders = @json($shipments->keyBy('id'));
 
     function openShippingModal(orderId) {
       const order = orders[orderId];
       if (order) {
-        document.getElementById('modalOrderId').textContent = '#ORD-' + orderId;
-        document.getElementById('modalCustomer').textContent = order.customer;
-        document.getElementById('modalItem').textContent = order.item;
-        document.getElementById('modalTracking').textContent = order.tracking;
+        document.getElementById('modalOrderId').textContent = orderId;
+        document.getElementById('modalCustomer').textContent = order.customer_name;
+        document.getElementById('modalItem').textContent = order.product_name;
+        document.getElementById('modalTracking').textContent = order.tracking_number;
         document.getElementById('modalStatus').textContent = order.status;
         document.getElementById('modalCourier').textContent = order.courier;
-        document.getElementById('modalDue').textContent = order.due;
-        document.getElementById('modalAddress').textContent = order.address;
+        document.getElementById('modalDue').textContent = order.due_date;
+        document.getElementById('modalAddress').textContent = order.shipment_address;
       }
 
       document.getElementById('pageContent').classList.add('blurred');
