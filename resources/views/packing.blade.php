@@ -530,6 +530,7 @@
     margin-top: 2px;
   }
 
+
   /* Blur + modal mechanism  */
   #pageContent {
     transition: filter 0.25s ease;
@@ -677,6 +678,50 @@
 
   .btn-cancel { background: #2b4a7c; color: #dbe4f5; }
   .btn-cancel:hover { background: #345a94; }
+
+  /* ===== Packing failed popup ===== */
+  .error-modal {
+    width: 380px;
+  }
+
+  .error-modal .modal-header {
+    background: #4a1620;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .error-modal .modal-header .error-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .error-modal .modal-header h2 {
+    color: #FCA5B1;
+  }
+
+  .error-modal-body {
+    padding: 22px 28px;
+    color: #dbe4f5;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .error-modal-body .missing-material {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .error-modal .modal-footer {
+    padding: 16px 28px;
+  }
+
+  .btn-error-ok {
+    background: #7F1D2E;
+    color: #fff;
+  }
+
+  .btn-error-ok:hover { background: #99283a; }
 </style>
 </head>
 <body>
@@ -714,8 +759,8 @@
         <div class="value">{{ $ShippedCount }}</div>
       </div>
       <div class="stat-card">
-        <div class="label">Packing error today</div>
-        <div class="value">{{ $packingErrorToday }}</div>
+        <div class="label">Packing Error</div>
+        <div class="value">{{ $packingError }}</div>
       </div>
       <div class="stat-card">
         <div class="label">Material low stock</div>
@@ -895,11 +940,11 @@
       </div>
 
       <div class="courier-options">
-        <div class="courier-option jt" data-courier="jt" onclick="selectCourier(this)">
+        <div class="courier-option jt" data-courier="J&T" onclick="selectCourier(this)">
           <img src="{{ asset('logo/jt-logo.png') }}" alt="J&T Express" class="courier-logo">
           <span class="courier-name">J &amp; T Express</span>
         </div>
-        <div class="courier-option flash" data-courier="flash" onclick="selectCourier(this)">
+        <div class="courier-option flash" data-courier="FLASH" onclick="selectCourier(this)">
           <img src="{{ asset('logo/flash-logo.png') }}" alt="Flash Express" class="courier-logo">
           <span class="courier-name">FLASH Express</span>
         </div>
@@ -913,6 +958,24 @@
   </div>
 
   <div class="filter-overlay" id="filterOverlay"></div>
+
+  <div class="overlay" id="packingFailedOverlay">
+    <div class="modal error-modal">
+      <div class="modal-header">
+        <span class="error-icon">⚠️</span>
+        <div>
+          <h2>Packing Failed</h2>
+          <p>This order could not be packed</p>
+        </div>
+      </div>
+      <div class="error-modal-body" id="packingFailedMessage">
+        Something went wrong while packing this order.
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-error-ok" onclick="closePackingFailedModal()">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // Order data keyed by order id, rendered straight from the DB
@@ -951,6 +1014,15 @@
     function closePackingModal() {
       document.getElementById('pageContent').classList.remove('blurred');
       document.getElementById('packingOverlay').classList.remove('active');
+    }
+
+    function showPackingFailedModal(message) {
+      document.getElementById('packingFailedMessage').innerHTML = message;
+      document.getElementById('packingFailedOverlay').classList.add('active');
+    }
+
+    function closePackingFailedModal() {
+      document.getElementById('packingFailedOverlay').classList.remove('active');
     }
 
     function selectBox(el) {
@@ -1078,11 +1150,30 @@
         }
     );
 
-    const result = await response.json();
+    let result;
+    try {
+        result = await response.json();
+    } catch (e) {
+        // Server returned something that wasn't JSON (e.g. an HTML error
+        // page from an unhandled server error). Show a generic failure
+        // instead of leaving the user with no feedback at all.
+        showPackingFailedModal('The server returned an unexpected response. Please try again.');
+        return;
+    }
 
-    if(result.success)
-    {
+    if (result.success) {
         location.reload();
+        return;
+    }
+
+    if (result.error === 'insufficient_stock') {
+        showPackingFailedModal(
+            `Not enough <span class="missing-material">${result.material}</span> in stock to pack this order. Please restock and try again.`
+        );
+    } else if (result.error === 'order_not_found') {
+        showPackingFailedModal('This order could not be found. It may have already been processed.');
+    } else {
+        showPackingFailedModal('Something went wrong while packing this order. Please try again.');
     }
   }
   </script>
