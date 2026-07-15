@@ -708,7 +708,7 @@
         <div class="value">{{ $inPackingCount }}</div>
       </div>
       <div class="stat-card">
-        <div class="label">Ready to ship</div>
+        <div class="label">Shipped</div>
         <div class="value">{{ $readyToShipCount }}</div>
       </div>
       <div class="stat-card">
