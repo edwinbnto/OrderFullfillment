@@ -128,8 +128,47 @@
     overflow: hidden;
   }
 
-  .order-queue { flex: 2.5; }
-  .activity { flex: 1; }
+  .order-queue {
+    flex: 2.5;
+    display: flex;
+    flex-direction: column;
+    /* Fixed frame: panel height never grows past this, queue scrolls inside it */
+    height: 560px;
+  }
+  .activity {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 560px;
+  }
+
+  /* Scrollable body under the fixed panel header */
+  .table-scroll {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .table-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .table-scroll::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  /* Keep column headers pinned while rows scroll */
+  .order-queue thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 5;
+  }
 
   .panel-header {
     display: flex;
@@ -319,6 +358,10 @@
   .order-id, .product { color: var(--text-muted); }
   .customer { font-weight: 600; }
 
+  .th-status, .status-cell {
+    text-align: center;
+  }
+
   .priority-low {
     background: #1B6FC8;
     color: #fff;
@@ -364,7 +407,25 @@
   .empty-row td { height: 38px; }
 
   /* Delivery alerts */
-  .activity-list { padding: 8px 0; }
+  .activity-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .activity-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .activity-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .activity-list::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .activity-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
 
   .activity-item {
     display: flex;
@@ -574,6 +635,7 @@
             </div>
           </div>
         </div>
+        <div class="table-scroll">
         <table>
           <thead>
             <tr>
@@ -581,7 +643,7 @@
               <th>Customer</th>
               <th>Product</th>
               <th>Tracking no.</th>
-              <th>Status</th>
+              <th class="th-status">Status</th>
               <th>Destination</th>
               <th></th>
             </tr>
@@ -603,7 +665,7 @@
     <td class="product">{{ $shipment->product_name }}</td>
     <td class="tracking">{{ $shipment->tracking_number }}</td>
 
-    <td>
+    <td class="status-cell">
         @if($shipment->status == 'Shipped')
             <span class="priority-low">{{ $shipment->status }}</span>
 
@@ -633,16 +695,13 @@
 
 </tr>
 @endforeach
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
 
             <tr class="no-results-row" id="noResultsRow" style="display:none;">
               <td colspan="7">No shipments match your search or filter.</td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
 
       <div class="panel activity">

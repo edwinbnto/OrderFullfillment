@@ -398,6 +398,8 @@
     border-bottom: none;
   }
 
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+
   tbody tr:hover {
     background: rgba(255,255,255,0.04);
     cursor: pointer;

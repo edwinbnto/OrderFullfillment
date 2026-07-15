@@ -402,6 +402,8 @@
     white-space: nowrap;
   }
 
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+
   .th-qty, .qty-cell {
     padding-left: 30px;
     text-align: center;
