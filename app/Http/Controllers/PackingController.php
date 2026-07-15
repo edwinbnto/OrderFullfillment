@@ -15,7 +15,7 @@ class PackingController extends Controller
         $packingOrders = DB::table('orders')->where('status', 'PACKING')->get();
 
         $inPackingCount = $packingOrders->count();
-        $ShippedCount   = DB::table('orders')->where('status', 'Shipped')->count();
+        $ShippedCount   = DB::table('orders')->where('status', 'SHIPPED')->count();
 
         // Real count instead of hardcoded 0: total packing attempts that
         // failed because a required material was out of stock.
@@ -90,7 +90,7 @@ class PackingController extends Controller
             $requiredMaterials = [
                 $validated['box'],
                 'Foam Inserts',
-                'Silica Gel Pack',
+                'Silica Gel Packs',
             ];
 
             if ($isBonusShipment) {
@@ -158,7 +158,7 @@ class PackingController extends Controller
                     'courier'         => $validated['courier'],
                     'box_used'        => $validated['box'],
                     'tracking_number' => $trackingNumber,
-                    'status'          => 'Shipped',
+                    'status'          => 'SHIPPED',
                     'address'         => $order->address,
                     'due_date'        => $order->due_date,
                     'created_at'      => now(),
@@ -167,7 +167,7 @@ class PackingController extends Controller
 
                 DB::table('orders')
                     ->where('id', $id)
-                    ->update(['status' => 'Shipped']);
+                    ->update(['status' => 'SHIPPED']);
 
                 return [
                     'success'         => true,
