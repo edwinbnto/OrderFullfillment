@@ -128,8 +128,47 @@
     overflow: hidden;
   }
 
-  .order-queue { flex: 2.5; }
-  .activity { flex: 1; }
+  .order-queue {
+    flex: 2.5;
+    display: flex;
+    flex-direction: column;
+    /* Fixed frame: panel height never grows past this, queue scrolls inside it */
+    height: 560px;
+  }
+  .activity {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 560px;
+  }
+
+  /* Scrollable body under the fixed panel header */
+  .table-scroll {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .table-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .table-scroll::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  /* Keep column headers pinned while rows scroll */
+  .order-queue thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 5;
+  }
 
   .panel-header {
     display: flex;
@@ -319,8 +358,9 @@
   .order-id, .product { color: var(--text-muted); }
   .customer { font-weight: 600; }
 
-  .shipping-row { cursor: pointer; transition: background 0.15s ease; }
-  .shipping-row:hover { background: rgba(255,255,255,0.04); }
+  .th-status, .status-cell {
+    text-align: center;
+  }
 
   .priority-low {
     background: #1B6FC8;
@@ -367,7 +407,25 @@
   .empty-row td { height: 38px; }
 
   /* Delivery alerts */
-  .activity-list { padding: 8px 0; }
+  .activity-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .activity-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .activity-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .activity-list::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .activity-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
 
   .activity-item {
     display: flex;
@@ -451,8 +509,6 @@
     font-size: 13px;
   }
 
-  .assign-banner.hidden { display: none; }
-
   .btn-assign-driver {
     background: #6B4A1E;
     color: #FBD38D;
@@ -488,94 +544,6 @@
 
   .btn-cancel { background: #7a2340; color: #f9c3d3; }
   .btn-cancel:hover { background: #8f2a4b; }
-
-  /* ============================================
-     Driver selection modal
-     ============================================ */
-  .driver-modal {
-    width: 460px;
-  }
-
-  .driver-modal .modal-body {
-    display: block;
-    padding: 22px 28px 6px;
-  }
-
-  .driver-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .driver-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #0f2549;
-    border: 1px solid var(--pill-border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
-  }
-
-  .driver-card:hover { border-color: var(--accent); }
-
-  .driver-card.selected {
-    border-color: #7c5cff;
-    background: rgba(124, 92, 255, 0.12);
-  }
-
-  .driver-name { font-weight: 700; font-size: 14.5px; margin-bottom: 3px; }
-  .driver-sub { color: var(--text-muted); font-size: 12.5px; }
-
-  .driver-avail {
-    background: rgba(34, 197, 94, 0.18);
-    color: #4ade80;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 5px 12px;
-    border-radius: 20px;
-    white-space: nowrap;
-  }
-
-  .driver-avail.busy {
-    background: rgba(148, 163, 184, 0.15);
-    color: #94a3b8;
-  }
-
-  .btn-back { background: #2b4a7c; color: #dbe4f5; }
-  .btn-back:hover { background: #345a94; }
-
-  .btn-confirm { background: #5b4de0; color: #fff; }
-  .btn-confirm:hover { background: #6c5cf0; }
-  .btn-confirm:disabled {
-    background: #33436e;
-    color: #7d8bb0;
-    cursor: not-allowed;
-  }
-
-  .assign-toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: #22c55e;
-    color: #08240f;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 12px 22px;
-    border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    z-index: 200;
-    pointer-events: none;
-  }
-
-  .assign-toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
 </style>
 </head>
 <body>
@@ -586,7 +554,6 @@
        Everything the user should see BLURRED while
        the modal is open goes inside #pageContent.
        ============================================ -->
-       
   <div id="pageContent">
 
     <!-- Navbar -->
@@ -668,6 +635,7 @@
             </div>
           </div>
         </div>
+        <div class="table-scroll">
         <table>
           <thead>
             <tr>
@@ -675,7 +643,7 @@
               <th>Customer</th>
               <th>Product</th>
               <th>Tracking no.</th>
-              <th>Status</th>
+              <th class="th-status">Status</th>
               <th>Destination</th>
               <th></th>
             </tr>
@@ -690,8 +658,6 @@
     data-tracking="{{ $shipment->tracking_number }}"
     data-status="{{ $shipment->status }}"
     data-destination="{{ $shipment->address }}"
-    data-amount="{{ number_format($shipment->amount, 2) }}"
-    onclick="openShippingModal('{{ $shipment->shipment_id }}')"
 >
 
     <td class="order-id">{{ $shipment->shipment_id }}</td>
@@ -699,7 +665,7 @@
     <td class="product">{{ $shipment->product_name }}</td>
     <td class="tracking">{{ $shipment->tracking_number }}</td>
 
-    <td>
+    <td class="status-cell">
         @if($shipment->status == 'Shipped')
             <span class="priority-low">{{ $shipment->status }}</span>
 
@@ -722,30 +688,20 @@
     <td>
         <button
             class="btn-prepare"
-            onclick="event.stopPropagation(); openShippingModal('{{ $shipment->shipment_id }}', true)">
+            onclick="openShippingModal('{{ $shipment->shipment_id }}')">
             Assign Driver
         </button>
     </td>
 
 </tr>
 @endforeach
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-
-
 
             <tr class="no-results-row" id="noResultsRow" style="display:none;">
               <td colspan="7">No shipments match your search or filter.</td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
 
       <div class="panel activity">
@@ -754,13 +710,16 @@
         </div>
         <div class="activity-list">
           <div class="activity-item">
-            <span class="activity-icon"></span>
+            <span class="activity-icon">🚫</span>
+            <span>DHL pickup delayed</span>
           </div>
           <div class="activity-item">
-            <span class="activity-icon"></span>
+            <span class="activity-icon">📍</span>
+            <span>Address verification needed</span>
           </div>
           <div class="activity-item">
-            <span class="activity-icon"></span>
+            <span class="activity-icon">📝</span>
+            <span>3 manifests pending handoff</span>
           </div>
         </div>
       </div>
@@ -769,11 +728,9 @@
   </div>
 
   <!-- ============================================
-       Modals live OUTSIDE #pageContent so they never
-       get blurred themselves.
+       Modal lives OUTSIDE #pageContent so it never
+       gets blurred itself.
        ============================================ -->
-
-  <!-- Order detail modal -->
   <div class="overlay" id="packingOverlay">
     <div class="modal">
       <div class="modal-header">
@@ -803,10 +760,6 @@
           <p class="field-value" id="modalCourier">J &amp; T Express</p>
         </div>
         <div>
-          <p class="field-label">Amount</p>
-          <p class="field-value" id="modalAmount">—</p>
-        </div>
-        <div>
           <p class="field-label">Due date</p>
           <p class="field-value" id="modalDue">Jun 25</p>
         </div>
@@ -816,7 +769,7 @@
         </div>
       </div>
 
-      <div class="assign-banner" id="assignBanner">
+      <div class="assign-banner">
         <span>This order is ready for delivery. Assign a driver to begin the final leg.</span>
         <button class="btn-assign-driver" onclick="assignDriver()">Assign driver</button>
       </div>
@@ -828,43 +781,13 @@
     </div>
   </div>
 
-  <!-- Driver selection modal -->
-  <div class="overlay" id="driverOverlay">
-    <div class="modal driver-modal">
-      <div class="modal-header">
-        <h2 id="driverModalOrderId">#ORD-4821</h2>
-        <p>Website order</p>
-      </div>
-
-      <div class="modal-body">
-        <div class="driver-list" id="driverList">
-          <!-- driver cards injected by JS -->
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-back" onclick="backToOrderModal()">Back</button>
-        <button class="btn btn-confirm" id="confirmAssignBtn" onclick="confirmDriverAssignment()" disabled>Confirm Assignment</button>
-      </div>
-    </div>
-  </div>
-
   <div class="filter-overlay" id="filterOverlay"></div>
 
-  <div class="assign-toast" id="assignToast">Driver assigned successfully</div>
-
   <script>
+    
+    const orders = @json($shipments->keyBy('id'));
 
-    const orders = @json($shipments->keyBy('shipment_id'));
-    const drivers = [
-      { name: 'Edward Tan', vehicle: 'Motorcycle', plate: 'JNT-5521', available: true },
-      { name: 'Bea Ramos',  vehicle: 'Van',        plate: 'JNT-2290', available: true },
-    ];
-
-    let currentOrderId = null;
-    let selectedDriver = null;
-
-    function openShippingModal(orderId, showBanner) {
+    function openShippingModal(orderId) {
       const order = orders[orderId];
       if (order) {
         document.getElementById('modalOrderId').textContent = orderId;
@@ -874,21 +797,9 @@
         document.getElementById('modalStatus').textContent = order.status;
         document.getElementById('modalCourier').textContent = order.courier;
         document.getElementById('modalDue').textContent = order.due_date;
-        document.getElementById('modalAddress').textContent = order.address;
-
-        // Amount may come from the shipment JSON, or fall back to the
-        // clicked row's data-amount attribute if the JSON doesn't have it.
-        const rowEl = document.querySelector('.shipping-row[data-id="' + orderId + '"]');
-        const rawAmount = order.amount ?? (rowEl ? rowEl.dataset.amount : null);
-        document.getElementById('modalAmount').textContent =
-          rawAmount != null ? '₱' + rawAmount : '—';
+        document.getElementById('modalAddress').textContent = order.shipment_address;
       }
 
-      // Only reveal the yellow "assign a driver" banner when the modal was
-      // opened via the Assign Driver button — not from a plain row click.
-      document.getElementById('assignBanner').classList.toggle('hidden', !showBanner);
-
-      currentOrderId = orderId;
       document.getElementById('pageContent').classList.add('blurred');
       document.getElementById('packingOverlay').classList.add('active');
     }
@@ -896,99 +807,12 @@
     function closePackingModal() {
       document.getElementById('pageContent').classList.remove('blurred');
       document.getElementById('packingOverlay').classList.remove('active');
-      currentOrderId = null;
     }
 
     function assignDriver() {
-      // Swap the order modal for the driver-selection modal.
-      // Background stays blurred the whole time.
-      document.getElementById('packingOverlay').classList.remove('active');
-      document.getElementById('driverModalOrderId').textContent =
-        document.getElementById('modalOrderId').textContent;
-
-      renderDriverList();
-      document.getElementById('driverOverlay').classList.add('active');
+      // TODO: hook this up to your real "assign driver" action
+      alert('Driver assigned for this shipment.');
     }
-
-    function renderDriverList() {
-      selectedDriver = null;
-      document.getElementById('confirmAssignBtn').disabled = true;
-
-      const list = document.getElementById('driverList');
-      list.innerHTML = '';
-
-      drivers.forEach(function (driver) {
-        const card = document.createElement('div');
-        card.className = 'driver-card';
-        card.innerHTML = `
-          <div>
-            <div class="driver-name">${driver.name}</div>
-            <div class="driver-sub">${driver.vehicle} · Plate ${driver.plate}</div>
-          </div>
-          <span class="driver-avail ${driver.available ? '' : 'busy'}">
-            ${driver.available ? 'Available' : 'On delivery'}
-          </span>
-        `;
-
-        if (driver.available) {
-          card.addEventListener('click', function () {
-            document.querySelectorAll('.driver-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            selectedDriver = driver;
-            document.getElementById('confirmAssignBtn').disabled = false;
-          });
-        } else {
-          card.style.opacity = '0.5';
-          card.style.cursor = 'not-allowed';
-        }
-
-        list.appendChild(card);
-      });
-    }
-
-    function backToOrderModal() {
-      document.getElementById('driverOverlay').classList.remove('active');
-      document.getElementById('packingOverlay').classList.add('active');
-    }
-
-    function confirmDriverAssignment() {
-      if (!selectedDriver || !currentOrderId) return;
-
-      // TODO: replace with a real request to your backend, e.g.
-      // fetch(`/shipping/${currentOrderId}/assign-driver`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-      //   body: JSON.stringify({ driver: selectedDriver.name })
-      // });
-
-      document.getElementById('driverOverlay').classList.remove('active');
-      document.getElementById('pageContent').classList.remove('blurred');
-
-      showAssignToast(`${selectedDriver.name} assigned to ${currentOrderId}`);
-
-      currentOrderId = null;
-      selectedDriver = null;
-    }
-
-    function showAssignToast(message) {
-      const toast = document.getElementById('assignToast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2600);
-    }
-
-    // Click outside either modal (on the dim backdrop) to close everything
-    ['packingOverlay', 'driverOverlay'].forEach(function (id) {
-      document.getElementById(id).addEventListener('click', function (e) {
-        if (e.target.id === id) {
-          document.getElementById('packingOverlay').classList.remove('active');
-          document.getElementById('driverOverlay').classList.remove('active');
-          document.getElementById('pageContent').classList.remove('blurred');
-          currentOrderId = null;
-          selectedDriver = null;
-        }
-      });
-    });
 
     /* ===================== Search + Filter (working) ===================== */
     const shippingRows   = Array.from(document.querySelectorAll('.shipping-row'));

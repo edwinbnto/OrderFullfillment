@@ -690,6 +690,7 @@
     data-tracking="{{ $shipment->tracking_number }}"
     data-status="{{ $shipment->status }}"
     data-destination="{{ $shipment->address }}"
+    data-amount="{{ number_format($shipment->amount, 2) }}"
     onclick="openShippingModal('{{ $shipment->shipment_id }}')"
 >
 
@@ -721,7 +722,7 @@
     <td>
         <button
             class="btn-prepare"
-            onclick="event.stopPropagation(); openShippingModal('{{ $shipment->shipment_id }}')">
+            onclick="event.stopPropagation(); openShippingModal('{{ $shipment->shipment_id }}', true)">
             Assign Driver
         </button>
     </td>
@@ -802,6 +803,10 @@
           <p class="field-value" id="modalCourier">J &amp; T Express</p>
         </div>
         <div>
+          <p class="field-label">Amount</p>
+          <p class="field-value" id="modalAmount">—</p>
+        </div>
+        <div>
           <p class="field-label">Due date</p>
           <p class="field-value" id="modalDue">Jun 25</p>
         </div>
@@ -850,7 +855,7 @@
 
   <script>
 
-    const orders = @json($shipments->keyBy('id'));
+    const orders = @json($shipments->keyBy('shipment_id'));
     const drivers = [
       { name: 'Edward Tan', vehicle: 'Motorcycle', plate: 'JNT-5521', available: true },
       { name: 'Bea Ramos',  vehicle: 'Van',        plate: 'JNT-2290', available: true },
@@ -859,7 +864,7 @@
     let currentOrderId = null;
     let selectedDriver = null;
 
-    function openShippingModal(orderId) {
+    function openShippingModal(orderId, showBanner) {
       const order = orders[orderId];
       if (order) {
         document.getElementById('modalOrderId').textContent = orderId;
@@ -869,8 +874,19 @@
         document.getElementById('modalStatus').textContent = order.status;
         document.getElementById('modalCourier').textContent = order.courier;
         document.getElementById('modalDue').textContent = order.due_date;
-        document.getElementById('modalAddress').textContent = order.shipment_address;
+        document.getElementById('modalAddress').textContent = order.address;
+
+        // Amount may come from the shipment JSON, or fall back to the
+        // clicked row's data-amount attribute if the JSON doesn't have it.
+        const rowEl = document.querySelector('.shipping-row[data-id="' + orderId + '"]');
+        const rawAmount = order.amount ?? (rowEl ? rowEl.dataset.amount : null);
+        document.getElementById('modalAmount').textContent =
+          rawAmount != null ? '₱' + rawAmount : '—';
       }
+
+      // Only reveal the yellow "assign a driver" banner when the modal was
+      // opened via the Assign Driver button — not from a plain row click.
+      document.getElementById('assignBanner').classList.toggle('hidden', !showBanner);
 
       currentOrderId = orderId;
       document.getElementById('pageContent').classList.add('blurred');
