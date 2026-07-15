@@ -402,8 +402,13 @@
     white-space: nowrap;
   }
 
-  .th-qty, .th-priority,
-  .qty-cell, .priority-cell {
+  .th-qty, .qty-cell {
+    padding-left: 30px;
+    text-align: center;
+  }
+
+  .th-priority, .priority-cell {
+    padding-left: 30px;
     text-align: center;
   }
 
@@ -413,6 +418,14 @@
 
   .order-id, .product {
     color: var(--text-muted);
+  }
+
+  .th-item, .product {
+    padding-left: 120px;
+  }
+
+  .th-customer, .customer {
+    padding-left: 90px;
   }
 
   .customer {
@@ -480,7 +493,6 @@
   }
 
   .activity-list {
-    padding: 8px 0;
     flex: 1;
     overflow-y: auto;
   }
@@ -629,8 +641,8 @@
   }
 
   .courier-option .courier-logo {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     object-fit: contain;
     vertical-align: middle;
   }
@@ -787,10 +799,6 @@
               @empty
                 <tr class="empty-row"><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Nothing in packing right now.</td></tr>
               @endforelse
-
-              @for ($i = 0; $i < max(0, 12 - $packingOrders->count()); $i++)
-                <tr class="empty-row"><td colspan="6">&nbsp;</td></tr>
-              @endfor
 
               <tr class="no-results-row" id="noResultsRow" style="display:none;">
                 <td colspan="6">No orders match your search or filter.</td>
