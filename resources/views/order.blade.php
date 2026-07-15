@@ -160,8 +160,47 @@
     overflow: hidden;
   }
 
-  .order-queue { flex: 2.5; }
-  .activity { flex: 1; }
+  .order-queue {
+    flex: 2.5;
+    display: flex;
+    flex-direction: column;
+    /* Fixed frame: panel height never grows past this, queue scrolls inside it */
+    height: 560px;
+  }
+  .activity {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 560px;
+  }
+
+  /* Scrollable body under the fixed panel header */
+  .table-scroll {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .table-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .table-scroll::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  /* Keep column headers pinned while rows scroll */
+  .order-queue thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 5;
+  }
 
   .panel-header {
     display: flex;
@@ -375,6 +414,12 @@
     color: #8b94b8;
   }
 
+  .th-qty, .qty-cell,
+  .th-status, .status-cell,
+  .th-priority, .priority-cell {
+    text-align: center;
+  }
+
   td.customer {
     color: #f1f3fb;
     font-weight: 700;
@@ -426,7 +471,23 @@
 
   /* Recent Activity */
   .activity-list {
+    flex: 1;
+    overflow-y: auto;
     padding: 8px 0;
+  }
+
+  .activity-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .activity-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .activity-list::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .activity-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
   }
 
   .activity-item {
@@ -701,15 +762,16 @@
             </div>
           </div>
         </div>
+        <div class="table-scroll">
         <table>
           <thead>
             <tr>
               <th>Order Id</th>
               <th>Customer</th>
               <th>Product</th>
-              <th>Qty</th>
-              <th>Status</th>
-              <th>Priority</th>
+              <th class="th-qty">Qty</th>
+              <th class="th-status">Status</th>
+              <th class="th-priority">Priority</th>
               <th>Due</th>
               <th></th>
             </tr>
@@ -732,9 +794,9 @@
               <td class="order-id">{{ $order->id }}</td>
               <td class="customer">{{ $order->customer_name }}</td>
               <td>{{ $order->product_name }}</td>
-              <td>{{ $order->qty }}</td>
-              <td><span class="badge status {{ strtoupper($order->status) === 'CANCELLED' ? 'status-cancelled' : '' }}">{{ strtoupper($order->status) }}</span></td>
-              <td>
+              <td class="qty-cell">{{ $order->qty }}</td>
+              <td class="status-cell"><span class="badge status {{ strtoupper($order->status) === 'CANCELLED' ? 'status-cancelled' : '' }}">{{ strtoupper($order->status) }}</span></td>
+              <td class="priority-cell">
               @if (strtoupper($order->status) !== 'CANCELLED')
               <span class="badge {{ $priority['class'] }}">
               {{ $priority['label'] }}
@@ -759,17 +821,13 @@
             </tr>
             @endforelse
 
-            {{-- Keeps the table visually padded to match the original design when there are few orders --}}
-            @for($i = 0; $i < max(0, 10 - $orders->count()); $i++)
-            <tr class="empty-row"><td colspan="8"></td></tr>
-            @endfor
-
             {{-- Shown by JS when search/filter produce zero matches --}}
             <tr class="no-results-row" id="noResultsRow" style="display:none;">
               <td colspan="8">No orders match your search or filter.</td>
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
 
       <div class="panel activity">
