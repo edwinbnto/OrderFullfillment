@@ -128,47 +128,8 @@
     overflow: hidden;
   }
 
-  .order-queue {
-    flex: 2.5;
-    display: flex;
-    flex-direction: column;
-    /* Fixed frame: panel height never grows past this, queue scrolls inside it */
-    height: 560px;
-  }
-  .activity {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 560px;
-  }
-
-  /* Scrollable body under the fixed panel header */
-  .table-scroll {
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  .table-scroll::-webkit-scrollbar {
-    width: 8px;
-  }
-  .table-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .table-scroll::-webkit-scrollbar-thumb {
-    background: var(--pill-border);
-    border-radius: 8px;
-  }
-  .table-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--accent);
-  }
-
-  /* Keep column headers pinned while rows scroll */
-  .order-queue thead th {
-    position: sticky;
-    top: 0;
-    background: var(--bg-card);
-    z-index: 5;
-  }
+  .order-queue { flex: 2.5; }
+  .activity { flex: 1; }
 
   .panel-header {
     display: flex;
@@ -358,9 +319,8 @@
   .order-id, .product { color: var(--text-muted); }
   .customer { font-weight: 600; }
 
-  .th-status, .status-cell {
-    text-align: center;
-  }
+  .shipping-row { cursor: pointer; transition: background 0.15s ease; }
+  .shipping-row:hover { background: rgba(255,255,255,0.04); }
 
   .priority-low {
     background: #1B6FC8;
@@ -407,25 +367,7 @@
   .empty-row td { height: 38px; }
 
   /* Delivery alerts */
-  .activity-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 0;
-  }
-
-  .activity-list::-webkit-scrollbar {
-    width: 8px;
-  }
-  .activity-list::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .activity-list::-webkit-scrollbar-thumb {
-    background: var(--pill-border);
-    border-radius: 8px;
-  }
-  .activity-list::-webkit-scrollbar-thumb:hover {
-    background: var(--accent);
-  }
+  .activity-list { padding: 8px 0; }
 
   .activity-item {
     display: flex;
@@ -508,6 +450,8 @@
     color: #f3d98a;
     font-size: 13px;
   }
+
+  .assign-banner.hidden { display: none; }
 
   .btn-assign-driver {
     background: #6B4A1E;
@@ -642,6 +586,7 @@
        Everything the user should see BLURRED while
        the modal is open goes inside #pageContent.
        ============================================ -->
+       
   <div id="pageContent">
 
     <!-- Navbar -->
@@ -723,7 +668,6 @@
             </div>
           </div>
         </div>
-        <div class="table-scroll">
         <table>
           <thead>
             <tr>
@@ -731,7 +675,7 @@
               <th>Customer</th>
               <th>Product</th>
               <th>Tracking no.</th>
-              <th class="th-status">Status</th>
+              <th>Status</th>
               <th>Destination</th>
               <th></th>
             </tr>
@@ -746,6 +690,7 @@
     data-tracking="{{ $shipment->tracking_number }}"
     data-status="{{ $shipment->status }}"
     data-destination="{{ $shipment->address }}"
+    onclick="openShippingModal('{{ $shipment->shipment_id }}')"
 >
 
     <td class="order-id">{{ $shipment->shipment_id }}</td>
@@ -753,45 +698,53 @@
     <td class="product">{{ $shipment->product_name }}</td>
     <td class="tracking">{{ $shipment->tracking_number }}</td>
 
-<td>
-  @if($shipment->status == 'Ready for delivery')
-    <span class="priority-low">{{ $shipment->status }}</span>
+    <td>
+        @if($shipment->status == 'Shipped')
+            <span class="priority-low">{{ $shipment->status }}</span>
 
-  @elseif($shipment->status == 'Out for delivery')
-    <span class="priority-low">{{ $shipment->status }}</span>
+        @elseif($shipment->status == 'Ready for delivery')
+            <span class="priority-low">{{ $shipment->status }}</span>
 
-  @elseif($shipment->status == 'Shipped')
-    <span class="priority-low">{{ $shipment->status }}</span>
+        @elseif($shipment->status == 'Out for delivery')
+            <span class="priority-low">{{ $shipment->status }}</span>
 
-  @elseif($shipment->status == 'Delivered')
-    <span class="priority-med">{{ $shipment->status }}</span>
+        @elseif($shipment->status == 'Delivered')
+            <span class="priority-low">{{ $shipment->status }}</span>
 
-  @elseif($shipment->status == 'Delayed')
-    <span class="priority-high">{{ $shipment->status }}</span>
-  @endif
-</td>
+        @elseif($shipment->status == 'Delayed')
+            <span class="priority-high">{{ $shipment->status }}</span>
+        @endif
+    </td>
 
-<td>
-  {{ $shipment->address }}
-</td>
+    <td>{{ $shipment->address }}</td>
 
     <td>
         <button
             class="btn-prepare"
-            onclick="openShippingModal('{{ $shipment->shipment_id }}')">
+            onclick="event.stopPropagation(); openShippingModal('{{ $shipment->shipment_id }}')">
             Assign Driver
         </button>
     </td>
 
 </tr>
 @endforeach
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+
+
 
             <tr class="no-results-row" id="noResultsRow" style="display:none;">
               <td colspan="7">No shipments match your search or filter.</td>
             </tr>
           </tbody>
         </table>
-        </div>
       </div>
 
       <div class="panel activity">
@@ -823,42 +776,42 @@
   <div class="overlay" id="packingOverlay">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modalOrderId">—</h2>
+        <h2 id="modalOrderId">#ORD-4821</h2>
         <p>Website order</p>
       </div>
 
       <div class="modal-body">
         <div>
           <p class="field-label">Customer</p>
-          <p class="field-value" id="modalCustomer">—</p>
+          <p class="field-value" id="modalCustomer">Maria Santos</p>
         </div>
         <div>
           <p class="field-label">Status</p>
-          <span class="status-pill" id="modalStatus">—</span>
+          <span class="status-pill" id="modalStatus">Ready for delivery</span>
         </div>
         <div>
           <p class="field-label">Product</p>
-          <p class="field-value" id="modalItem">—</p>
+          <p class="field-value" id="modalItem">Wireless Headphone</p>
         </div>
         <div>
           <p class="field-label">Tracing no.</p>
-          <p class="field-value" id="modalTracking">—</p>
+          <p class="field-value" id="modalTracking">2</p>
         </div>
         <div>
           <p class="field-label">Courier</p>
-          <p class="field-value" id="modalCourier">—</p>
+          <p class="field-value" id="modalCourier">J &amp; T Express</p>
         </div>
         <div>
           <p class="field-label">Due date</p>
-          <p class="field-value" id="modalDue">—</p>
+          <p class="field-value" id="modalDue">Jun 25</p>
         </div>
         <div style="grid-column: 1 / -1;">
           <p class="field-label">Delivery Address</p>
-          <p class="field-value" id="modalAddress">—</p>
+          <p class="field-value" id="modalAddress">Hillsview Naic, Cavite</p>
         </div>
       </div>
 
-      <div class="assign-banner">
+      <div class="assign-banner" id="assignBanner">
         <span>This order is ready for delivery. Assign a driver to begin the final leg.</span>
         <button class="btn-assign-driver" onclick="assignDriver()">Assign driver</button>
       </div>
@@ -897,8 +850,7 @@
 
   <script>
 
-    const orders = @json($shipments->keyBy('shipment_id'));
-
+    const orders = @json($shipments->keyBy('id'));
     const drivers = [
       { name: 'Edward Tan', vehicle: 'Motorcycle', plate: 'JNT-5521', available: true },
       { name: 'Bea Ramos',  vehicle: 'Van',        plate: 'JNT-2290', available: true },
@@ -907,22 +859,23 @@
     let currentOrderId = null;
     let selectedDriver = null;
 
-function openShippingModal(orderId) {
-  const order = orders[orderId];
-  if (order) {
-    document.getElementById('modalOrderId').textContent = orderId;
-    document.getElementById('modalCustomer').textContent = order.customer_name;
-    document.getElementById('modalItem').textContent = order.product_name;
-    document.getElementById('modalTracking').textContent = order.tracking_number;
-    document.getElementById('modalStatus').textContent = order.status;
-    document.getElementById('modalCourier').textContent = order.courier;
-    document.getElementById('modalDue').textContent = order.due_date;
-    document.getElementById('modalAddress').textContent = order.address;
-  }
+    function openShippingModal(orderId) {
+      const order = orders[orderId];
+      if (order) {
+        document.getElementById('modalOrderId').textContent = orderId;
+        document.getElementById('modalCustomer').textContent = order.customer_name;
+        document.getElementById('modalItem').textContent = order.product_name;
+        document.getElementById('modalTracking').textContent = order.tracking_number;
+        document.getElementById('modalStatus').textContent = order.status;
+        document.getElementById('modalCourier').textContent = order.courier;
+        document.getElementById('modalDue').textContent = order.due_date;
+        document.getElementById('modalAddress').textContent = order.shipment_address;
+      }
 
-  document.getElementById('pageContent').classList.add('blurred');
-  document.getElementById('packingOverlay').classList.add('active');
-}
+      currentOrderId = orderId;
+      document.getElementById('pageContent').classList.add('blurred');
+      document.getElementById('packingOverlay').classList.add('active');
+    }
 
     function closePackingModal() {
       document.getElementById('pageContent').classList.remove('blurred');
