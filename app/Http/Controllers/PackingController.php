@@ -160,7 +160,7 @@ class PackingController extends Controller
                     'courier'         => $validated['courier'],
                     'box_used'        => $validated['box'],
                     'tracking_number' => $trackingNumber,
-                    'status'          => 'SHIPPED',
+                    'status'          => 'Shipped',
                     'address'         => $order->address,
                     'due_date'        => $order->due_date,
                     'created_at'      => now(),
@@ -169,7 +169,7 @@ class PackingController extends Controller
 
                 DB::table('orders')
                     ->where('id', $id)
-                    ->update(['status' => 'SHIPPED']);
+                    ->update(['status' => 'Shipped']);
 
                 return [
                     'success'         => true,
