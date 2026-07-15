@@ -11,15 +11,14 @@ class PackingController extends Controller
 {
     public function index()
     {
-        // ---- Orders currently in the PACKING column ----
+
         $packingOrders = DB::table('orders')->where('status', 'PACKING')->get();
 
-        // ---- Stats row (all derived from the orders table, nothing hardcoded) ----
+
         $inPackingCount    = $packingOrders->count();
         $readyToShipCount  = DB::table('orders')->where('status', 'READY_TO_SHIP')->count();
-        $packingErrorToday = 0; // TODO: wire to a packing_errors log once that table exists
+        $packingErrorToday = 0; 
 
-        // ---- Packing materials (boxes, tape, wrap, etc.) ----
         $materials = Schema::hasTable('packing_materials')
             ? DB::table('packing_materials')->get()
             : collect();
@@ -28,10 +27,10 @@ class PackingController extends Controller
             return isset($m->stock_qty, $m->low_stock_threshold) && $m->stock_qty <= $m->low_stock_threshold;
         })->count();
 
-        // Box options shown inside the "prepare shipment" modal.
+
         $boxMaterials = $materials->filter(fn ($m) => !empty($m->is_box));
 
-        // Lookup (order id => details) for the modal, in the shape the front-end JS expects.
+
         $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
             $priority = OrderPriority::packing($order->created_at ?? null);
             return [
@@ -129,6 +128,7 @@ class PackingController extends Controller
         'status' => 'Shipped',
 
         'address' => $order->address,
+        'due_date' => $order->due_date,
 
         'created_at' => now(),
         'updated_at' => now()

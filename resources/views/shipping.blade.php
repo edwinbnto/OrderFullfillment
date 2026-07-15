@@ -756,22 +756,27 @@
     <td class="status-cell">
         @if($shipment->status == 'Shipped')
             <span class="priority-low">{{ $shipment->status }}</span>
+<td>
+  @if($shipment->status == 'Ready for delivery')
+    <span class="priority-low">{{ $shipment->status }}</span>
 
-        @elseif($shipment->status == 'Ready for delivery')
-            <span class="priority-low">{{ $shipment->status }}</span>
+  @elseif($shipment->status == 'Out for delivery')
+    <span class="priority-low">{{ $shipment->status }}</span>
 
-        @elseif($shipment->status == 'Out for delivery')
-            <span class="priority-low">{{ $shipment->status }}</span>
+  @elseif($shipment->status == 'Shipped')
+    <span class="priority-low">{{ $shipment->status }}</span>
 
-        @elseif($shipment->status == 'Delivered')
-            <span class="priority-low">{{ $shipment->status }}</span>
+  @elseif($shipment->status == 'Delivered')
+    <span class="priority-med">{{ $shipment->status }}</span>
 
-        @elseif($shipment->status == 'Delayed')
-            <span class="priority-high">{{ $shipment->status }}</span>
-        @endif
-    </td>
+  @elseif($shipment->status == 'Delayed')
+    <span class="priority-high">{{ $shipment->status }}</span>
+  @endif
+</td>
 
-    <td>{{ $shipment->address }}</td>
+<td>
+  {{ $shipment->address }}
+</td>
 
     <td>
         <button
@@ -922,6 +927,25 @@
       document.getElementById('pageContent').classList.add('blurred');
       document.getElementById('packingOverlay').classList.add('active');
     }
+    
+const orders = @json($shipments->keyBy('shipment_id'));
+
+function openShippingModal(orderId) {
+  const order = orders[orderId];
+  if (order) {
+    document.getElementById('modalOrderId').textContent = orderId;
+    document.getElementById('modalCustomer').textContent = order.customer_name;
+    document.getElementById('modalItem').textContent = order.product_name;
+    document.getElementById('modalTracking').textContent = order.tracking_number;
+    document.getElementById('modalStatus').textContent = order.status;
+    document.getElementById('modalCourier').textContent = order.courier;
+    document.getElementById('modalDue').textContent = order.due_date;
+    document.getElementById('modalAddress').textContent = order.address;
+  }
+
+  document.getElementById('pageContent').classList.add('blurred');
+  document.getElementById('packingOverlay').classList.add('active');
+}
 
     function closePackingModal() {
       document.getElementById('pageContent').classList.remove('blurred');

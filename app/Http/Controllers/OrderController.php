@@ -21,8 +21,7 @@ class OrderController extends Controller
         $total        = DB::table('orders')->count();
         $onTimeRate   = $total > 0 ? round(($delivered / $total) * 100) . '%' : '0%';
 
-        // Recent activity panel (packing + shipped + cancelled orders, newest first) —
-        // order.blade.php loops over this at the bottom of the page.
+
         $recentActivity = DB::table('orders')
             ->whereIn('status', ['PACKING', 'SHIPPED', 'CANCELLED'])
             ->orderByDesc('updated_at')
