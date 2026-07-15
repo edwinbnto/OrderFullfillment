@@ -753,9 +753,6 @@
     <td class="product">{{ $shipment->product_name }}</td>
     <td class="tracking">{{ $shipment->tracking_number }}</td>
 
-    <td class="status-cell">
-        @if($shipment->status == 'Shipped')
-            <span class="priority-low">{{ $shipment->status }}</span>
 <td>
   @if($shipment->status == 'Ready for delivery')
     <span class="priority-low">{{ $shipment->status }}</span>
@@ -826,38 +823,38 @@
   <div class="overlay" id="packingOverlay">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modalOrderId">#ORD-4821</h2>
+        <h2 id="modalOrderId">—</h2>
         <p>Website order</p>
       </div>
 
       <div class="modal-body">
         <div>
           <p class="field-label">Customer</p>
-          <p class="field-value" id="modalCustomer">Maria Santos</p>
+          <p class="field-value" id="modalCustomer">—</p>
         </div>
         <div>
           <p class="field-label">Status</p>
-          <span class="status-pill" id="modalStatus">Ready for delivery</span>
+          <span class="status-pill" id="modalStatus">—</span>
         </div>
         <div>
           <p class="field-label">Product</p>
-          <p class="field-value" id="modalItem">Wireless Headphone</p>
+          <p class="field-value" id="modalItem">—</p>
         </div>
         <div>
           <p class="field-label">Tracing no.</p>
-          <p class="field-value" id="modalTracking">2</p>
+          <p class="field-value" id="modalTracking">—</p>
         </div>
         <div>
           <p class="field-label">Courier</p>
-          <p class="field-value" id="modalCourier">J &amp; T Express</p>
+          <p class="field-value" id="modalCourier">—</p>
         </div>
         <div>
           <p class="field-label">Due date</p>
-          <p class="field-value" id="modalDue">Jun 25</p>
+          <p class="field-value" id="modalDue">—</p>
         </div>
         <div style="grid-column: 1 / -1;">
           <p class="field-label">Delivery Address</p>
-          <p class="field-value" id="modalAddress">Hillsview Naic, Cavite</p>
+          <p class="field-value" id="modalAddress">—</p>
         </div>
       </div>
 
@@ -900,7 +897,7 @@
 
   <script>
 
-    const orders = @json($shipments->keyBy('id'));
+    const orders = @json($shipments->keyBy('shipment_id'));
 
     const drivers = [
       { name: 'Edward Tan', vehicle: 'Motorcycle', plate: 'JNT-5521', available: true },
@@ -909,26 +906,6 @@
 
     let currentOrderId = null;
     let selectedDriver = null;
-
-    function openShippingModal(orderId) {
-      const order = orders[orderId];
-      if (order) {
-        document.getElementById('modalOrderId').textContent = orderId;
-        document.getElementById('modalCustomer').textContent = order.customer_name;
-        document.getElementById('modalItem').textContent = order.product_name;
-        document.getElementById('modalTracking').textContent = order.tracking_number;
-        document.getElementById('modalStatus').textContent = order.status;
-        document.getElementById('modalCourier').textContent = order.courier;
-        document.getElementById('modalDue').textContent = order.due_date;
-        document.getElementById('modalAddress').textContent = order.shipment_address;
-      }
-
-      currentOrderId = orderId;
-      document.getElementById('pageContent').classList.add('blurred');
-      document.getElementById('packingOverlay').classList.add('active');
-    }
-    
-const orders = @json($shipments->keyBy('shipment_id'));
 
 function openShippingModal(orderId) {
   const order = orders[orderId];

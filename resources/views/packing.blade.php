@@ -711,7 +711,7 @@
       </div>
       <div class="stat-card">
         <div class="label">Shipped</div>
-        <div class="value">{{ $readyToShipCount }}</div>
+        <div class="value">{{ $ShippedCount }}</div>
       </div>
       <div class="stat-card">
         <div class="label">Packing error today</div>

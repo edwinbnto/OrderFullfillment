@@ -16,7 +16,7 @@ class PackingController extends Controller
 
 
         $inPackingCount    = $packingOrders->count();
-        $readyToShipCount  = DB::table('orders')->where('status', 'READY_TO_SHIP')->count();
+        $ShippedCount = DB::table('orders')->where('status', 'Shipped')->count();
         $packingErrorToday = 0; 
 
         $materials = Schema::hasTable('packing_materials')
@@ -48,7 +48,7 @@ class PackingController extends Controller
         return view('packing', compact(
             'packingOrders',
             'inPackingCount',
-            'readyToShipCount',
+            'ShippedCount',
             'packingErrorToday',
             'materials',
             'lowStockMaterialCount',
