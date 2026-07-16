@@ -32,6 +32,39 @@ return [
 
     'connections' => [
 
+        'procurement'=> [
+            'driver' => 'pgsql',
+            'url' => env('PROCUREMENT_DB_URL'),
+            'charset' => 'utf8',
+            'prefix' =>'',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'require',
+            'channel_binding' => 'require',
+        ],
+
+         'inventory' => [
+            'driver' => 'pgsql',
+            'url' => env('INVENTORY_DB_URL'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'require',
+            'channel_binding' => 'require',
+        ],
+
+        'finance' => [
+            'driver' => 'pgsql',
+            'url' => env('FINANCE_DB_URL'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'require',
+            'channel_binding' => 'require',
+        ],
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
@@ -180,5 +213,4 @@ return [
         ],
 
     ],
-
 ];

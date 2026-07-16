@@ -132,7 +132,6 @@
     flex: 2.5;
     display: flex;
     flex-direction: column;
-    /* Fixed frame: panel height never grows past this, queue scrolls inside it */
     height: 560px;
   }
   .activity {
@@ -358,36 +357,22 @@
   .order-id, .product { color: var(--text-muted); }
   .customer { font-weight: 600; }
 
-  .th-status, .status-cell {
-    text-align: center;
+  .shipping-row { cursor: pointer; transition: background 0.15s ease; }
+  .shipping-row:hover { background: rgba(255,255,255,0.04); }
+
+  .status-tag {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
   }
 
-  .priority-low {
-    background: #1B6FC8;
-    color: #fff;
-    padding: 3px 12px;
-    border-radius: 5px;
-    font-size: 11px;
-    display: inline-block;
-  }
-
-  .priority-med {
-    background: #16A34A;
-    color: #fff;
-    padding: 3px 12px;
-    border-radius: 5px;
-    font-size: 11px;
-    display: inline-block;
-  }
-
-  .priority-high {
-    background: #7F1D2E;
-    color: #FCA5B1;
-    padding: 3px 12px;
-    border-radius: 5px;
-    font-size: 11px;
-    display: inline-block;
-  }
+  .status-tag.tag-packing   { background: #6B4A1E; color: #FBD38D; }
+  .status-tag.tag-shipped   { background: #1E5A6B; color: #7DD3E8; }
+  .status-tag.tag-transit   { background: #1E3A6B; color: #93C5FD; }
+  .status-tag.tag-delivered { background: #1E5A3A; color: #86EFAC; }
+  .status-tag.tag-cancelled { background: #4A1E1E; color: #F3A9A9; }
 
   .btn-prepare {
     display: inline-block;
@@ -487,13 +472,19 @@
 
   .modal-body .status-pill {
     display: inline-block;
-    background: #1c3a7a;
-    color: #9ec4ff;
     font-weight: 700;
     font-size: 13px;
     padding: 4px 12px;
-    border-radius: 6px;
+    border-radius: 12px;
+    background: #1E5A6B;
+    color: #7DD3E8;
   }
+
+  .modal-body .status-pill.tag-packing   { background: #6B4A1E; color: #FBD38D; }
+  .modal-body .status-pill.tag-shipped   { background: #1E5A6B; color: #7DD3E8; }
+  .modal-body .status-pill.tag-transit   { background: #1E3A6B; color: #93C5FD; }
+  .modal-body .status-pill.tag-delivered { background: #1E5A3A; color: #86EFAC; }
+  .modal-body .status-pill.tag-cancelled { background: #4A1E1E; color: #F3A9A9; }
 
   .assign-banner {
     margin: 0 28px 20px;
@@ -508,6 +499,8 @@
     color: #f3d98a;
     font-size: 13px;
   }
+
+  .assign-banner.hidden { display: none; }
 
   .btn-assign-driver {
     background: #6B4A1E;
@@ -544,6 +537,94 @@
 
   .btn-cancel { background: #7a2340; color: #f9c3d3; }
   .btn-cancel:hover { background: #8f2a4b; }
+
+  /* ============================================
+     Driver selection modal
+     ============================================ */
+  .driver-modal {
+    width: 460px;
+  }
+
+  .driver-modal .modal-body {
+    display: block;
+    padding: 22px 28px 6px;
+  }
+
+  .driver-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .driver-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0f2549;
+    border: 1px solid var(--pill-border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .driver-card:hover { border-color: var(--accent); }
+
+  .driver-card.selected {
+    border-color: #7c5cff;
+    background: rgba(124, 92, 255, 0.12);
+  }
+
+  .driver-name { font-weight: 700; font-size: 14.5px; margin-bottom: 3px; }
+  .driver-sub { color: var(--text-muted); font-size: 12.5px; }
+
+  .driver-avail {
+    background: rgba(34, 197, 94, 0.18);
+    color: #4ade80;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .driver-avail.busy {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+  }
+
+  .btn-back { background: #2b4a7c; color: #dbe4f5; }
+  .btn-back:hover { background: #345a94; }
+
+  .btn-confirm { background: #5b4de0; color: #fff; }
+  .btn-confirm:hover { background: #6c5cf0; }
+  .btn-confirm:disabled {
+    background: #33436e;
+    color: #7d8bb0;
+    cursor: not-allowed;
+  }
+
+  .assign-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #22c55e;
+    color: #08240f;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  .assign-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 </style>
 </head>
 <body>
@@ -554,6 +635,7 @@
        Everything the user should see BLURRED while
        the modal is open goes inside #pageContent.
        ============================================ -->
+       
   <div id="pageContent">
 
     <!-- Navbar -->
@@ -617,20 +699,24 @@
                 All
               </label>
               <label class="filter-option">
-                <input type="radio" name="statusFilter" value="Ready for delivery" class="status-check">
-                Ready for delivery
+                <input type="radio" name="statusFilter" value="READY_TO_SHIP" class="status-check">
+                READY FOR DELIVERY
               </label>
               <label class="filter-option">
-                <input type="radio" name="statusFilter" value="Shipped" class="status-check">
-                Shipped
+                <input type="radio" name="statusFilter" value="SHIPPED" class="status-check">
+                SHIPPED
               </label>
               <label class="filter-option">
-                <input type="radio" name="statusFilter" value="Delivered" class="status-check">
-                Delivered
+                <input type="radio" name="statusFilter" value="OUT_FOR_DELIVERY" class="status-check">
+                OUT FOR DELIVERY
               </label>
               <label class="filter-option">
-                <input type="radio" name="statusFilter" value="Delayed" class="status-check">
-                Delayed
+                <input type="radio" name="statusFilter" value="DELIVERED" class="status-check">
+                DELIVERED
+              </label>
+              <label class="filter-option">
+                <input type="radio" name="statusFilter" value="DELAYED" class="status-check">
+                DELAYED
               </label>
             </div>
           </div>
@@ -650,14 +736,35 @@
           </thead>
           <tbody id="shippingTableBody">
             @foreach($shipments as $shipment)
+@php
+    $statusRaw = strtoupper($shipment->status);
+    $statusLabels = [
+        'SHIPPED'           => 'SHIPPED',
+        'READY_TO_SHIP'     => 'READY FOR DELIVERY',
+        'OUT_FOR_DELIVERY'  => 'OUT FOR DELIVERY',
+        'DELIVERED'         => 'DELIVERED',
+        'DELAYED'           => 'DELAYED',
+    ];
+    $statusLabel = $statusLabels[$statusRaw] ?? strtoupper(str_replace('_', ' ', $statusRaw));
+    $statusClassMap = [
+        'SHIPPED'           => 'tag-shipped',
+        'READY_TO_SHIP'     => 'tag-packing',
+        'OUT_FOR_DELIVERY'  => 'tag-transit',
+        'DELIVERED'         => 'tag-delivered',
+        'DELAYED'           => 'tag-cancelled',
+    ];
+    $statusClass = $statusClassMap[$statusRaw] ?? 'tag-shipped';
+@endphp
 <tr
     class="shipping-row"
     data-id="{{ $shipment->shipment_id }}"
     data-customer="{{ $shipment->customer_name }}"
     data-product="{{ $shipment->product_name }}"
     data-tracking="{{ $shipment->tracking_number }}"
-    data-status="{{ $shipment->status }}"
+    data-status="{{ $statusRaw }}"
     data-destination="{{ $shipment->address }}"
+    data-amount="{{ number_format($shipment->amount, 2) }}"
+    onclick="openShippingModal('{{ $shipment->shipment_id }}')"
 >
 
     <td class="order-id">{{ $shipment->shipment_id }}</td>
@@ -666,21 +773,7 @@
     <td class="tracking">{{ $shipment->tracking_number }}</td>
 
     <td class="status-cell">
-        @if($shipment->status == 'Shipped')
-            <span class="priority-low">{{ $shipment->status }}</span>
-
-        @elseif($shipment->status == 'Ready for delivery')
-            <span class="priority-low">{{ $shipment->status }}</span>
-
-        @elseif($shipment->status == 'Out for delivery')
-            <span class="priority-low">{{ $shipment->status }}</span>
-
-        @elseif($shipment->status == 'Delivered')
-            <span class="priority-low">{{ $shipment->status }}</span>
-
-        @elseif($shipment->status == 'Delayed')
-            <span class="priority-high">{{ $shipment->status }}</span>
-        @endif
+        <span class="status-tag {{ $statusClass }}">{{ $statusLabel }}</span>
     </td>
 
     <td>{{ $shipment->address }}</td>
@@ -688,7 +781,7 @@
     <td>
         <button
             class="btn-prepare"
-            onclick="openShippingModal('{{ $shipment->shipment_id }}')">
+            onclick="event.stopPropagation(); openShippingModal('{{ $shipment->shipment_id }}', true)">
             Assign Driver
         </button>
     </td>
@@ -710,16 +803,13 @@
         </div>
         <div class="activity-list">
           <div class="activity-item">
-            <span class="activity-icon">🚫</span>
-            <span>DHL pickup delayed</span>
+            <span class="activity-icon"></span>
           </div>
           <div class="activity-item">
-            <span class="activity-icon">📍</span>
-            <span>Address verification needed</span>
+            <span class="activity-icon"></span>
           </div>
           <div class="activity-item">
-            <span class="activity-icon">📝</span>
-            <span>3 manifests pending handoff</span>
+            <span class="activity-icon"></span>
           </div>
         </div>
       </div>
@@ -728,9 +818,11 @@
   </div>
 
   <!-- ============================================
-       Modal lives OUTSIDE #pageContent so it never
-       gets blurred itself.
+       Modals live OUTSIDE #pageContent so they never
+       get blurred themselves.
        ============================================ -->
+
+  <!-- Order detail modal -->
   <div class="overlay" id="packingOverlay">
     <div class="modal">
       <div class="modal-header">
@@ -745,7 +837,7 @@
         </div>
         <div>
           <p class="field-label">Status</p>
-          <span class="status-pill" id="modalStatus">Ready for delivery</span>
+          <span class="status-pill tag-packing" id="modalStatus">READY FOR DELIVERY</span>
         </div>
         <div>
           <p class="field-label">Product</p>
@@ -760,6 +852,10 @@
           <p class="field-value" id="modalCourier">J &amp; T Express</p>
         </div>
         <div>
+          <p class="field-label">Amount</p>
+          <p class="field-value" id="modalAmount">—</p>
+        </div>
+        <div>
           <p class="field-label">Due date</p>
           <p class="field-value" id="modalDue">Jun 25</p>
         </div>
@@ -769,7 +865,7 @@
         </div>
       </div>
 
-      <div class="assign-banner">
+      <div class="assign-banner" id="assignBanner">
         <span>This order is ready for delivery. Assign a driver to begin the final leg.</span>
         <button class="btn-assign-driver" onclick="assignDriver()">Assign driver</button>
       </div>
@@ -781,25 +877,85 @@
     </div>
   </div>
 
+  <!-- Driver selection modal -->
+  <div class="overlay" id="driverOverlay">
+    <div class="modal driver-modal">
+      <div class="modal-header">
+        <h2 id="driverModalOrderId">#ORD-4821</h2>
+        <p>Website order</p>
+      </div>
+
+      <div class="modal-body">
+        <div class="driver-list" id="driverList">
+          <!-- driver cards injected by JS -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-back" onclick="backToOrderModal()">Back</button>
+        <button class="btn btn-confirm" id="confirmAssignBtn" onclick="confirmDriverAssignment()" disabled>Confirm Assignment</button>
+      </div>
+    </div>
+  </div>
+
   <div class="filter-overlay" id="filterOverlay"></div>
 
-  <script>
-    
-    const orders = @json($shipments->keyBy('id'));
+  <div class="assign-toast" id="assignToast">Driver assigned successfully</div>
 
-    function openShippingModal(orderId) {
+  <script>
+
+    const orders = @json($shipments->keyBy('shipment_id'));
+    const statusLabels = {
+      'SHIPPED': 'SHIPPED',
+      'READY_TO_SHIP': 'READY FOR DELIVERY',
+      'OUT_FOR_DELIVERY': 'OUT FOR DELIVERY',
+      'DELIVERED': 'DELIVERED',
+      'DELAYED': 'DELAYED',
+    };
+    const statusTagClasses = {
+      'SHIPPED': 'tag-shipped',
+      'READY_TO_SHIP': 'tag-packing',
+      'OUT_FOR_DELIVERY': 'tag-transit',
+      'DELIVERED': 'tag-delivered',
+      'DELAYED': 'tag-cancelled',
+    };
+    const STATUS_TAG_CLASSES = ['tag-packing', 'tag-shipped', 'tag-transit', 'tag-delivered', 'tag-cancelled'];
+    const drivers = [
+      { name: 'Edward Tan', vehicle: 'Motorcycle', plate: 'JNT-5521', available: true },
+      { name: 'Bea Ramos',  vehicle: 'Van',        plate: 'JNT-2290', available: true },
+    ];
+
+    let currentOrderId = null;
+    let selectedDriver = null;
+
+    function openShippingModal(orderId, showBanner) {
       const order = orders[orderId];
       if (order) {
         document.getElementById('modalOrderId').textContent = orderId;
         document.getElementById('modalCustomer').textContent = order.customer_name;
         document.getElementById('modalItem').textContent = order.product_name;
         document.getElementById('modalTracking').textContent = order.tracking_number;
-        document.getElementById('modalStatus').textContent = order.status;
+        const modalStatusEl = document.getElementById('modalStatus');
+        modalStatusEl.textContent = statusLabels[order.status] || order.status;
+        modalStatusEl.classList.remove(...STATUS_TAG_CLASSES);
+        modalStatusEl.classList.add(statusTagClasses[order.status] || 'tag-shipped');
         document.getElementById('modalCourier').textContent = order.courier;
         document.getElementById('modalDue').textContent = order.due_date;
-        document.getElementById('modalAddress').textContent = order.shipment_address;
+        document.getElementById('modalAddress').textContent = order.address;
+
+        // Amount may come from the shipment JSON, or fall back to the
+        // clicked row's data-amount attribute if the JSON doesn't have it.
+        const rowEl = document.querySelector('.shipping-row[data-id="' + orderId + '"]');
+        const rawAmount = order.amount ?? (rowEl ? rowEl.dataset.amount : null);
+        document.getElementById('modalAmount').textContent =
+          rawAmount != null ? '₱' + rawAmount : '—';
       }
 
+      // Only reveal the yellow "assign a driver" banner when the modal was
+      // opened via the Assign Driver button — not from a plain row click.
+      document.getElementById('assignBanner').classList.toggle('hidden', !showBanner);
+
+      currentOrderId = orderId;
       document.getElementById('pageContent').classList.add('blurred');
       document.getElementById('packingOverlay').classList.add('active');
     }
@@ -807,12 +963,99 @@
     function closePackingModal() {
       document.getElementById('pageContent').classList.remove('blurred');
       document.getElementById('packingOverlay').classList.remove('active');
+      currentOrderId = null;
     }
 
     function assignDriver() {
-      // TODO: hook this up to your real "assign driver" action
-      alert('Driver assigned for this shipment.');
+      // Swap the order modal for the driver-selection modal.
+      // Background stays blurred the whole time.
+      document.getElementById('packingOverlay').classList.remove('active');
+      document.getElementById('driverModalOrderId').textContent =
+        document.getElementById('modalOrderId').textContent;
+
+      renderDriverList();
+      document.getElementById('driverOverlay').classList.add('active');
     }
+
+    function renderDriverList() {
+      selectedDriver = null;
+      document.getElementById('confirmAssignBtn').disabled = true;
+
+      const list = document.getElementById('driverList');
+      list.innerHTML = '';
+
+      drivers.forEach(function (driver) {
+        const card = document.createElement('div');
+        card.className = 'driver-card';
+        card.innerHTML = `
+          <div>
+            <div class="driver-name">${driver.name}</div>
+            <div class="driver-sub">${driver.vehicle} · Plate ${driver.plate}</div>
+          </div>
+          <span class="driver-avail ${driver.available ? '' : 'busy'}">
+            ${driver.available ? 'Available' : 'On delivery'}
+          </span>
+        `;
+
+        if (driver.available) {
+          card.addEventListener('click', function () {
+            document.querySelectorAll('.driver-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedDriver = driver;
+            document.getElementById('confirmAssignBtn').disabled = false;
+          });
+        } else {
+          card.style.opacity = '0.5';
+          card.style.cursor = 'not-allowed';
+        }
+
+        list.appendChild(card);
+      });
+    }
+
+    function backToOrderModal() {
+      document.getElementById('driverOverlay').classList.remove('active');
+      document.getElementById('packingOverlay').classList.add('active');
+    }
+
+    function confirmDriverAssignment() {
+      if (!selectedDriver || !currentOrderId) return;
+
+      // TODO: replace with a real request to your backend, e.g.
+      // fetch(`/shipping/${currentOrderId}/assign-driver`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+      //   body: JSON.stringify({ driver: selectedDriver.name })
+      // });
+
+      document.getElementById('driverOverlay').classList.remove('active');
+      document.getElementById('pageContent').classList.remove('blurred');
+
+      showAssignToast(`${selectedDriver.name} assigned to ${currentOrderId}`);
+
+      currentOrderId = null;
+      selectedDriver = null;
+    }
+
+    function showAssignToast(message) {
+      const toast = document.getElementById('assignToast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    // Click outside either modal (on the dim backdrop) to close everything
+    ['packingOverlay', 'driverOverlay'].forEach(function (id) {
+      document.getElementById(id).addEventListener('click', function (e) {
+        if (e.target.id === id) {
+          document.getElementById('packingOverlay').classList.remove('active');
+          document.getElementById('driverOverlay').classList.remove('active');
+          document.getElementById('pageContent').classList.remove('blurred');
+          currentOrderId = null;
+          selectedDriver = null;
+        }
+      });
+    });
 
     /* ===================== Search + Filter (working) ===================== */
     const shippingRows   = Array.from(document.querySelectorAll('.shipping-row'));

@@ -17,13 +17,16 @@ class DashboardController extends Controller
         $onTimeRate          = $totalOrders > 0 ? round(($deliveredCount / $totalOrders) * 100) : 0;
 
         // ---- Board columns ----
-        $newOrders       = DB::table('orders')->where('status', 'NEW')->get();
+        // The ORDERS column acts as a running log of every order, so it keeps
+        // showing an order even after it moves on to packing/shipped/etc.
+        $newOrders       = DB::table('orders')->orderByDesc('created_at')->get();
         $packingOrders   = DB::table('orders')->where('status', 'PACKING')->get();
         $shippedOrders   = DB::table('orders')->where('status', 'SHIPPED')->get();
         $cancelledOrders = DB::table('orders')->where('status', 'CANCELLED')->get();
 
         // ---- Sidebar ----.
-        $alerts = $newOrders;
+        // Alerts should only reflect brand-new orders, not the full order log above.
+        $alerts = $newOrders->where('status', 'NEW')->values();
 
         // Activity feed: packing + shipped + cancelled orders together, newest first.
         $activity = $packingOrders

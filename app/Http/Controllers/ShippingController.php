@@ -22,32 +22,34 @@ class ShippingController extends Controller
             'amount'
         )
         ->whereIn('status',[
-            'Shipped',
-            'Ready for delivery',
-            'Out for delivery',
-            'Delayed',
-            'Delivered'
+            'SHIPPED',
+            'READY_TO_SHIP',
+            'OUT_FOR_DELIVERY',
+            'DELAYED',
+            'DELIVERED'
         ])
         ->get();
 
         $shippedToday = DB::table('orders')
         ->whereDate('updated_at', today())
-        ->where('status','Shipped')
+        ->where('status','SHIPPED')
         ->count();
 
+        // Was previously an exact copy of $shippedToday (same status filter).
+        // In-transit orders are the ones out for delivery, not just shipped.
         $inTransit = DB::table('orders')
         ->whereDate('updated_at', today())
-        ->where('status','Shipped')
+        ->where('status','OUT_FOR_DELIVERY')
         ->count();
 
         $delayed = DB::table('orders')
         ->whereDate('updated_at', today())
-        ->where('status','Delayed')
+        ->where('status','DELAYED')
         ->count();
 
         $delivered = DB::table('orders')
         ->whereDate('updated_at', today())
-        ->where('status','Delivered')
+        ->where('status','DELIVERED')
         ->count();
 
         $onTimeRate = $delivered

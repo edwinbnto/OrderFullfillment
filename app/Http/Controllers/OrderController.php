@@ -5,9 +5,22 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
+    /**
+     * Single order detail page. Moved here from the abstract base
+     * Controller, where it didn't belong (every controller inherited
+     * an order-specific method) and was broken anyway (Order class
+     * was never imported there).
+     */
+    public function show($id)
+    {
+        $order = Order::findOrFail($id);
+        return view('orders.show', compact('order'));
+    }
+
     /**
      * Orders page (order.blade.php)
      */

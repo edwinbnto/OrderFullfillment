@@ -6,6 +6,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackingController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\MaterialRequestController;
 
 Route::get('/', function () {
     return view('Signup');
@@ -49,3 +50,5 @@ Route::post('/login',[LoginController::class,'login'])->name('login');
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 
 Route::get('/shipping', [ShippingController::class, 'index'])->name('shipping');
+
+Route::post('/material-requests', [MaterialRequestController::class, 'store']);

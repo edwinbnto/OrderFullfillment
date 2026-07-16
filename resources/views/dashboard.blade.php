@@ -292,11 +292,25 @@
   .tag-packing { background: #6B4A1E; color: #FBD38D; }
   .tag-shipped { background: #1E5A6B; color: #7DD3E8; }
   .tag-delivered { background: #1E5A3A; color: #86EFAC; }
+  .tag-cancelled { background: #4A1E1E; color: #F3A9A9; }
 
   /* Priority tags (based on order age) */
   .tag-low { background: #6B2B2B; color: #F3A9A9; }
   .tag-medium { background: #6B5A1E; color: #FBE38D; }
   .tag-high { background: #6B1E1E; color: #FB8D8D; }
+
+  /* Status (left) + priority (right) sit on the same row */
+  .tag-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .tag-row .tag {
+    margin-bottom: 0;
+  }
 
   .order-due {
     font-size: 12px;
@@ -455,6 +469,15 @@
   </div>
 
   <!-- Board + Sidebar -->
+  @php
+    $statusMap = [
+      'NEW'       => ['label' => 'NEW',       'class' => 'tag-new'],
+      'PACKING'   => ['label' => 'PACKING',   'class' => 'tag-packing'],
+      'SHIPPED'   => ['label' => 'SHIPPED',   'class' => 'tag-shipped'],
+      'DELIVERED' => ['label' => 'DELIVERED', 'class' => 'tag-delivered'],
+      'CANCELLED' => ['label' => 'CANCELLED', 'class' => 'tag-cancelled'],
+    ];
+  @endphp
   <div class="board">
 
     <!-- ORDERS -->
@@ -466,12 +489,18 @@
 
       <div class="column-body">
         @forelse ($newOrders as $order)
-          @php $priority = \App\Helpers\OrderPriority::dashboard($order->created_at ?? null); @endphp
+          @php
+            $priority = \App\Helpers\OrderPriority::dashboard($order->created_at ?? null);
+            $status   = $statusMap[strtoupper($order->status)] ?? ['label' => strtoupper($order->status), 'class' => 'tag-new'];
+          @endphp
           <div class="order-card">
             <div class="order-id">{{ $order->id }}</div>
             <div class="order-details">
               <div class="order-item">{{ $order->product_name }} ×{{ $order->qty }}</div>
-              <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+              <div class="tag-row">
+                <span class="tag {{ $status['class'] }}">{{ $status['label'] }}</span>
+                <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+              </div>
               @if (!empty($order->due_date))
                 <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
               @endif
@@ -492,12 +521,18 @@
 
       <div class="column-body">
         @forelse ($packingOrders as $order)
-          @php $priority = \App\Helpers\OrderPriority::dashboard($order->created_at ?? null); @endphp
+          @php
+            $priority = \App\Helpers\OrderPriority::dashboard($order->created_at ?? null);
+            $status   = $statusMap[strtoupper($order->status)] ?? ['label' => strtoupper($order->status), 'class' => 'tag-packing'];
+          @endphp
           <div class="order-card">
             <div class="order-id">{{ $order->id }}</div>
             <div class="order-details">
               <div class="order-item">{{ $order->product_name }}</div>
-              <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+              <div class="tag-row">
+                <span class="tag {{ $status['class'] }}">{{ $status['label'] }}</span>
+                <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+              </div>
               @if (!empty($order->due_date))
                 <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
               @endif
@@ -518,12 +553,18 @@
 
       <div class="column-body">
         @forelse ($shippedOrders as $order)
-          @php $priority = \App\Helpers\OrderPriority::dashboard($order->created_at ?? null); @endphp
+          @php
+            $priority = \App\Helpers\OrderPriority::dashboard($order->created_at ?? null);
+            $status   = $statusMap[strtoupper($order->status)] ?? ['label' => strtoupper($order->status), 'class' => 'tag-shipped'];
+          @endphp
           <div class="order-card">
             <div class="order-id">{{ $order->id }}</div>
             <div class="order-details">
               <div class="order-item">{{ $order->product_name }}</div>
-              <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+              <div class="tag-row">
+                <span class="tag {{ $status['class'] }}">{{ $status['label'] }}</span>
+                <span class="tag {{ $priority['class'] }}">{{ $priority['label'] }}</span>
+              </div>
               @if (!empty($order->due_date))
                 <div class="order-due">Due: {{ \Carbon\Carbon::parse($order->due_date)->format('F j') }}</div>
               @endif

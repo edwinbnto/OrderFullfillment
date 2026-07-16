@@ -19,7 +19,7 @@ class OrderPriority
             return ['label' => 'NEW', 'class' => 'tag-new'];
         }
 
-        $daysOld = Carbon::parse($createdAt)->diffInDays(Carbon::now());
+        $daysOld = round(Carbon::parse($createdAt)->floatDiffInDays(Carbon::now()));
 
         if ($daysOld >= 3) {
             return ['label' => 'HIGH', 'class' => 'tag-high'];
@@ -42,7 +42,7 @@ class OrderPriority
             return ['label' => 'LOW', 'class' => 'priority-low'];
         }
 
-        $daysOld = Carbon::parse($createdAt)->diffInDays(now());
+        $daysOld = round(Carbon::parse($createdAt)->floatDiffInDays(Carbon::now()));
 
         if ($daysOld >= 3) {
             return ['label' => 'HIGH', 'class' => 'priority-high'];
@@ -66,7 +66,7 @@ class OrderPriority
             return ['label' => 'Low', 'class' => 'priority-low', 'key' => 'Low'];
         }
 
-        $daysOld = Carbon::parse($createdAt)->diffInDays(Carbon::now());
+        $daysOld = round(Carbon::parse($createdAt)->floatDiffInDays(Carbon::now()));
 
         if ($daysOld >= 3) {
             return ['label' => 'High', 'class' => 'priority-high', 'key' => 'High'];

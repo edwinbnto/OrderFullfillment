@@ -436,14 +436,17 @@
   }
 
   .badge.status {
-    background:rgba(255,255,255,0.1);
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
     color: #9FB3D1;
   }
 
-  .badge.status.status-cancelled {
-    background: #dc3545;
-    color: #fff;
-  }
+  .badge.status.status-new { background: rgba(255,255,255,0.1); color: #9FB3D1; }
+  .badge.status.status-packing { background: #6B4A1E; color: #FBD38D; }
+  .badge.status.status-shipped { background: #1E5A6B; color: #7DD3E8; }
+  .badge.status.status-delivered { background: #1E5A3A; color: #86EFAC; }
+  .badge.status.status-cancelled { background: #4A1E1E; color: #F3A9A9; }
 
   .badge.priority {
     background: #6e3a63;
@@ -782,6 +785,15 @@
             @forelse($orders as $order)
             @php
             $priority = \App\Helpers\OrderPriority::order($order->created_at);
+            $statusRaw = strtoupper($order->status);
+            $statusClassMap = [
+                'NEW'       => 'status-new',
+                'PACKING'   => 'status-packing',
+                'SHIPPED'   => 'status-shipped',
+                'DELIVERED' => 'status-delivered',
+                'CANCELLED' => 'status-cancelled',
+            ];
+            $statusClass = $statusClassMap[$statusRaw] ?? 'status-new';
             @endphp
             <tr class="order-row"
                 style="cursor: pointer;"
@@ -789,7 +801,7 @@
                 data-customer="{{ $order->customer_name }}"
                 data-product="{{ $order->product_name }}"
                 data-qty="{{ $order->qty }}"
-                data-status="{{ strtoupper($order->status) }}"
+                data-status="{{ $statusRaw }}"
                 data-priority="{{ $priority['label'] }}"
                 data-priority-class="{{ $priority['class'] }}"
                 data-amount="{{ number_format($order->amount, 2) }}"
@@ -798,9 +810,9 @@
               <td class="customer">{{ $order->customer_name }}</td>
               <td>{{ $order->product_name }}</td>
               <td class="qty-cell">{{ $order->qty }}</td>
-              <td class="status-cell"><span class="badge status {{ strtoupper($order->status) === 'CANCELLED' ? 'status-cancelled' : '' }}">{{ strtoupper($order->status) }}</span></td>
+              <td class="status-cell"><span class="badge status {{ $statusClass }}">{{ $statusRaw }}</span></td>
               <td class="priority-cell">
-              @if (strtoupper($order->status) !== 'CANCELLED')
+              @if ($statusRaw !== 'CANCELLED')
               <span class="badge {{ $priority['class'] }}">
               {{ $priority['label'] }}
               </span>
@@ -808,7 +820,7 @@
               </td>
               <td>{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}</td>
               <td>
-                @if (strtoupper($order->status) === 'NEW')
+                @if ($statusRaw === 'NEW')
                   <button type="button"
                           class="btn-prepare"
                           data-order-id="{{ $order->id }}"
@@ -867,7 +879,7 @@
         </div>
         <div>
           <p class="field-label">Status</p>
-          <span class="badge status" id="modalStatus">NEW</span>
+          <span class="badge status status-new" id="modalStatus">NEW</span>
         </div>
         <div>
           <p class="field-label">Product</p>
@@ -909,6 +921,26 @@
   <div class="filter-overlay" id="filterOverlay"></div>
 
   <script>
+    const STATUS_CLASSES = ['status-new', 'status-packing', 'status-shipped', 'status-delivered', 'status-cancelled'];
+
+    function statusToClass(status) {
+      const map = {
+        NEW: 'status-new',
+        PACKING: 'status-packing',
+        SHIPPED: 'status-shipped',
+        DELIVERED: 'status-delivered',
+        CANCELLED: 'status-cancelled',
+      };
+      return map[status] || 'status-new';
+    }
+
+    function setStatusBadge(el, status) {
+      if (!el) return;
+      el.textContent = status;
+      el.classList.remove(...STATUS_CLASSES);
+      el.classList.add(statusToClass(status));
+    }
+
     const orderRows = Array.from(document.querySelectorAll('.order-row'));
     let currentOrderRow = null;
 
@@ -930,8 +962,7 @@
       document.getElementById('modalQty').textContent = data.qty;
       document.getElementById('modalAmount').textContent = '₱' + data.amount;
       document.getElementById('modalDue').textContent = data.due;
-      document.getElementById('modalStatus').textContent = data.status;
-      document.getElementById('modalStatus').classList.toggle('status-cancelled', data.status === 'CANCELLED');
+      setStatusBadge(document.getElementById('modalStatus'), data.status);
 
       const priorityEl = document.getElementById('modalPriority');
       priorityEl.textContent = data.priority;
@@ -1001,8 +1032,7 @@
           const row = btn.closest('.order-row');
           row.dataset.status = 'PACKING';
 
-          const statusBadge = row.querySelector('.badge.status');
-          if (statusBadge) statusBadge.textContent = 'PACKING';
+          setStatusBadge(row.querySelector('.badge.status'), 'PACKING');
 
           // Order has moved past NEW — no action button needed anymore.
           btn.remove();
@@ -1010,7 +1040,7 @@
           // If the floating window is currently open for this same order,
           // keep it in sync with the new status.
           if (currentOrderRow === row) {
-            document.getElementById('modalStatus').textContent = 'PACKING';
+            setStatusBadge(document.getElementById('modalStatus'), 'PACKING');
           }
         })
         .catch(function (err) {
@@ -1069,8 +1099,7 @@
           if (!data.success) throw new Error(data.message || 'Cancel failed');
 
           // ---- Update modal ----
-          document.getElementById('modalStatus').textContent = 'CANCELLED';
-          document.getElementById('modalStatus').classList.add('status-cancelled');
+          setStatusBadge(document.getElementById('modalStatus'), 'CANCELLED');
           const priorityEl = document.getElementById('modalPriority');
           priorityEl.textContent = '—';
           priorityEl.className = 'badge';
@@ -1081,11 +1110,7 @@
           currentOrderRow.dataset.status = 'CANCELLED';
           currentOrderRow.dataset.priority = 'CANCELLED';
 
-          const statusBadge = currentOrderRow.querySelector('.badge.status');
-          if (statusBadge) {
-            statusBadge.textContent = 'CANCELLED';
-            statusBadge.classList.add('status-cancelled');
-          }
+          setStatusBadge(currentOrderRow.querySelector('.badge.status'), 'CANCELLED');
 
           // Priority badge disappears entirely for cancelled orders.
           const rowPriorityBadge = currentOrderRow.querySelector('td .badge:not(.status)');

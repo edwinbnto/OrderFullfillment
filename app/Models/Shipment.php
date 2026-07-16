@@ -14,6 +14,7 @@ class Shipment extends Model
         'customer_name',
         'product_name',
         'qty',
+        'amount',
         'courier',
         'box_used',
         'tracking_number',

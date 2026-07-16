@@ -664,6 +664,49 @@
     border-top: 1px solid rgba(255,255,255,0.08);
   }
 
+.request-modal { width: 480px; }
+
+.request-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.modal-close {
+  cursor: pointer;
+  color: #8ea3cc;
+  font-size: 16px;
+}
+.modal-close:hover { color: #fff; }
+
+.request-form-body {
+  padding: 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+
+.form-input {
+  background: #0f2549;
+  border: 1px solid var(--pill-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-input::placeholder { color: #6b83ac; }
+
   .btn {
     flex: 1;
     padding: 12px;
@@ -679,7 +722,25 @@
   .btn-cancel { background: #2b4a7c; color: #dbe4f5; }
   .btn-cancel:hover { background: #345a94; }
 
-  /* ===== Packing failed popup ===== */
+  .btn-request-material {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .btn-request-material:hover {
+    background: #2563eb;
+  } 
+
   .error-modal {
     width: 380px;
   }
@@ -722,6 +783,7 @@
   }
 
   .btn-error-ok:hover { background: #99283a; }
+
 </style>
 </head>
 <body>
@@ -859,14 +921,15 @@
       <div class="panel activity">
         <div class="panel-header">
           <div class="title">📋 Packing materials</div>
+          <button class="btn-request-material" onclick="openRequestModal()">
+          <span>+</span> Request material
+          </button>
         </div>
         <div class="activity-list">
           @forelse ($materials as $material)
             @php
               $isLow = isset($material->stock_qty, $material->low_stock_threshold)
                   && $material->stock_qty <= $material->low_stock_threshold;
-              // Boxes always show the box glyph; everything else shows a
-              // warning when low, or a checkmark when adequately stocked.
               if (!empty($material->is_box)) {
                   $icon = $material->icon ?? '📦';
               } else {
@@ -982,6 +1045,66 @@
     </div>
   </div>
 
+  <div class="overlay" id="requestMaterialOverlay">
+    <div class="modal request-modal">
+      <div class="modal-header request-modal-header">
+        <div>
+          <h2>🚚 Request material</h2>
+          <p>Sent to the procurement department for approval.</p>
+        </div>
+        <span class="modal-close" onclick="closeRequestModal()">✕</span>
+      </div>
+
+      <div class="request-form-body">
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">Req number</label>
+            <input type="text" id="reqNumber" class="form-input" readonly>
+          </div>
+        <div class="form-field">
+          <label class="field-label">Date requested</label>
+          <input type="date" id="reqDate" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label">Item</label>
+        <select id="reqItem" class="form-input">
+          @foreach ($materials as $material)
+            <option value="{{ $material->name }}">{{ $material->name }}</option>
+          @endforeach
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label">Qty</label>
+        <input type="number" id="reqQty" class="form-input" min="1" value="0">
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Department</label>
+          <input type="text" id="reqDepartment" class="form-input" value="Procurement">
+        </div>
+        <div class="form-field">
+          <label class="field-label">Requested by</label>
+          <input type="text" id="reqRequestedBy" class="form-input" placeholder="Your name">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label">Notes</label>
+        <textarea id="reqNotes" class="form-input" rows="3" placeholder="Optional notes for procurement"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeRequestModal()">Cancel</button>
+      <button class="btn btn-done" onclick="submitMaterialRequest()">Submit request</button>
+    </div>
+  </div>
+</div>
+
   <script>
     // Order data keyed by order id, rendered straight from the DB
     // ($packingOrders, queried in the controller) — nothing hardcoded.
@@ -989,6 +1112,50 @@
     let currentOrderId = null;
     let selectedBox = null;
     let selectedCourier = null;
+
+    function openRequestModal() {
+      document.getElementById('reqNumber').value = 'REQ-' + String(Date.now()).slice(-5);
+      document.getElementById('reqDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('pageContent').classList.add('blurred');
+      document.getElementById('requestMaterialOverlay').classList.add('active');
+    }
+
+    function closeRequestModal() {
+      document.getElementById('pageContent').classList.remove('blurred');
+      document.getElementById('requestMaterialOverlay').classList.remove('active');
+    }
+
+    async function submitMaterialRequest() {
+    const payload = {
+      req_number: document.getElementById('reqNumber').value,
+      date_requested: document.getElementById('reqDate').value,
+      item: document.getElementById('reqItem').value,
+      qty: document.getElementById('reqQty').value,
+      department: document.getElementById('reqDepartment').value,
+      requested_by: document.getElementById('reqRequestedBy').value,
+      notes: document.getElementById('reqNotes').value,
+    };
+
+    if (!payload.qty || payload.qty <= 0) { alert('Enter a valid quantity'); return; }
+    if (!payload.requested_by) { alert('Enter your name'); return; }
+
+    const response = await fetch(`{{ url('/material-requests') }}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+      if (result.success) {
+      closeRequestModal();
+      location.reload();
+    } else {
+      alert(result.message || 'Failed to submit request.');
+      }
+    }
 
     function openPackingModal(orderId, rowEl) {
       currentOrderId = orderId;
@@ -1186,6 +1353,7 @@
     } else {
         showPackingFailedModal('Something went wrong while packing this order. Please try again.');
     }
+
   }
   </script>
 
