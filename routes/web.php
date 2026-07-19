@@ -29,10 +29,6 @@ Route::post(
     [PackingController::class, 'processOrder']
 )->name('packing.process');
 
-Route::get('/shipping', function () {
-    return view('shipping');
-})->name('shipping');
-
 Route::get('/return', function () {
     return view('return');
 })->name('return');
@@ -50,5 +46,7 @@ Route::post('/login',[LoginController::class,'login'])->name('login');
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 
 Route::get('/shipping', [ShippingController::class, 'index'])->name('shipping');
+Route::get('/shipping/{shipmentId}/drivers', [ShippingController::class, 'drivers'])->name('shipping.drivers');
+Route::post('/shipping/{shipmentId}/assign-driver', [ShippingController::class, 'assignDriver'])->name('shipping.assign-driver');
 
 Route::post('/material-requests', [MaterialRequestController::class, 'store']);

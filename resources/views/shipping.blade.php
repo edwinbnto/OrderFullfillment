@@ -779,11 +779,13 @@
     <td>{{ $shipment->address }}</td>
 
     <td>
+      @if($statusRaw === 'READY_TO_SHIP')
         <button
             class="btn-prepare"
             onclick="event.stopPropagation(); openShippingModal('{{ $shipment->shipment_id }}', true)">
             Assign Driver
         </button>
+        @endif
     </td>
 
 </tr>
@@ -826,30 +828,30 @@
   <div class="overlay" id="packingOverlay">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modalOrderId">#ORD-4821</h2>
+        <h2 id="modalOrderId">—</h2>
         <p>Website order</p>
       </div>
 
       <div class="modal-body">
         <div>
           <p class="field-label">Customer</p>
-          <p class="field-value" id="modalCustomer">Maria Santos</p>
+          <p class="field-value" id="modalCustomer">—</p>
         </div>
         <div>
           <p class="field-label">Status</p>
-          <span class="status-pill tag-packing" id="modalStatus">READY FOR DELIVERY</span>
+          <span class="status-pill tag-packing" id="modalStatus">—</span>
         </div>
         <div>
           <p class="field-label">Product</p>
-          <p class="field-value" id="modalItem">Wireless Headphone</p>
+          <p class="field-value" id="modalItem">—</p>
         </div>
         <div>
           <p class="field-label">Tracing no.</p>
-          <p class="field-value" id="modalTracking">2</p>
+          <p class="field-value" id="modalTracking">—</p>
         </div>
         <div>
           <p class="field-label">Courier</p>
-          <p class="field-value" id="modalCourier">J &amp; T Express</p>
+          <p class="field-value" id="modalCourier">—</p>
         </div>
         <div>
           <p class="field-label">Amount</p>
@@ -857,11 +859,11 @@
         </div>
         <div>
           <p class="field-label">Due date</p>
-          <p class="field-value" id="modalDue">Jun 25</p>
+          <p class="field-value" id="modalDue">—</p>
         </div>
         <div style="grid-column: 1 / -1;">
           <p class="field-label">Delivery Address</p>
-          <p class="field-value" id="modalAddress">Hillsview Naic, Cavite</p>
+          <p class="field-value" id="modalAddress">—</p>
         </div>
       </div>
 
@@ -904,6 +906,12 @@
 
   <script>
 
+    // Base URL for the shipping endpoints, resolved server-side so it
+    // works no matter where this app is actually mounted (e.g. served
+    // from a subfolder like /dashboard/OrderFullfillment/public rather
+    // than the domain root).
+    const SHIPPING_BASE_URL = "{{ url('/shipping') }}";
+
     const orders = @json($shipments->keyBy('shipment_id'));
     const statusLabels = {
       'SHIPPED': 'SHIPPED',
@@ -920,13 +928,9 @@
       'DELAYED': 'tag-cancelled',
     };
     const STATUS_TAG_CLASSES = ['tag-packing', 'tag-shipped', 'tag-transit', 'tag-delivered', 'tag-cancelled'];
-    const drivers = [
-      { name: 'Edward Tan', vehicle: 'Motorcycle', plate: 'JNT-5521', available: true },
-      { name: 'Bea Ramos',  vehicle: 'Van',        plate: 'JNT-2290', available: true },
-    ];
 
     let currentOrderId = null;
-    let selectedDriver = null;
+    let selectedDriverId = null;
 
     function openShippingModal(orderId, showBanner) {
       const order = orders[orderId];
@@ -973,41 +977,66 @@
       document.getElementById('driverModalOrderId').textContent =
         document.getElementById('modalOrderId').textContent;
 
-      renderDriverList();
       document.getElementById('driverOverlay').classList.add('active');
+      fetchDrivers(currentOrderId);
     }
 
-    function renderDriverList() {
-      selectedDriver = null;
+    async function fetchDrivers(orderId) {
+      const list = document.getElementById('driverList');
+      selectedDriverId = null;
       document.getElementById('confirmAssignBtn').disabled = true;
+      list.innerHTML = '<p style="color: var(--text-muted); padding: 8px 4px;">Loading available drivers…</p>';
 
+      try {
+        const res = await fetch(`${SHIPPING_BASE_URL}/${orderId}/drivers`, {
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!res.ok) {
+          // Show the real status/body instead of swallowing it, so the
+          // actual cause (missing table, bad route, etc.) is visible.
+          let detail = res.status + ' ' + res.statusText;
+          try {
+            const body = await res.json();
+            if (body.message) detail = body.message;
+          } catch (_) {}
+          console.error('Failed to load drivers:', detail);
+          throw new Error(detail);
+        }
+
+        const availableDrivers = await res.json();
+        renderDriverList(availableDrivers);
+      } catch (err) {
+        list.innerHTML = '<p style="color:#f87171; padding:8px 4px;">Could not load drivers: ' + err.message + '</p>';
+      }
+    }
+
+    function renderDriverList(availableDrivers) {
       const list = document.getElementById('driverList');
       list.innerHTML = '';
 
-      drivers.forEach(function (driver) {
+      if (!availableDrivers.length) {
+        list.innerHTML = '<p style="color: var(--text-muted); padding: 8px 4px;">No available drivers for this courier right now.</p>';
+        return;
+      }
+
+      availableDrivers.forEach(function (driver) {
         const card = document.createElement('div');
         card.className = 'driver-card';
         card.innerHTML = `
           <div>
             <div class="driver-name">${driver.name}</div>
-            <div class="driver-sub">${driver.vehicle} · Plate ${driver.plate}</div>
+            <div class="driver-sub">${driver.vehicle_type} · Plate ${driver.plate_number}</div>
           </div>
-          <span class="driver-avail ${driver.available ? '' : 'busy'}">
-            ${driver.available ? 'Available' : 'On delivery'}
-          </span>
+          <span class="driver-avail">Available</span>
         `;
 
-        if (driver.available) {
-          card.addEventListener('click', function () {
-            document.querySelectorAll('.driver-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            selectedDriver = driver;
-            document.getElementById('confirmAssignBtn').disabled = false;
-          });
-        } else {
-          card.style.opacity = '0.5';
-          card.style.cursor = 'not-allowed';
-        }
+        card.addEventListener('click', function () {
+          document.querySelectorAll('.driver-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedDriverId = driver.id;
+          document.getElementById('confirmAssignBtn').disabled = false;
+        });
 
         list.appendChild(card);
       });
@@ -1018,28 +1047,77 @@
       document.getElementById('packingOverlay').classList.add('active');
     }
 
-    function confirmDriverAssignment() {
-      if (!selectedDriver || !currentOrderId) return;
+    async function confirmDriverAssignment() {
+      if (!selectedDriverId || !currentOrderId) return;
 
-      // TODO: replace with a real request to your backend, e.g.
-      // fetch(`/shipping/${currentOrderId}/assign-driver`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-      //   body: JSON.stringify({ driver: selectedDriver.name })
-      // });
+      const confirmBtn = document.getElementById('confirmAssignBtn');
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Assigning…';
 
-      document.getElementById('driverOverlay').classList.remove('active');
-      document.getElementById('pageContent').classList.remove('blurred');
+      try {
+        const res = await fetch(`${SHIPPING_BASE_URL}/${currentOrderId}/assign-driver`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ driver_id: selectedDriverId })
+        });
 
-      showAssignToast(`${selectedDriver.name} assigned to ${currentOrderId}`);
+        const data = await res.json();
 
-      currentOrderId = null;
-      selectedDriver = null;
+        if (!res.ok) {
+          showAssignToast(data.message || 'Could not assign driver.', true);
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = 'Confirm Assignment';
+          return;
+        }
+
+        applyAssignmentToRow(currentOrderId, data.status);
+
+        document.getElementById('driverOverlay').classList.remove('active');
+        document.getElementById('pageContent').classList.remove('blurred');
+
+        showAssignToast(data.message);
+
+        currentOrderId = null;
+        selectedDriverId = null;
+      } catch (err) {
+        showAssignToast('Network error — please try again.', true);
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm Assignment';
+      }
     }
 
-    function showAssignToast(message) {
+    // Reflect the new status on the table row immediately, without a full
+    // page reload: swap the status pill and drop the now-irrelevant
+    // "Assign Driver" button.
+    function applyAssignmentToRow(orderId, newStatus) {
+      if (orders[orderId]) orders[orderId].status = newStatus;
+
+      const row = document.querySelector('.shipping-row[data-id="' + orderId + '"]');
+      if (!row) return;
+
+      row.dataset.status = newStatus;
+
+      const tag = row.querySelector('.status-cell .status-tag');
+      if (tag) {
+        tag.textContent = statusLabels[newStatus] || newStatus;
+        tag.classList.remove(...STATUS_TAG_CLASSES);
+        tag.classList.add(statusTagClasses[newStatus] || 'tag-shipped');
+      }
+
+      const actionCell = row.querySelector('td:last-child');
+      if (actionCell) actionCell.innerHTML = '';
+    }
+
+    function showAssignToast(message, isError = false) {
       const toast = document.getElementById('assignToast');
       toast.textContent = message;
+      toast.style.background = isError ? '#ef4444' : '#22c55e';
+      toast.style.color = isError ? '#ffffff' : '#08240f';
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2600);
     }
@@ -1052,7 +1130,7 @@
           document.getElementById('driverOverlay').classList.remove('active');
           document.getElementById('pageContent').classList.remove('blurred');
           currentOrderId = null;
-          selectedDriver = null;
+          selectedDriverId = null;
         }
       });
     });
