@@ -1070,21 +1070,37 @@
       <div class="form-field">
         <label class="field-label">Item</label>
         <select id="reqItem" class="form-input">
-          @foreach ($materials as $material)
-            <option value="{{ $material->name }}">{{ $material->name }}</option>
-          @endforeach
+          <option value="Small Box">Small Box</option>
+          <option value="Medium Box">Medium Box</option>
+          <option value="Large Box">Large Box</option>
+          <option value="Bubble Wrap">Bubble Wrap</option>
+          <option value="Packing Tape">Packing Tape</option>
+          <option value="Foam Inserts">Foam Inserts</option>
+          <option value="Silica Gel Packs">Silica Gel Packs</option>
+          <option value="Fragile Tape">Fragile Tape</option>
         </select>
       </div>
 
-      <div class="form-field">
-        <label class="field-label">Qty</label>
-        <input type="number" id="reqQty" class="form-input" min="1" value="0">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Qty</label>
+          <input type="number" id="reqQty" class="form-input" min="1" value="0">
+        </div>
+        <div class="form-field">
+          <label class="field-label">Priority</label>
+          <select id="reqPriority" class="form-input">
+            <option value="Low">Low</option>
+            <option value="Normal" selected>Normal</option>
+            <option value="Urgent">Urgent</option>
+            <option value="High">High</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-row">
         <div class="form-field">
           <label class="field-label">Department</label>
-          <input type="text" id="reqDepartment" class="form-input" value="Procurement">
+          <input type="text" id="reqDepartment" class="form-input" value="Order Fullfilment">
         </div>
         <div class="form-field">
           <label class="field-label">Requested by</label>
@@ -1116,6 +1132,7 @@
     function openRequestModal() {
       document.getElementById('reqNumber').value = 'REQ-' + String(Date.now()).slice(-5);
       document.getElementById('reqDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('reqPriority').value = 'Normal';
       document.getElementById('pageContent').classList.add('blurred');
       document.getElementById('requestMaterialOverlay').classList.add('active');
     }
@@ -1131,6 +1148,7 @@
       date_requested: document.getElementById('reqDate').value,
       item: document.getElementById('reqItem').value,
       qty: document.getElementById('reqQty').value,
+      priority: document.getElementById('reqPriority').value,
       department: document.getElementById('reqDepartment').value,
       requested_by: document.getElementById('reqRequestedBy').value,
       notes: document.getElementById('reqNotes').value,

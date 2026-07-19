@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Order;
+use App\Models\Shipment;
 
 class ShippingController extends Controller
 {
     public function index()
     {
-        $shipments = DB::table('shipments')
-        ->select(
+        $shipments = Shipment::select(
             'shipment_id',
             'customer_name',
             'product_name',
@@ -30,25 +30,21 @@ class ShippingController extends Controller
         ])
         ->get();
 
-        $shippedToday = DB::table('orders')
-        ->whereDate('updated_at', today())
+        $shippedToday = Order::whereDate('updated_at', today())
         ->where('status','SHIPPED')
         ->count();
 
         // Was previously an exact copy of $shippedToday (same status filter).
         // In-transit orders are the ones out for delivery, not just shipped.
-        $inTransit = DB::table('orders')
-        ->whereDate('updated_at', today())
+        $inTransit = Order::whereDate('updated_at', today())
         ->where('status','OUT_FOR_DELIVERY')
         ->count();
 
-        $delayed = DB::table('orders')
-        ->whereDate('updated_at', today())
+        $delayed = Order::whereDate('updated_at', today())
         ->where('status','DELAYED')
         ->count();
 
-        $delivered = DB::table('orders')
-        ->whereDate('updated_at', today())
+        $delivered = Order::whereDate('updated_at', today())
         ->where('status','DELIVERED')
         ->count();
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
+use App\Models\PackingMaterial;
 
 class OrderController extends Controller
 {
@@ -26,17 +27,16 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders       = DB::table('orders')->orderByDesc('created_at')->get();
-        $ordersToday  = DB::table('orders')->where('status', 'NEW')->count();
-        $inPacking    = DB::table('orders')->where('status', 'PACKING')->count();
-        $shippedToday = DB::table('orders')->where('status', 'SHIPPED')->count();
-        $delivered    = DB::table('orders')->where('status', 'DELIVERED')->count();
-        $total        = DB::table('orders')->count();
+        $orders       = Order::orderByDesc('created_at')->get();
+        $ordersToday  = Order::where('status', 'NEW')->count();
+        $inPacking    = Order::where('status', 'PACKING')->count();
+        $shippedToday = Order::where('status', 'SHIPPED')->count();
+        $delivered    = Order::where('status', 'DELIVERED')->count();
+        $total        = Order::count();
         $onTimeRate   = $total > 0 ? round(($delivered / $total) * 100) . '%' : '0%';
 
 
-        $recentActivity = DB::table('orders')
-            ->whereIn('status', ['PACKING', 'SHIPPED', 'CANCELLED'])
+        $recentActivity = Order::whereIn('status', ['PACKING', 'SHIPPED', 'CANCELLED'])
             ->orderByDesc('updated_at')
             ->limit(10)
             ->get()
@@ -67,13 +67,15 @@ class OrderController extends Controller
      */
     public function packing()
     {
-        $packingOrders    = DB::table('orders')->where('status', 'PACKING')->get();
-        $readyToShipCount = DB::table('orders')->where('status', 'READY_TO_SHIP')->count();
+        $packingOrders    = Order::where('status', 'PACKING')->get();
+        $readyToShipCount = Order::where('status', 'READY_TO_SHIP')->count();
         $packingErrorToday = 0; // TODO: hook up to a packing_errors table once one exists
 
-        // Expected table: packing_materials(id, name, icon, stock_qty,
-        // low_stock_threshold, stock_label, is_box, box_size)
-        $materials = DB::table('packing_materials')->get();
+        // packing_materials lives on the separate "inventory" connection,
+        // not the default one — must go through the PackingMaterial model
+        // (which declares that connection) rather than DB::table(), or this
+        // silently queries the wrong database and returns nothing.
+        $materials = PackingMaterial::all();
 
         return view('packing', compact(
             'packingOrders', 'readyToShipCount', 'packingErrorToday', 'materials'
@@ -88,7 +90,7 @@ class OrderController extends Controller
      */
     public function prepare($id): JsonResponse
     {
-        $order = DB::table('orders')->where('id', $id)->first();
+        $order = Order::find($id);
 
         if (!$order) {
             return response()->json([
@@ -104,7 +106,7 @@ class OrderController extends Controller
             ], 409);
         }
 
-        DB::table('orders')->where('id', $id)->update([
+        $order->update([
             'status'     => 'PACKING',
             'updated_at' => now(),
         ]);
@@ -123,7 +125,7 @@ class OrderController extends Controller
      */
     public function cancel($id): JsonResponse
     {
-        $order = DB::table('orders')->where('id', $id)->first();
+        $order = Order::find($id);
 
         if (!$order) {
             return response()->json([
@@ -148,7 +150,7 @@ class OrderController extends Controller
             ], 409);
         }
 
-        DB::table('orders')->where('id', $id)->update([
+        $order->update([
             'status'     => 'CANCELLED',
             'updated_at' => now(),
         ]);

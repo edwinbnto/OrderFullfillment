@@ -804,7 +804,7 @@
                 data-status="{{ $statusRaw }}"
                 data-priority="{{ $priority['label'] }}"
                 data-priority-class="{{ $priority['class'] }}"
-                data-amount="{{ number_format($order->amount, 2) }}"
+                data-amount="{{ number_format($order->product_amount * $order->qty, 2) }}"
                 data-due="{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}">
               <td class="order-id">{{ $order->id }}</td>
               <td class="customer">{{ $order->customer_name }}</td>

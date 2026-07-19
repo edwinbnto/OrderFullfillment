@@ -18,6 +18,7 @@ public function store(Request $request)
         'department' => 'nullable|string',
         'requested_by' => 'nullable|string',
         'notes' => 'nullable|string',
+        'priority' => 'nullable|string',
     ]);
 
     MaterialRequest::create($validated);
