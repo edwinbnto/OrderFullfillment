@@ -444,6 +444,7 @@
 
   .badge.status.status-new { background: rgba(255,255,255,0.1); color: #9FB3D1; }
   .badge.status.status-packing { background: #6B4A1E; color: #FBD38D; }
+  .badge.status.status-transit { background: #1E3A6B; color: #93C5FD; }
   .badge.status.status-shipped { background: #1E5A6B; color: #7DD3E8; }
   .badge.status.status-delivered { background: #1E5A3A; color: #86EFAC; }
   .badge.status.status-cancelled { background: #4A1E1E; color: #F3A9A9; }
@@ -569,24 +570,94 @@
     font-size: 13px;
   }
 
-  .modal-body {
-    padding: 24px 28px;
+  .modal-body-grid {
+    padding: 20px 28px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px 20px;
+    gap: 18px 20px;
   }
 
-  .modal-body .field-label {
+  .modal-body-grid .field-label {
     margin: 0 0 6px;
     font-size: 12px;
     color: #8ea3cc;
   }
 
-  .modal-body .field-value {
+  .modal-body-grid .field-value {
     margin: 0;
     font-size: 15px;
     color: #fff;
     font-weight: 600;
+  }
+
+  /* ===== Items section (order modal) ===== */
+  .items-section {
+    padding: 4px 28px 24px;
+  }
+
+  .items-heading {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #cdd9f0;
+  }
+
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0f2549;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+
+  .item-row .item-name {
+    margin: 0 0 3px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .item-row .item-meta {
+    margin: 0;
+    font-size: 12px;
+    color: #8ea3cc;
+  }
+
+  .item-row .item-line-total {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    padding-left: 12px;
+  }
+
+  .items-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 14px;
+  }
+
+  .items-total .items-total-label {
+    color: #8ea3cc;
+    font-weight: 600;
+  }
+
+  .items-total .items-total-value {
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
   }
 
   .modal-footer {
@@ -647,33 +718,99 @@
     color: #fff;
 }
 
-.confirm-box {
+/* ===== Cancel confirmation modal (stacked on top of order modal) ===== */
+.cancel-modal-overlay {
+    z-index: 200;
+    background: rgba(5, 12, 28, 0.65);
+}
+
+.cancel-warning {
+    text-align: center;
+    padding: 4px 28px 18px;
+}
+
+.cancel-warning .warning-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
     background: rgba(225,75,90,0.16);
     border: 1px solid rgba(225,75,90,0.45);
-    border-radius: 10px;
-    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.cancel-warning .cancel-title {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.cancel-warning .cancel-desc {
+    margin: 0 auto;
+    max-width: 340px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #b9c6e3;
+}
+
+.cancel-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     margin: 0 28px 20px;
-    display: none;
+    padding: 12px 14px;
+    background: #0f2549;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
 }
-.confirm-box.show { display: block; }
-.confirm-box p {
-    margin: 0 0 10px;
-    font-size: 12.5px;
-    color: #ffd9dd;
-    line-height: 1.4;
+
+.cancel-items-list .cancel-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13.5px;
 }
-.confirm-actions { display: flex; gap: 10px; }
-.confirm-actions button {
-    flex: 1;
+
+.cancel-items-list .cancel-item-name {
+    color: #dbe4f5;
+}
+
+.cancel-items-list .cancel-item-amount {
+    color: #fff;
+    font-weight: 700;
+}
+
+.cancel-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 28px 28px;
+}
+
+.cancel-actions button {
+    width: 100%;
     border: none;
-    border-radius: 7px;
-    padding: 8px 0;
-    font-size: 12px;
+    border-radius: 9px;
+    padding: 13px 0;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
 }
-.btn-yes { background: #e14b5a; color: #fff; }
-.btn-no  { background: #2b4a7c; color: #dbe4f5; }
+
+.btn-yes-full { background: #b3374a; color: #fff; }
+.btn-yes-full:hover { background: #c23f54; }
+
+.btn-no-full {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    color: #dbe4f5;
+}
+.btn-no-full:hover { background: rgba(255,255,255,0.05); }
+
 .btn-cancel.disabled { opacity: .4; cursor: not-allowed; }
 
 .priority-cancelled {
@@ -773,8 +910,8 @@
             <tr>
               <th>Order Id</th>
               <th>Customer</th>
-              <th>Product</th>
               <th class="th-qty">Qty</th>
+              <th>Amount</th>
               <th class="th-status">Status</th>
               <th class="th-priority">Priority</th>
               <th>Due</th>
@@ -786,31 +923,51 @@
             @php
             $priority = \App\Helpers\OrderPriority::order($order->created_at);
             $statusRaw = strtoupper($order->status);
+            $statusLabels = [
+                'NEW'               => 'NEW',
+                'PACKING'           => 'PACKING',
+                'READY_TO_SHIP'     => 'READY FOR DELIVERY',
+                'OUT_FOR_DELIVERY'  => 'OUT FOR DELIVERY',
+                'SHIPPED'           => 'SHIPPED',
+                'DELIVERED'         => 'DELIVERED',
+                'CANCELLED'         => 'CANCELLED',
+            ];
+            $statusLabel = $statusLabels[$statusRaw] ?? strtoupper(str_replace('_', ' ', $statusRaw));
             $statusClassMap = [
-                'NEW'       => 'status-new',
-                'PACKING'   => 'status-packing',
-                'SHIPPED'   => 'status-shipped',
-                'DELIVERED' => 'status-delivered',
-                'CANCELLED' => 'status-cancelled',
+                'NEW'               => 'status-new',
+                'PACKING'           => 'status-packing',
+                'READY_TO_SHIP'     => 'status-packing',
+                'OUT_FOR_DELIVERY'  => 'status-transit',
+                'SHIPPED'           => 'status-shipped',
+                'DELIVERED'         => 'status-delivered',
+                'CANCELLED'         => 'status-cancelled',
             ];
             $statusClass = $statusClassMap[$statusRaw] ?? 'status-new';
+            $orderQty = $order->items->sum('qty');
+            $orderTotal = $order->items->sum(fn($item) => $item->qty * $item->product_amount);
             @endphp
             <tr class="order-row"
                 style="cursor: pointer;"
                 data-id="{{ $order->id }}"
                 data-customer="{{ $order->customer_name }}"
-                data-product="{{ $order->product_summary }}"
-                data-qty="{{ $order->total_qty }}"
+                data-qty="{{ $orderQty }}"
+                data-amount="{{ $orderTotal }}"
                 data-status="{{ $statusRaw }}"
                 data-priority="{{ $priority['label'] }}"
                 data-priority-class="{{ $priority['class'] }}"
-                data-amount="{{ number_format($order->total, 2) }}"
-                data-due="{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}">
+                data-due="{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}"
+                {{-- Itemized breakdown for the order modal, sourced from the
+                     order_items table (product_name, qty, product_amount). --}}
+                data-items="{{ $order->items->map(fn($item) => [
+                    'name'  => $item->product_name,
+                    'qty'   => $item->qty,
+                    'price' => $item->product_amount,
+                ])->toJson() }}">
               <td class="order-id">{{ $order->id }}</td>
               <td class="customer">{{ $order->customer_name }}</td>
-              <td>{{ $order->product_summary }}</td>
-              <td class="qty-cell">{{ $order->total_qty }}</td>
-              <td class="status-cell"><span class="badge status {{ $statusClass }}">{{ $statusRaw }}</span></td>
+              <td class="qty-cell">{{ $orderQty }}</td>
+              <td class="amount-cell">₱{{ number_format($orderTotal, 2) }}</td>
+              <td class="status-cell"><span class="badge status {{ $statusClass }}">{{ $statusLabel }}</span></td>
               <td class="priority-cell">
               @if ($statusRaw !== 'CANCELLED')
               <span class="badge {{ $priority['class'] }}">
@@ -870,9 +1027,9 @@
     <div class="modal">
       <div class="modal-header">
         <h2 id="modalOrderId">#ORD-4821</h2>
-        <p>Website order</p>
+        <p id="modalSubtitle">Website order · 2 items</p>
       </div>
-      <div class="modal-body">
+      <div class="modal-body-grid">
         <div>
           <p class="field-label">Customer</p>
           <p class="field-value" id="modalCustomer">Maria Santos</p>
@@ -882,31 +1039,23 @@
           <span class="badge status status-new" id="modalStatus">NEW</span>
         </div>
         <div>
-          <p class="field-label">Product</p>
-          <p class="field-value" id="modalProduct">Wireless Headphone</p>
-        </div>
-        <div>
-          <p class="field-label">Quantity</p>
-          <p class="field-value" id="modalQty">2</p>
-        </div>
-        <div>
-          <p class="field-label">Amount</p>
-          <p class="field-value" id="modalAmount">₱0.00</p>
+          <p class="field-label">Due date</p>
+          <p class="field-value" id="modalDue">Jun 25</p>
         </div>
         <div>
           <p class="field-label">Priority</p>
           <span class="badge priority" id="modalPriority">Low</span>
         </div>
-        <div>
-          <p class="field-label">Due date</p>
-          <p class="field-value" id="modalDue">Jun 25</p>
-        </div>
       </div>
-      <div class="confirm-box" id="confirmBox">
-        <p>⚠️ Are you sure you want to cancel this order? This action can't be undone and the customer will be notified.</p>
-        <div class="confirm-actions">
-          <button class="btn-yes" id="yesCancelBtn">Yes, cancel the order</button>
-          <button class="btn-no" id="noKeepBtn">No, keep order</button>
+
+      <div class="items-section">
+        <p class="items-heading">Items in this order</p>
+        <div class="items-list" id="modalItemsList">
+          <!-- populated by JS -->
+        </div>
+        <div class="items-total">
+          <span class="items-total-label" id="modalItemsTotalLabel">Total (0 items)</span>
+          <span class="items-total-value" id="modalAmount">₱0.00</span>
         </div>
       </div>
 
@@ -916,17 +1065,78 @@
       </div>
     </div>
   </div>
+
+  <div class="overlay cancel-modal-overlay" id="cancelOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="cancelOrderId">#ORD-4821</h2>
+        <p id="cancelSubtitle">Website order · 2 items</p>
+      </div>
+      <div class="modal-body-grid">
+        <div>
+          <p class="field-label">Customer</p>
+          <p class="field-value" id="cancelCustomer">Maria Santos</p>
+        </div>
+        <div>
+          <p class="field-label">Status</p>
+          <span class="badge status status-new" id="cancelStatus">NEW</span>
+        </div>
+        <div>
+          <p class="field-label">Amount</p>
+          <p class="field-value" id="cancelAmount">₱0.00</p>
+        </div>
+        <div>
+          <p class="field-label">Due date</p>
+          <p class="field-value" id="cancelDue">Jun 25</p>
+        </div>
+      </div>
+
+      <div class="cancel-warning">
+        <div class="warning-icon">⚠️</div>
+        <p class="cancel-title">Cancel this order?</p>
+        <p class="cancel-desc">
+          This will cancel all <span id="cancelItemCount">0</span> items below and notify
+          <span id="cancelCustomerName">this customer</span>. This action can't be undone.
+        </p>
+      </div>
+
+      <div class="cancel-items-list" id="cancelItemsList">
+        <!-- populated by JS -->
+      </div>
+
+      <div class="cancel-actions">
+        <button class="btn-yes-full" id="yesCancelBtn">Yes, cancel order</button>
+        <button class="btn-no-full" id="noKeepBtn">No, keep order</button>
+      </div>
+    </div>
+  </div>
   
 
   <div class="filter-overlay" id="filterOverlay"></div>
 
   <script>
-    const STATUS_CLASSES = ['status-new', 'status-packing', 'status-shipped', 'status-delivered', 'status-cancelled'];
+    const STATUS_CLASSES = ['status-new', 'status-packing', 'status-transit', 'status-shipped', 'status-delivered', 'status-cancelled'];
+
+    const STATUS_LABELS = {
+      NEW: 'NEW',
+      PACKING: 'PACKING',
+      READY_TO_SHIP: 'READY FOR DELIVERY',
+      OUT_FOR_DELIVERY: 'OUT FOR DELIVERY',
+      SHIPPED: 'SHIPPED',
+      DELIVERED: 'DELIVERED',
+      CANCELLED: 'CANCELLED',
+    };
+
+    function statusToLabel(status) {
+      return STATUS_LABELS[status] || String(status).replace(/_/g, ' ');
+    }
 
     function statusToClass(status) {
       const map = {
         NEW: 'status-new',
         PACKING: 'status-packing',
+        READY_TO_SHIP: 'status-packing',
+        OUT_FOR_DELIVERY: 'status-transit',
         SHIPPED: 'status-shipped',
         DELIVERED: 'status-delivered',
         CANCELLED: 'status-cancelled',
@@ -936,7 +1146,7 @@
 
     function setStatusBadge(el, status) {
       if (!el) return;
-      el.textContent = status;
+      el.textContent = statusToLabel(status);
       el.classList.remove(...STATUS_CLASSES);
       el.classList.add(statusToClass(status));
     }
@@ -953,14 +1163,46 @@
       });
     });
 
+    function renderItemRows(items) {
+      return items.map(function (item) {
+        const qty = Number(item.qty) || 0;
+        const price = Number(item.price) || 0;
+        const lineTotal = qty * price;
+        return (
+          '<div class="item-row">' +
+            '<div>' +
+              '<p class="item-name">' + item.name + '</p>' +
+              '<p class="item-meta">Qty ' + qty + ' · ₱' + price.toFixed(2) + ' each</p>' +
+            '</div>' +
+            '<div class="item-line-total">₱' + lineTotal.toFixed(2) + '</div>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function computeItemsTotal(items) {
+      return items.reduce(function (sum, item) {
+        return sum + ((Number(item.qty) || 0) * (Number(item.price) || 0));
+      }, 0);
+    }
+
+    function itemLabel(count) {
+      return count + (count === 1 ? ' item' : ' items');
+    }
+
     function openOrderModal(data, rowEl) {
       currentOrderRow = rowEl;
 
+      let items = [];
+      try {
+        items = data.items ? JSON.parse(data.items) : [];
+      } catch (e) {
+        console.error('Could not parse order items:', e);
+      }
+
       document.getElementById('modalOrderId').textContent = data.id;
+      document.getElementById('modalSubtitle').textContent = 'Website order · ' + itemLabel(items.length);
       document.getElementById('modalCustomer').textContent = data.customer;
-      document.getElementById('modalProduct').textContent = data.product;
-      document.getElementById('modalQty').textContent = data.qty;
-      document.getElementById('modalAmount').textContent = '₱' + data.amount;
       document.getElementById('modalDue').textContent = data.due;
       setStatusBadge(document.getElementById('modalStatus'), data.status);
 
@@ -968,10 +1210,14 @@
       priorityEl.textContent = data.priority;
       priorityEl.className = 'badge ' + data.priorityClass;
 
+      document.getElementById('modalItemsList').innerHTML = renderItemRows(items);
+      document.getElementById('modalItemsTotalLabel').textContent = 'Total (' + itemLabel(items.length) + ')';
+      document.getElementById('modalAmount').textContent = '₱' + computeItemsTotal(items).toFixed(2);
+
       const cancelBtn = document.getElementById('cancelOrderBtn');
       const alreadyCancelled = data.status === 'CANCELLED';
       cancelBtn.classList.toggle('disabled', alreadyCancelled);
-      document.getElementById('confirmBox').classList.remove('show');
+      document.getElementById('cancelOverlay').classList.remove('active');
 
       document.getElementById('pageContent').classList.add('blurred');
       document.getElementById('orderOverlay').classList.add('active');
@@ -980,7 +1226,7 @@
     function closeOrderModal() {
       document.getElementById('pageContent').classList.remove('blurred');
       document.getElementById('orderOverlay').classList.remove('active');
-      document.getElementById('confirmBox').classList.remove('show');
+      document.getElementById('cancelOverlay').classList.remove('active');
     }
 
     const prepareUrlTemplate = @json(route('orders.prepare', ['id' => '__ID__']));
@@ -1052,12 +1298,43 @@
     }
     /* =================== end Prepare -> Packing =================== */
     document.getElementById('cancelOrderBtn').addEventListener('click', function () {
-      if (this.classList.contains('disabled')) return;
-      document.getElementById('confirmBox').classList.add('show');
+      if (this.classList.contains('disabled') || !currentOrderRow) return;
+
+      const data = currentOrderRow.dataset;
+      let items = [];
+      try {
+        items = data.items ? JSON.parse(data.items) : [];
+      } catch (e) {
+        console.error('Could not parse order items:', e);
+      }
+
+      document.getElementById('cancelOrderId').textContent = data.id;
+      document.getElementById('cancelSubtitle').textContent = 'Website order · ' + itemLabel(items.length);
+      document.getElementById('cancelCustomer').textContent = data.customer;
+      document.getElementById('cancelAmount').textContent = '₱' + computeItemsTotal(items).toFixed(2);
+      document.getElementById('cancelDue').textContent = data.due;
+      setStatusBadge(document.getElementById('cancelStatus'), data.status);
+
+      document.getElementById('cancelItemCount').textContent = items.length;
+      document.getElementById('cancelCustomerName').textContent = data.customer;
+
+      document.getElementById('cancelItemsList').innerHTML = items.map(function (item) {
+        const qty = Number(item.qty) || 0;
+        const price = Number(item.price) || 0;
+        const lineTotal = qty * price;
+        return (
+          '<div class="cancel-item-row">' +
+            '<span class="cancel-item-name">' + item.name + ' × ' + qty + '</span>' +
+            '<span class="cancel-item-amount">₱' + lineTotal.toFixed(2) + '</span>' +
+          '</div>'
+        );
+      }).join('');
+
+      document.getElementById('cancelOverlay').classList.add('active');
     });
 
     document.getElementById('noKeepBtn').addEventListener('click', function () {
-      document.getElementById('confirmBox').classList.remove('show');
+      document.getElementById('cancelOverlay').classList.remove('active');
     });
 
     const cancelUrlTemplate = @json(route('orders.cancel', ['id' => '__ID__']));
@@ -1098,13 +1375,13 @@
         .then(function (data) {
           if (!data.success) throw new Error(data.message || 'Cancel failed');
 
-          // ---- Update modal ----
+          // ---- Update order modal ----
           setStatusBadge(document.getElementById('modalStatus'), 'CANCELLED');
           const priorityEl = document.getElementById('modalPriority');
           priorityEl.textContent = '—';
           priorityEl.className = 'badge';
           document.getElementById('cancelOrderBtn').classList.add('disabled');
-          document.getElementById('confirmBox').classList.remove('show');
+          document.getElementById('cancelOverlay').classList.remove('active');
 
           // ---- Update the row ----
           currentOrderRow.dataset.status = 'CANCELLED';

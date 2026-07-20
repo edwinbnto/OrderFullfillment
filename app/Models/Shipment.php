@@ -34,6 +34,11 @@ class Shipment extends Model
         return $this->belongsTo(DeliveryMan::class, 'delivery_man_id');
     }
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
+    }
+
     protected static function booted(): void
     {
         // Requirement #5: a driver only becomes available again once the
@@ -60,6 +65,22 @@ class Shipment extends Model
                 ! $shipment->shipped_at
             ) {
                 $shipment->shipped_at = now();
+            }
+        });
+
+        // Keep the parent Order's status mirrored to its Shipment's status
+        // (READY_TO_SHIP, OUT_FOR_DELIVERY, DELIVERED, etc). Without this,
+        // the Orders and Shipping pages drift apart the moment a shipment
+        // changes status anywhere other than the Orders page itself — e.g.
+        // assigning a driver moves the shipment to OUT_FOR_DELIVERY but the
+        // order was left showing READY_TO_SHIP. Fires on every save, no
+        // matter where the status change comes from.
+        static::updated(function (Shipment $shipment) {
+            if ($shipment->wasChanged('status') && $shipment->order_id) {
+                Order::where('id', $shipment->order_id)->update([
+                    'status'     => strtoupper($shipment->status),
+                    'updated_at' => now(),
+                ]);
             }
         });
     }

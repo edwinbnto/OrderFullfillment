@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\Shipment;
 use App\Models\DeliveryMan;
+use App\Helpers\OrderStatus;
 
 class ShippingController extends Controller
 {
@@ -30,7 +31,8 @@ class ShippingController extends Controller
             'tracking_number',
             'courier',
             'amount',
-            'delivery_man_id'
+            'delivery_man_id',
+            'updated_at'
         )
         ->whereIn('status', [
             'SHIPPED',
@@ -61,13 +63,25 @@ class ShippingController extends Controller
             ? round(($delivered / ($delivered + $delayed)) * 100)
             : 0;
 
+        // Delivery alerts panel: recently-changed shipments, newest first.
+        // Same idea as the dashboard's $alerts — just built from $shipments
+        // instead of a separate query.
+        $deliveryAlerts = $shipments->sortByDesc('updated_at')->take(10)->map(function ($s) {
+            return (object) [
+                'id'      => $s->shipment_id,
+                'icon'    => '🔔',
+                'message' => $s->shipment_id . ' is now ' . OrderStatus::label($s->status),
+            ];
+        })->values();
+
         return view('shipping', compact(
             'shipments',
             'shippedToday',
             'inTransit',
             'delayed',
             'delivered',
-            'onTimeRate'
+            'onTimeRate',
+            'deliveryAlerts'
         ));
     }
 

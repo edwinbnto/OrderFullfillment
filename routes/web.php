@@ -7,6 +7,7 @@ use App\Http\Controllers\PackingController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\MaterialRequestController;
+use App\Http\Controllers\ActivityController;
 
 Route::get('/', function () {
     return view('Signup');
@@ -50,3 +51,5 @@ Route::get('/shipping/{shipmentId}/drivers', [ShippingController::class, 'driver
 Route::post('/shipping/{shipmentId}/assign-driver', [ShippingController::class, 'assignDriver'])->name('shipping.assign-driver');
 
 Route::post('/material-requests', [MaterialRequestController::class, 'store']);
+
+Route::get('/activity/recent', [ActivityController::class, 'recent']);
