@@ -799,17 +799,17 @@
                 style="cursor: pointer;"
                 data-id="{{ $order->id }}"
                 data-customer="{{ $order->customer_name }}"
-                data-product="{{ $order->product_name }}"
-                data-qty="{{ $order->qty }}"
+                data-product="{{ $order->product_summary }}"
+                data-qty="{{ $order->total_qty }}"
                 data-status="{{ $statusRaw }}"
                 data-priority="{{ $priority['label'] }}"
                 data-priority-class="{{ $priority['class'] }}"
-                data-amount="{{ number_format($order->product_amount * $order->qty, 2) }}"
+                data-amount="{{ number_format($order->total, 2) }}"
                 data-due="{{ \Carbon\Carbon::parse($order->due_date)->format('M d') }}">
               <td class="order-id">{{ $order->id }}</td>
               <td class="customer">{{ $order->customer_name }}</td>
-              <td>{{ $order->product_name }}</td>
-              <td class="qty-cell">{{ $order->qty }}</td>
+              <td>{{ $order->product_summary }}</td>
+              <td class="qty-cell">{{ $order->total_qty }}</td>
               <td class="status-cell"><span class="badge status {{ $statusClass }}">{{ $statusRaw }}</span></td>
               <td class="priority-cell">
               @if ($statusRaw !== 'CANCELLED')

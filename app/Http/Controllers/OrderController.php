@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\PackingMaterial;
+use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
@@ -18,7 +19,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('items')->findOrFail($id);
         return view('orders.show', compact('order'));
     }
 
@@ -27,7 +28,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders       = Order::orderByDesc('created_at')->get();
+        $orders       = Order::with('items')->orderByDesc('created_at')->get();
         $ordersToday  = Order::where('status', 'NEW')->count();
         $inPacking    = Order::where('status', 'PACKING')->count();
         $shippedToday = Order::where('status', 'SHIPPED')->count();
