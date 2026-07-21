@@ -448,27 +448,34 @@
   .overlay.active { display: flex; }
 
   .modal {
-    width: 620px;
+    width: 520px;
     max-width: 90vw;
+    max-height: 85vh;
     background: #16305c;
     border-radius: 14px;
-    overflow: hidden;
+    overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* old Edge/IE */
   }
 
-  .modal-header { background: #0f2549; padding: 20px 28px; }
-  .modal-header h2 { margin: 0; color: #fff; font-size: 18px; }
-  .modal-header p { margin: 4px 0 0; color: #8ea3cc; font-size: 13px; }
+  .modal::-webkit-scrollbar {
+    display: none;              /* Chrome/Safari/new Edge */
+  }
+
+  .modal-header { background: #0f2549; padding: 16px 24px; }
+  .modal-header h2 { margin: 0; color: #fff; font-size: 16px; }
+  .modal-header p { margin: 3px 0 0; color: #8ea3cc; font-size: 12px; }
 
   .modal-body {
-    padding: 24px 28px;
+    padding: 18px 24px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px 20px;
+    gap: 14px 18px;
   }
 
-  .modal-body .field-label { margin: 0 0 6px; font-size: 12px; color: #8ea3cc; }
-  .modal-body .field-value { margin: 0; font-size: 15px; color: #fff; font-weight: 600; }
+  .modal-body .field-label { margin: 0 0 4px; font-size: 11px; color: #8ea3cc; }
+  .modal-body .field-value { margin: 0; font-size: 14px; color: #fff; font-weight: 600; }
 
   .modal-body .status-pill {
     display: inline-block;
@@ -487,18 +494,110 @@
   .modal-body .status-pill.tag-cancelled { background: #4A1E1E; color: #F3A9A9; }
 
   .assign-banner {
-    margin: 0 28px 20px;
+    margin: 0 24px 16px;
     background: #3a3016;
     border: 1px solid #6b5a24;
     border-radius: 8px;
-    padding: 14px 18px;
+    padding: 12px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     color: #f3d98a;
-    font-size: 13px;
+    font-size: 12.5px;
   }
+
+  /* ===== Order items breakdown (order modal + assign-driver modal) ===== */
+  .items-section {
+    background: #0f2549;
+    border: 1px solid var(--pill-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .items-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .items-badge {
+    background: var(--pill);
+    border: 1px solid var(--pill-border);
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 190px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .items-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .items-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .items-list::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .items-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  .items-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+  }
+
+  .items-row-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .items-row-qty {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .items-row-amount {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .items-total-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #1b3a6b;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  /* ===== end order items breakdown ===== */
+
 
   .assign-banner.hidden { display: none; }
 
@@ -519,16 +618,16 @@
   .modal-footer {
     display: flex;
     gap: 12px;
-    padding: 20px 28px;
+    padding: 16px 24px;
     border-top: 1px solid rgba(255,255,255,0.08);
   }
 
   .btn {
     flex: 1;
-    padding: 12px;
+    padding: 10px;
     border: none;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13.5px;
     cursor: pointer;
   }
 
@@ -725,9 +824,9 @@
         <table>
           <thead>
             <tr>
-              <th>Order Id</th>
+              <th>Shipment Id</th>
               <th>Customer</th>
-              <th>Product</th>
+              <th>Items</th>
               <th>Tracking no.</th>
               <th class="th-status">Status</th>
               <th>Destination</th>
@@ -759,7 +858,7 @@
     class="shipping-row"
     data-id="{{ $shipment->shipment_id }}"
     data-customer="{{ $shipment->customer_name }}"
-    data-product="{{ $shipment->product_name }}"
+    data-product="{{ collect($shipment->items ?? [])->pluck('product_name')->implode(', ') }}"
     data-tracking="{{ $shipment->tracking_number }}"
     data-status="{{ $statusRaw }}"
     data-destination="{{ $shipment->address }}"
@@ -769,7 +868,7 @@
 
     <td class="order-id">{{ $shipment->shipment_id }}</td>
     <td class="customer">{{ $shipment->customer_name }}</td>
-    <td class="product">{{ $shipment->product_name }}</td>
+    <td class="product">{{ $shipment->items_count ?? 0 }} {{ ($shipment->items_count ?? 0) === 1 ? 'item' : 'items' }}</td>
     <td class="tracking">{{ $shipment->tracking_number }}</td>
 
     <td class="status-cell">
@@ -843,7 +942,7 @@
           <span class="status-pill tag-packing" id="modalStatus">—</span>
         </div>
         <div>
-          <p class="field-label">Product</p>
+          <p class="field-label">Items</p>
           <p class="field-value" id="modalItem">—</p>
         </div>
         <div>
@@ -865,6 +964,19 @@
         <div style="grid-column: 1 / -1;">
           <p class="field-label">Delivery Address</p>
           <p class="field-value" id="modalAddress">—</p>
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <div class="items-section">
+            <div class="items-section-header">
+              <p class="field-label" style="margin:0;">Items in this order</p>
+              <span class="items-badge" id="modalItemsBadge">0 items</span>
+            </div>
+            <div class="items-list" id="modalItemsList"></div>
+            <div class="items-total-row">
+              <span>Total amount</span>
+              <span id="modalItemsTotal">—</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -933,12 +1045,65 @@
     let currentOrderId = null;
     let selectedDriverId = null;
 
+    function formatCurrency(n) {
+      const num = Number(n) || 0;
+      return '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Title-cases a status string like "OUT_FOR_DELIVERY"/"OUT FOR DELIVERY"
+    // for use inline in a sentence (the all-caps pill labels only look right
+    // as small badges, not sitting in "... is now OUT FOR DELIVERY").
+    function toSentenceStatus(str) {
+      return String(str)
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    // Renders an order's line items + total into the given list/badge/total
+    // elements. Shared by the order-detail modal and the assign-driver modal
+    // so both stay in sync with the same $shipment->items payload.
+    function renderOrderItems(order, listElId, badgeElId, totalElId) {
+      const listEl = document.getElementById(listElId);
+      const badgeEl = document.getElementById(badgeElId);
+      const totalEl = document.getElementById(totalElId);
+      const items = (order && order.items) || [];
+
+      listEl.innerHTML = '';
+
+      if (!items.length) {
+        listEl.innerHTML = '<p style="color: var(--text-muted); margin: 0; padding: 4px 0;">No item details available.</p>';
+      } else {
+        items.forEach(function (item) {
+          const row = document.createElement('div');
+          row.className = 'items-row';
+          row.innerHTML = `
+            <div>
+              <div class="items-row-name">${item.product_name}</div>
+              <div class="items-row-qty">Qty ${item.qty}</div>
+            </div>
+            <div class="items-row-amount">${formatCurrency(item.line_total)}</div>
+          `;
+          listEl.appendChild(row);
+        });
+      }
+
+      badgeEl.textContent = items.length + (items.length === 1 ? ' item' : ' items');
+
+      // Sum the line items rather than trusting order.amount — that column
+      // on the shipments table isn't actually populated (defaults to 0), so
+      // relying on it was showing ₱0.00 even when items had real amounts.
+      const total = items.reduce((sum, it) => sum + (Number(it.line_total) || 0), 0);
+      totalEl.textContent = formatCurrency(total);
+    }
+
     function openShippingModal(orderId, showBanner) {
       const order = orders[orderId];
       if (order) {
         document.getElementById('modalOrderId').textContent = orderId;
         document.getElementById('modalCustomer').textContent = order.customer_name;
-        document.getElementById('modalItem').textContent = order.product_name;
+        const itemCount = order.items_count ?? (order.items ? order.items.length : 0);
+        document.getElementById('modalItem').textContent = itemCount + (itemCount === 1 ? ' item' : ' items');
         document.getElementById('modalTracking').textContent = order.tracking_number;
         const modalStatusEl = document.getElementById('modalStatus');
         modalStatusEl.textContent = statusLabels[order.status] || order.status;
@@ -948,12 +1113,13 @@
         document.getElementById('modalDue').textContent = order.due_date;
         document.getElementById('modalAddress').textContent = order.address;
 
-        // Amount may come from the shipment JSON, or fall back to the
-        // clicked row's data-amount attribute if the JSON doesn't have it.
-        const rowEl = document.querySelector('.shipping-row[data-id="' + orderId + '"]');
-        const rawAmount = order.amount ?? (rowEl ? rowEl.dataset.amount : null);
-        document.getElementById('modalAmount').textContent =
-          rawAmount != null ? '₱' + rawAmount : '—';
+        // The shipments table's amount column isn't populated (defaults to
+        // 0), so the real total comes from summing the order's line items —
+        // same figure used for the "Total amount" row in the items section.
+        const itemsTotal = (order.items || []).reduce((sum, it) => sum + (Number(it.line_total) || 0), 0);
+        document.getElementById('modalAmount').textContent = formatCurrency(itemsTotal);
+
+        renderOrderItems(order, 'modalItemsList', 'modalItemsBadge', 'modalItemsTotal');
       }
 
       // Only reveal the yellow "assign a driver" banner when the modal was
@@ -1131,7 +1297,7 @@
       item.dataset.alertId = orderId;
       item.innerHTML = `
         <span class="activity-icon">🔔</span>
-        <span class="activity-message">${orderId} is now ${statusLabels[newStatus] || newStatus}</span>
+        <span class="activity-message">${orderId} is now ${toSentenceStatus(statusLabels[newStatus] || newStatus)}</span>
       `;
 
       list.prepend(item);

@@ -12,7 +12,6 @@ class Shipment extends Model
         'shipment_id',
         'order_id',
         'customer_name',
-        'product_name',
         'qty',
         'amount',
         'courier',

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\Shipment;
+use App\Models\OrderItem;
 use App\Models\DeliveryMan;
 use App\Helpers\OrderStatus;
 
@@ -25,7 +26,6 @@ class ShippingController extends Controller
             'shipment_id',
             'order_id',
             'customer_name',
-            'product_name',
             'status',
             'due_date',
             'address',
@@ -43,6 +43,32 @@ class ShippingController extends Controller
             'DELIVERED',
         ])
         ->get();
+
+        // Pull every line item for the orders behind these shipments in one
+        // query, then attach a plain-array 'items' + 'items_count' to each
+        // shipment so the Items column and the item-breakdown modals (order
+        // detail + assign-driver) can both be driven from the same data
+        // that's already being @json()'d out to the page.
+        $orderIds = $shipments->pluck('order_id')->filter()->unique()->values();
+
+        $itemsByOrder = OrderItem::whereIn('order_id', $orderIds)
+            ->get(['order_id', 'product_name', 'qty', 'product_amount'])
+            ->groupBy('order_id');
+
+        $shipments->each(function (Shipment $shipment) use ($itemsByOrder) {
+            $orderItems = $itemsByOrder->get($shipment->order_id, collect());
+
+            $shipment->items = $orderItems->map(function (OrderItem $item) {
+                return [
+                    'product_name'   => $item->product_name,
+                    'qty'            => (int) $item->qty,
+                    'product_amount' => (float) $item->product_amount,
+                    'line_total'     => (float) $item->line_total,
+                ];
+            })->values()->toArray();
+
+            $shipment->items_count = $orderItems->count();
+        });
 
         $shippedToday = Order::whereDate('updated_at', today())
             ->where('status', 'SHIPPED')
@@ -68,10 +94,16 @@ class ShippingController extends Controller
         // Same idea as the dashboard's $alerts — just built from $shipments
         // instead of a separate query.
         $deliveryAlerts = $shipments->sortByDesc('updated_at')->take(10)->map(function ($s) {
+            // OrderStatus::label() returns the shouty all-caps form used for
+            // the status pills (e.g. "OUT FOR DELIVERY"). That reads fine on
+            // a small badge but not sitting in a sentence, so title-case it
+            // here for the alert feed only — pills elsewhere are untouched.
+            $label = ucwords(strtolower(OrderStatus::label($s->status)));
+
             return (object) [
                 'id'      => $s->shipment_id,
                 'icon'    => '🔔',
-                'message' => $s->shipment_id . ' is now ' . OrderStatus::label($s->status),
+                'message' => $s->shipment_id . ' is now ' . $label,
             ];
         })->values();
 
