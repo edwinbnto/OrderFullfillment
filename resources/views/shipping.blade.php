@@ -803,16 +803,17 @@
         <div class="panel-header">
           <div class="title">🔔 Delivery alerts</div>
         </div>
-        <div class="activity-list">
-          <div class="activity-item">
-            <span class="activity-icon"></span>
+        <div class="activity-list" id="deliveryAlertsList">
+          @forelse($deliveryAlerts as $alert)
+          <div class="activity-item" data-alert-id="{{ $alert->id }}">
+            <span class="activity-icon">{{ $alert->icon }}</span>
+            <span class="activity-message">{{ $alert->message }}</span>
           </div>
+          @empty
           <div class="activity-item">
-            <span class="activity-icon"></span>
+            <span class="activity-message" style="color: var(--text-muted);">No recent activity.</span>
           </div>
-          <div class="activity-item">
-            <span class="activity-icon"></span>
-          </div>
+          @endforelse
         </div>
       </div>
 
@@ -1075,6 +1076,7 @@
         }
 
         applyAssignmentToRow(currentOrderId, data.status);
+        pushDeliveryAlert(currentOrderId, data.status);
 
         document.getElementById('driverOverlay').classList.remove('active');
         document.getElementById('pageContent').classList.remove('blurred');
@@ -1111,6 +1113,33 @@
 
       const actionCell = row.querySelector('td:last-child');
       if (actionCell) actionCell.innerHTML = '';
+    }
+
+    // Mirrors the message format ShippingController@index builds for
+    // $deliveryAlerts, so a freshly-assigned shipment shows up immediately
+    // instead of waiting for the next full page load.
+    function pushDeliveryAlert(orderId, newStatus) {
+      const list = document.getElementById('deliveryAlertsList');
+      if (!list) return;
+
+      // Drop the "No recent activity." placeholder if it's the only thing there.
+      const placeholder = list.querySelector('.activity-item:not([data-alert-id])');
+      if (placeholder && list.children.length === 1) placeholder.remove();
+
+      const item = document.createElement('div');
+      item.className = 'activity-item';
+      item.dataset.alertId = orderId;
+      item.innerHTML = `
+        <span class="activity-icon">🔔</span>
+        <span class="activity-message">${orderId} is now ${statusLabels[newStatus] || newStatus}</span>
+      `;
+
+      list.prepend(item);
+
+      // Keep it capped at 10, same as the controller's ->take(10).
+      while (list.children.length > 10) {
+        list.removeChild(list.lastElementChild);
+      }
     }
 
     function showAssignToast(message, isError = false) {

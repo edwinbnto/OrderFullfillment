@@ -591,24 +591,29 @@
       </div>
     </div>
 
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="label">Return requests pending</div>
-        <div class="value">3</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">In transit back</div>
-        <div class="value">11</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Refunds processed today</div>
-        <div class="value">9</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Return rate (30 days)</div>
-        <div class="value">2.1%</div>
-      </div>
-    </div>
+<div class="stats-row">
+
+  <div class="stat-card">
+    <div class="label">Return requests pending</div>
+    <div class="value">{{ $pendingReturns }}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="label">In transit back</div>
+    <div class="value">0</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="label">Refunds processed today</div>
+    <div class="value">{{ $refundedToday }}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="label">Return rate (30 days)</div>
+    <div class="value">0%</div>
+  </div>
+
+</div>
 
     <div class="content">
 
@@ -662,50 +667,35 @@
               <th>Resolution</th>
             </tr>
           </thead>
-          <tbody id="returnsTableBody">
-            <tr class="return-row" data-return-id="r1" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Defective" data-status="High" data-resolution="Pending" onclick="openReturnModal('r1')">
-              <td class="order-id">#ORD-4821</td>
-              <td class="customer">Maria Santos</td>
-              <td class="product">Wireless Headphone</td>
-              <td>Defective</td>
-              <td><span class="status-badge status-high">High</span></td>
-              <td>Pending</td>
-            </tr>
-            <tr class="return-row" data-return-id="r2" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Wrong item" data-status="Med" data-resolution="Pending" onclick="openReturnModal('r2')">
-              <td class="order-id">#ORD-4821</td>
-              <td class="customer">Maria Santos</td>
-              <td class="product">Wireless Headphone</td>
-              <td>Wrong item</td>
-              <td><span class="status-badge status-med">Med</span></td>
-              <td>Pending</td>
-            </tr>
-            <tr class="return-row" data-return-id="r3" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Defective" data-status="Refunded" data-resolution="Refund issued" onclick="openReturnModal('r3')">
-              <td class="order-id">#ORD-4821</td>
-              <td class="customer">Maria Santos</td>
-              <td class="product">Wireless Headphone</td>
-              <td>Defective</td>
-              <td><span class="status-badge status-refunded">Refunded</span></td>
-              <td>Refund issued</td>
-            </tr>
-            <tr class="return-row" data-return-id="r4" data-order-id="#ORD-4821" data-customer="Maria Santos" data-product="Wireless Headphone" data-reason="Damaged in transit" data-status="Inspecting" data-resolution="Not resellable" onclick="openReturnModal('r4')">
-              <td class="order-id">#ORD-4821</td>
-              <td class="customer">Maria Santos</td>
-              <td class="product">Wireless Headphone</td>
-              <td>Damaged in transit</td>
-              <td><span class="status-badge status-inspecting">Inspecting</span></td>
-              <td><span class="resolution-not-resellable">Not resellable</span></td>
-            </tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
+<tbody id="returnsTableBody">
 
-            <tr class="no-results-row" id="noResultsRow" style="display:none;">
-              <td colspan="6">No returns match your search or filter.</td>
-            </tr>
-          </tbody>
+@foreach($returns as $return)
+<tr class="return-row"
+    onclick="openReturnModal(this)"
+    data-return-id="{{ $return->id }}"
+    data-order-id="{{ $return->order_id }}"
+    data-customer="{{ $return->customer_name }}"
+    data-product="{{ $return->product_name }}"
+    data-reason="{{ $return->reason }}"
+    data-status="{{ $return->status }}"
+    data-resolution="{{ $return->resolution }}"
+>
+    <td class="order-id">{{ $return->order_id }}</td>
+    <td class="customer">{{ $return->customer_name }}</td>
+    <td class="product">{{ $return->product_name }}</td>
+    <td>{{ $return->reason }}</td>
+
+    <td>
+        <span class="status-badge">
+            {{ $return->status }}
+        </span>
+    </td>
+
+    <td>{{ $return->resolution }}</td>
+</tr>
+@endforeach
+
+</tbody>
         </table>
       </div>
 
@@ -715,9 +705,9 @@
             <div class="title">📊 Return reasons</div>
           </div>
           <div class="reason-list">
-            <div class="reason-item"><span class="reason-icon">⚠️</span><span>Defective — 41%</span></div>
-            <div class="reason-item"><span class="reason-icon">📦</span><span>Wrong item — 24%</span></div>
-            <div class="reason-item"><span class="reason-icon">👤</span><span>Changed mind — 18%</span></div>
+            <div class="reason-item"><span class="reason-icon">⚠️</span><span>Defective — 0%</span></div>
+            <div class="reason-item"><span class="reason-icon">📦</span><span>Wrong item — 0%</span></div>
+            <div class="reason-item"><span class="reason-icon">👤</span><span>Changed mind — 0%</span></div>
           </div>
         </div>
 
@@ -726,13 +716,6 @@
             <div class="title">📈 Refund activity</div>
           </div>
           <div class="refund-list">
-            <div class="refund-item"><span class="refund-icon">✔</span><span>#ORD-4821 refunded</span></div>
-            <div class="refund-item"><span class="refund-icon">✔</span><span>#ORD-4822 refunded</span></div>
-            <div class="refund-item"></div>
-            <div class="refund-item"></div>
-            <div class="refund-item"></div>
-            <div class="refund-item"></div>
-            <div class="refund-item"></div>
           </div>
         </div>
       </div>
@@ -796,54 +779,31 @@
   <script>
     // Demo data keyed by return id. Swap this for a fetch() call to your
     // backend if you want live data instead of hardcoded values.
-    const returns = {
-      r1: {
-        orderId: '#ORD-4821', customer: 'Maria Santos', product: 'Wireless Headphone',
-        priority: 'High priority', review: 'Pending Review',
-        reasonTitle: "Defective - item stopped working after 2 days",
-        reasonDesc: "Customer reports the left earcup lost audio and the device won't hold a charge. No visible external damage.",
-        value: '$67.67', requestedOn: 'July 2, 2026', inTransit: 'Yes'
-      },
-      r2: {
-        orderId: '#ORD-4821', customer: 'Maria Santos', product: 'Wireless Headphone',
-        priority: 'Med priority', review: 'Pending Review',
-        reasonTitle: "Wrong item - received a different model",
-        reasonDesc: "Customer ordered wireless headphones but received a wired pair instead. Packaging matches the order but contents are incorrect.",
-        value: '$67.67', requestedOn: 'July 1, 2026', inTransit: 'No'
-      },
-      r3: {
-        orderId: '#ORD-4821', customer: 'Maria Santos', product: 'Wireless Headphone',
-        priority: 'High priority', review: 'Refunded',
-        reasonTitle: "Defective - device would not power on",
-        reasonDesc: "Item arrived and never powered on despite a full charge. Refund was reviewed and approved.",
-        value: '$67.67', requestedOn: 'June 28, 2026', inTransit: 'No'
-      },
-      r4: {
-        orderId: '#ORD-4821', customer: 'Maria Santos', product: 'Wireless Headphone',
-        priority: 'Med priority', review: 'Inspecting',
-        reasonTitle: "Damaged in transit - cracked casing",
-        reasonDesc: "Outer packaging showed impact damage. Item casing is cracked and currently under inspection to confirm resellability.",
-        value: '$67.67', requestedOn: 'June 30, 2026', inTransit: 'Yes'
-      }
-    };
 
-    function openReturnModal(returnId) {
-      const r = returns[returnId];
-      if (r) {
-        document.getElementById('modalOrderId').textContent = r.orderId;
-        document.getElementById('modalCustomerProduct').textContent = r.customer + ' · ' + r.product;
-        document.getElementById('modalPriority').textContent = r.priority;
-        document.getElementById('modalReviewStatus').textContent = r.review;
-        document.getElementById('modalReasonTitle').textContent = r.reasonTitle;
-        document.getElementById('modalReasonDesc').textContent = r.reasonDesc;
-        document.getElementById('modalValue').textContent = r.value;
-        document.getElementById('modalRequestedOn').textContent = r.requestedOn;
-        document.getElementById('modalInTransit').textContent = r.inTransit;
-      }
 
-      document.getElementById('pageContent').classList.add('blurred');
-      document.getElementById('returnOverlay').classList.add('active');
-    }
+function openReturnModal(row)
+{
+    document.getElementById('modalOrderId').textContent =
+        row.dataset.orderId;
+
+    document.getElementById('modalCustomerProduct').textContent =
+        row.dataset.customer + ' · ' + row.dataset.product;
+
+    document.getElementById('modalPriority').textContent =
+        row.dataset.status;
+
+    document.getElementById('modalReviewStatus').textContent =
+        row.dataset.resolution;
+
+    document.getElementById('modalReasonTitle').textContent =
+        row.dataset.reason;
+
+    document.getElementById('pageContent')
+        .classList.add('blurred');
+
+    document.getElementById('returnOverlay')
+        .classList.add('active');
+}
 
     function closeReturnModal() {
       document.getElementById('pageContent').classList.remove('blurred');

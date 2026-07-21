@@ -522,7 +522,7 @@
           <div class="order-card">
             <div class="order-id">{{ $order->id }}</div>
             <div class="order-details">
-              <div class="order-item">{{ $order->product_name }} ×{{ $order->qty }}</div>
+              <div class="order-item">{{ $order->customer_name }}</div>
               <div class="tag-row">
                 <span class="tag {{ $status['class'] }}">{{ $status['label'] }}</span>
                 @if ($showPriority)
@@ -567,7 +567,7 @@
           <div class="order-card">
             <div class="order-id">{{ $order->id }}</div>
             <div class="order-details">
-              <div class="order-item">{{ $order->product_name }}</div>
+              <div class="order-item">{{ $order->customer_name }}</div>
               <div class="tag-row">
                 <span class="tag {{ $status['class'] }}">{{ $status['label'] }}</span>
                 @if ($showPriority)
@@ -623,7 +623,7 @@
           <div class="order-card">
             <div class="order-id">{{ $order->id }}</div>
             <div class="order-details">
-              <div class="order-item">{{ $order->product_name }}</div>
+              <div class="order-item">{{ $order->customer_name }}</div>
               <div class="tag-row">
                 <span class="tag {{ $status['class'] }}">{{ $status['label'] }}</span>
                 @if ($showPriority)

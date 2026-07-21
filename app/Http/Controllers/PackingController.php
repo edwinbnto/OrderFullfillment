@@ -19,7 +19,9 @@ class PackingController extends Controller
 
     public function index()
     {
-        $packingOrders = Order::where('status', 'PACKING')->get();
+        $packingOrders = Order::where('status', 'PACKING')
+            ->when(Schema::hasTable('order_items'), fn ($q) => $q->with('items'))
+            ->get();
 
         $inPackingCount = $packingOrders->count();
         $ShippedCount   = Order::where('status', 'SHIPPED')->count();
@@ -41,15 +43,25 @@ class PackingController extends Controller
 
         $packingOrdersJson = $packingOrders->mapWithKeys(function ($order) {
             $priority = OrderPriority::packing($order->created_at ?? null);
+            $items    = $this->buildOrderItems($order);
+
+            // Total the order from its actual line items rather than the
+            // single product_amount/qty fields, so multi-item orders
+            // (order_items) report the correct total instead of null/0.
+            $totalAmount = $items->sum('amount_raw');
+
             return [
                 (string) $order->id => [
                     'customer'      => $order->customer_name,
                     'item'          => $order->product_name,
                     'qty'           => $order->qty,
-                    'amount'        => number_format($order->product_amount * $order->qty, 2),
+                    'amount'        => number_format($totalAmount, 2),
                     'priority'      => $priority['label'],
+                    'priorityKey'   => $priority['key'] ?? '',
                     'priorityClass' => $priority['class'],
                     'address'       => $order->address ?? '',
+                    'items'         => $items,
+                    'itemCount'     => $items->count(),
                 ],
             ];
         });
@@ -260,6 +272,40 @@ class PackingController extends Controller
         } catch (\Throwable $e) {
             report($e);
         }
+    }
+
+    /**
+     * Build the list of line items shown in the packing modal.
+     *
+     * Prefers the order's related order_items rows (multi-item orders).
+     * Falls back to the single product_name/qty/product_amount fields on
+     * the order itself, so orders created before order_items existed (or
+     * environments where the table hasn't been migrated yet) still show
+     * a one-line item list instead of an empty modal.
+     */
+    private function buildOrderItems(Order $order)
+    {
+        if (Schema::hasTable('order_items') && $order->relationLoaded('items') && $order->items->isNotEmpty()) {
+            return $order->items->map(function ($item) {
+                $rawAmount = $item->qty * $item->product_amount;
+
+                return [
+                    'name'       => $item->product_name,
+                    'qty'        => $item->qty,
+                    'amount'     => number_format($rawAmount, 2),
+                    'amount_raw' => $rawAmount,
+                ];
+            })->values();
+        }
+
+        $rawAmount = $order->product_amount * $order->qty;
+
+        return collect([[
+            'name'       => $order->product_name,
+            'qty'        => $order->qty,
+            'amount'     => number_format($rawAmount, 2),
+            'amount_raw' => $rawAmount,
+        ]]);
     }
 
     /**

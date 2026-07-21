@@ -23,6 +23,7 @@ class ShippingController extends Controller
 
         $shipments = Shipment::select(
             'shipment_id',
+            'order_id',
             'customer_name',
             'product_name',
             'status',

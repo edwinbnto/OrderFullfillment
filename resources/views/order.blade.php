@@ -547,9 +547,11 @@
   .modal {
     width: 480px;
     max-width: 90vw;
+    max-height: 85vh;
     background: #16305c;
     border-radius: 14px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0,0,0,0.4);
   }
 
@@ -607,6 +609,23 @@
     flex-direction: column;
     gap: 8px;
     margin-bottom: 14px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+
+  .items-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .items-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .items-list::-webkit-scrollbar-thumb {
+    background: var(--pill-border);
+    border-radius: 8px;
+  }
+  .items-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
   }
 
   .item-row {
@@ -910,7 +929,7 @@
             <tr>
               <th>Order Id</th>
               <th>Customer</th>
-              <th class="th-qty">Qty</th>
+              <th class="th-qty">Items</th>
               <th>Amount</th>
               <th class="th-status">Status</th>
               <th class="th-priority">Priority</th>
@@ -943,7 +962,7 @@
                 'CANCELLED'         => 'status-cancelled',
             ];
             $statusClass = $statusClassMap[$statusRaw] ?? 'status-new';
-            $orderQty = $order->items->sum('qty');
+            $orderQty = $order->items->count();
             $orderTotal = $order->items->sum(fn($item) => $item->qty * $item->product_amount);
             @endphp
             <tr class="order-row"
@@ -982,7 +1001,7 @@
                           class="btn-prepare"
                           data-order-id="{{ $order->id }}"
                           onclick="event.stopPropagation(); prepareOrder('{{ $order->id }}', this)">
-                    Prepare
+                    Process
                   </button>
                 @endif
               </td>

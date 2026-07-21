@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ReturnController;
 
 Route::get('/', function () {
     return view('Signup');
@@ -30,9 +31,7 @@ Route::post(
     [PackingController::class, 'processOrder']
 )->name('packing.process');
 
-Route::get('/return', function () {
-    return view('return');
-})->name('return');
+
 
 Route::get('/database', function () {
     return view('database');
@@ -53,3 +52,6 @@ Route::post('/shipping/{shipmentId}/assign-driver', [ShippingController::class, 
 Route::post('/material-requests', [MaterialRequestController::class, 'store']);
 
 Route::get('/activity/recent', [ActivityController::class, 'recent']);
+
+Route::get('/return', [ReturnController::class, 'index'])
+    ->name('return');
