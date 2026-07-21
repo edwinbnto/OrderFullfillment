@@ -8,7 +8,9 @@ use App\Models\Order;
 use App\Models\Shipment;
 use App\Models\OrderItem;
 use App\Models\DeliveryMan;
+use App\Models\ReturnItem;
 use App\Helpers\OrderStatus;
+use Illuminate\Support\Str;
 
 class ShippingController extends Controller
 {
@@ -172,6 +174,71 @@ class ShippingController extends Controller
         return response()->json([
             'message' => "{$driver->name} assigned to {$shipment->shipment_id}",
             'status' => $shipment->status,
+        ]);
+    }
+
+    /**
+     * Cancel a shipment: it disappears from the Shipping page and a matching
+     * record is created on the Returns page instead.
+     *
+     * POST /shipping/{shipmentId}/cancel
+     */
+    public function cancel(string $shipmentId)
+    {
+        $shipment = Shipment::where('shipment_id', $shipmentId)->firstOrFail();
+
+        if (strtoupper($shipment->status) === 'DELIVERED') {
+            return response()->json([
+                'message' => 'This order has already been delivered and can no longer be cancelled.',
+            ], 422);
+        }
+
+        DB::transaction(function () use ($shipment) {
+            $orderItems = OrderItem::where('order_id', $shipment->order_id)
+                ->get(['product_name', 'qty', 'product_amount']);
+
+            // line_total isn't a real order_items column — it's derived
+            // (qty * product_amount) — so sum it in PHP the same way
+            // index() and the order-detail modal already do, rather than
+            // selecting it directly in the query.
+            $refundAmount = $orderItems->sum(function (OrderItem $item) {
+                return $item->qty * $item->product_amount;
+            });
+
+            ReturnItem::create([
+                'id'            => (string) Str::uuid(),
+                'order_id'      => $shipment->order_id,
+                'customer_name' => $shipment->customer_name,
+                'product_name'  => $orderItems->pluck('product_name')->implode(', ') ?: 'N/A',
+                'reason'        => 'Cancelled while shipping',
+                // Admin cancelled this after it had already left for delivery,
+                // so there's nothing to "review" — it just needs to make its
+                // way back to the warehouse. ReturnController::index() auto-
+                // promotes this to Completed / Returned to Inventory 24h later,
+                // the same way Shipment::SHIPPED auto-promotes on the shipping page.
+                'status'        => 'In Transit to Warehouse',
+                'resolution'    => 'Pending',
+                'due_date'      => $shipment->due_date,
+                'address'       => $shipment->address,
+                'refund_amount' => $refundAmount,
+            ]);
+
+            // Free up the driver, if one was already assigned, same as a
+            // normal delivery completion would.
+            if ($shipment->delivery_man_id) {
+                DeliveryMan::where('id', $shipment->delivery_man_id)
+                    ->update(['status' => DeliveryMan::STATUS_AVAILABLE]);
+            }
+
+            // Setting status to CANCELLED both removes it from the shipping
+            // index (which only pulls SHIPPED/READY_TO_SHIP/OUT_FOR_DELIVERY/
+            // DELAYED/DELIVERED) and, via Shipment::booted()'s `updated`
+            // hook, mirrors the same status onto the parent Order.
+            $shipment->update(['status' => 'CANCELLED']);
+        });
+
+        return response()->json([
+            'message' => 'Order cancelled and moved to Returns.',
         ]);
     }
 }

@@ -48,6 +48,7 @@ Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 Route::get('/shipping', [ShippingController::class, 'index'])->name('shipping');
 Route::get('/shipping/{shipmentId}/drivers', [ShippingController::class, 'drivers'])->name('shipping.drivers');
 Route::post('/shipping/{shipmentId}/assign-driver', [ShippingController::class, 'assignDriver'])->name('shipping.assign-driver');
+Route::post('/shipping/{shipmentId}/cancel', [ShippingController::class, 'cancel'])->name('shipping.cancel');
 
 Route::post('/material-requests', [MaterialRequestController::class, 'store']);
 

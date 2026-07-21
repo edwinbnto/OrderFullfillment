@@ -637,6 +637,25 @@
   .btn-cancel { background: #7a2340; color: #f9c3d3; }
   .btn-cancel:hover { background: #8f2a4b; }
 
+  /* Footer button swaps to this when the order is ready-to-ship / in the
+     assign-driver flow, replacing "Cancel order" (see openShippingModal). */
+  .btn-assign-driver-footer { background: #6B4A1E; color: #FBD38D; }
+  .btn-assign-driver-footer:hover { background: #7d5824; }
+
+  /* ===== Cancel confirmation modal ===== */
+  .confirm-modal { width: 420px; }
+  .confirm-modal .modal-body {
+    display: block;
+    padding: 22px 28px 6px;
+  }
+  .confirm-text {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #dbe4f5;
+    line-height: 1.6;
+  }
+  .confirm-text strong { color: #fff; }
+
   /* ============================================
      Driver selection modal
      ============================================ */
@@ -987,7 +1006,7 @@
 
       <div class="modal-footer">
         <button class="btn btn-close" onclick="closePackingModal()">Close</button>
-        <button class="btn btn-cancel">Cancel order</button>
+        <button class="btn btn-cancel" id="modalActionBtn" onclick="requestCancelOrder()">Cancel order</button>
       </div>
     </div>
   </div>
@@ -1009,6 +1028,25 @@
       <div class="modal-footer">
         <button class="btn btn-back" onclick="backToOrderModal()">Back</button>
         <button class="btn btn-confirm" id="confirmAssignBtn" onclick="confirmDriverAssignment()" disabled>Confirm Assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel-order confirmation modal -->
+  <div class="overlay" id="cancelConfirmOverlay">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <h2>Cancel this order?</h2>
+        <p>This can't be undone</p>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">
+          Are you sure you want to cancel order <strong id="cancelConfirmOrderId">—</strong>?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-close" onclick="closeCancelConfirm()">Keep order</button>
+        <button class="btn btn-cancel" id="confirmCancelBtn" onclick="confirmCancelOrder()">Yes, cancel order</button>
       </div>
     </div>
   </div>
@@ -1126,6 +1164,19 @@
       // opened via the Assign Driver button — not from a plain row click.
       document.getElementById('assignBanner').classList.toggle('hidden', !showBanner);
 
+      // Same condition drives the footer's action button. The banner
+      // already has its own "Assign driver" button, so when it's showing,
+      // just hide the footer action button instead of duplicating it.
+      const actionBtn = document.getElementById('modalActionBtn');
+      if (showBanner) {
+        actionBtn.style.display = 'none';
+      } else {
+        actionBtn.style.display = '';
+        actionBtn.textContent = 'Cancel order';
+        actionBtn.className = 'btn btn-cancel';
+        actionBtn.onclick = requestCancelOrder;
+      }
+
       currentOrderId = orderId;
       document.getElementById('pageContent').classList.add('blurred');
       document.getElementById('packingOverlay').classList.add('active');
@@ -1214,6 +1265,79 @@
       document.getElementById('packingOverlay').classList.add('active');
     }
 
+    // ===================== Cancel order flow =====================
+
+    function requestCancelOrder() {
+      if (!currentOrderId) return;
+
+      document.getElementById('cancelConfirmOrderId').textContent = currentOrderId;
+      document.getElementById('packingOverlay').classList.remove('active');
+      document.getElementById('cancelConfirmOverlay').classList.add('active');
+    }
+
+    function closeCancelConfirm() {
+      document.getElementById('cancelConfirmOverlay').classList.remove('active');
+      document.getElementById('packingOverlay').classList.add('active');
+    }
+
+    async function confirmCancelOrder() {
+      if (!currentOrderId) return;
+
+      const btn = document.getElementById('confirmCancelBtn');
+      btn.disabled = true;
+      btn.textContent = 'Cancelling…';
+
+      try {
+        const res = await fetch(`${SHIPPING_BASE_URL}/${currentOrderId}/cancel`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showAssignToast(data.message || 'Could not cancel order.', true);
+          return;
+        }
+
+        removeShippingRow(currentOrderId);
+        pushDeliveryAlert(currentOrderId, 'CANCELLED', 'moved to Returns');
+
+        document.getElementById('cancelConfirmOverlay').classList.remove('active');
+        document.getElementById('pageContent').classList.remove('blurred');
+
+        showAssignToast(data.message || 'Order cancelled and moved to Returns.');
+
+        currentOrderId = null;
+      } catch (err) {
+        showAssignToast('Network error — please try again.', true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Yes, cancel order';
+      }
+    }
+
+    // Cancelled shipments no longer belong on the Shipping page at all
+    // (they now live on the Returns page), so drop the row entirely
+    // rather than just updating its status pill.
+    function removeShippingRow(orderId) {
+      delete orders[orderId];
+
+      const row = document.querySelector('.shipping-row[data-id="' + orderId + '"]');
+      if (row) row.remove();
+
+      const idx = shippingRows.findIndex(r => r.dataset.id === orderId);
+      if (idx !== -1) shippingRows.splice(idx, 1);
+
+      applyShippingFilters();
+    }
+
+    // ===================== end cancel order flow =====================
+
     async function confirmDriverAssignment() {
       if (!selectedDriverId || !currentOrderId) return;
 
@@ -1284,7 +1408,7 @@
     // Mirrors the message format ShippingController@index builds for
     // $deliveryAlerts, so a freshly-assigned shipment shows up immediately
     // instead of waiting for the next full page load.
-    function pushDeliveryAlert(orderId, newStatus) {
+    function pushDeliveryAlert(orderId, newStatus, customMessage) {
       const list = document.getElementById('deliveryAlertsList');
       if (!list) return;
 
@@ -1292,12 +1416,16 @@
       const placeholder = list.querySelector('.activity-item:not([data-alert-id])');
       if (placeholder && list.children.length === 1) placeholder.remove();
 
+      const message = customMessage
+        ? `${orderId} ${customMessage}`
+        : `${orderId} is now ${toSentenceStatus(statusLabels[newStatus] || newStatus)}`;
+
       const item = document.createElement('div');
       item.className = 'activity-item';
       item.dataset.alertId = orderId;
       item.innerHTML = `
         <span class="activity-icon">🔔</span>
-        <span class="activity-message">${orderId} is now ${toSentenceStatus(statusLabels[newStatus] || newStatus)}</span>
+        <span class="activity-message">${message}</span>
       `;
 
       list.prepend(item);
@@ -1318,11 +1446,12 @@
     }
 
     // Click outside either modal (on the dim backdrop) to close everything
-    ['packingOverlay', 'driverOverlay'].forEach(function (id) {
+    ['packingOverlay', 'driverOverlay', 'cancelConfirmOverlay'].forEach(function (id) {
       document.getElementById(id).addEventListener('click', function (e) {
         if (e.target.id === id) {
           document.getElementById('packingOverlay').classList.remove('active');
           document.getElementById('driverOverlay').classList.remove('active');
+          document.getElementById('cancelConfirmOverlay').classList.remove('active');
           document.getElementById('pageContent').classList.remove('blurred');
           currentOrderId = null;
           selectedDriverId = null;

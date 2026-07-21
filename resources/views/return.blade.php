@@ -557,8 +557,8 @@
     cursor: pointer;
   }
 
-  .btn-cancel { background: #7a2340; color: #f9c3d3; }
-  .btn-cancel:hover { background: #8f2a4b; }
+  .btn-close { background: var(--pill); color: var(--text-light); border: 1px solid var(--pill-border); }
+  .btn-close:hover { background: #1c3766; }
 
   .btn-accept { background: #16a34a; color: #eafff0; }
   .btn-accept:hover { background: #1bbf58; }
@@ -744,13 +744,6 @@
         <p class="reason-title" id="modalReasonTitle">Defective - item stopped working after 2 days</p>
         <p class="reason-desc" id="modalReasonDesc">Customer reports the left earcup lost audio and the device won't hold a charge. No visible external damage.</p>
 
-        <p class="field-label">Proof submitted</p>
-        <div class="proof-row">
-          <div class="proof-thumb">🖼️</div>
-          <div class="proof-thumb">🖼️</div>
-          <div class="proof-thumb">🎥</div>
-        </div>
-
         <div class="meta-row">
           <div>
             <p class="field-label">Order value</p>
@@ -768,8 +761,8 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-cancel" onclick="closeReturnModal()">Cancel order</button>
-        <button class="btn btn-accept" onclick="closeReturnModal()">Accept return</button>
+        <button class="btn btn-close" onclick="closeReturnModal()">Close</button>
+        <button class="btn btn-accept" id="modalAcceptBtn" onclick="closeReturnModal()">Accept return</button>
       </div>
     </div>
   </div>
@@ -780,6 +773,11 @@
     // Demo data keyed by return id. Swap this for a fetch() call to your
     // backend if you want live data instead of hardcoded values.
 
+
+// Returns created by the admin cancelling an order (rather than a customer
+// requesting a return) have nothing to accept/reject — they're just moving
+// stock back to the warehouse — so the modal shows Close only, no Accept.
+const ADMIN_CANCEL_REASONS = ['Cancelled while shipping', 'Cancelled before shipping'];
 
 function openReturnModal(row)
 {
@@ -797,6 +795,10 @@ function openReturnModal(row)
 
     document.getElementById('modalReasonTitle').textContent =
         row.dataset.reason;
+
+    const isAdminCancellation = ADMIN_CANCEL_REASONS.includes(row.dataset.reason);
+    document.getElementById('modalAcceptBtn').style.display =
+        isAdminCancellation ? 'none' : '';
 
     document.getElementById('pageContent')
         .classList.add('blurred');
